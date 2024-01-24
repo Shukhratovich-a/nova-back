@@ -24,7 +24,7 @@ export class FileService {
       const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
 
       await writeFile(join(uploadFolder, filename), file.buffer);
-      res.push({ url: `/uploads/${dateFolder}/${filename}`, name: filename });
+      res.push({ url: `/uploads/${dateFolder}/${filename}`, name: file.originalname });
     }
 
     return res;
