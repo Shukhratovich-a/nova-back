@@ -7,10 +7,9 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
-  Generated,
   Relation,
-  CreateDateColumn,
-  UpdateDateColumn,
+  // CreateDateColumn,
+  // UpdateDateColumn,
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
@@ -23,15 +22,11 @@ export class SubcategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "uuid", type: "uuid" })
-  @Generated("uuid")
-  uuid: string;
-
-  @Column({ name: "icon", type: "varchar" })
-  icon: string;
-
-  @Column({ name: "poster", type: "varchar" })
+  @Column({ name: "poster", type: "varchar", nullable: true })
   poster: string;
+
+  @Column({ name: "alias", type: "varchar" })
+  alias: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.subcategories, { nullable: false })
   @JoinColumn({ name: "category_id" })
@@ -58,9 +53,6 @@ export class SubcategoryContentEntity extends BaseEntity {
 
   @Column({ name: "title", type: "varchar" })
   title: string;
-
-  @Column({ name: "alias", type: "varchar" })
-  alias: string;
 
   @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
   language: LanguageEnum;

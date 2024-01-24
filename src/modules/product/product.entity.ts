@@ -7,10 +7,9 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
-  Generated,
   Relation,
-  CreateDateColumn,
-  UpdateDateColumn,
+  // CreateDateColumn,
+  // UpdateDateColumn,
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
@@ -22,19 +21,6 @@ import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
 export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
-
-  @Column({ name: "uuid", type: "uuid" })
-  @Generated("uuid")
-  uuid: string;
-
-  @Column({ name: "total_amount", type: "int" })
-  totalAmount: number;
-
-  @Column({ name: "available_amount", type: "int" })
-  availableAmount: number;
-
-  @Column({ name: "full_price", type: "int" })
-  fullPrice: number;
 
   @Column({ name: "purchase_price", type: "int", nullable: true })
   purchasePrice: number;
