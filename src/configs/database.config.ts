@@ -13,18 +13,18 @@ export const getDatabaseConfig = async (configService: ConfigService): Promise<T
   };
 };
 
-// export const getDatabaseString = (configService: ConfigService) =>
-//   configService.get("postgresql") +
-//   "://" +
-//   configService.get("DB_USERNAME") +
-//   ":" +
-//   configService.get("DB_PASSWORD") +
-//   "@" +
-//   configService.get("DB_HOST") +
-//   ":" +
-//   configService.get("DB_PORT") +
-//   "/" +
-//   configService.get("DB_DATABASE");
+export const getDatabaseString = (configService: ConfigService) =>
+  configService.get("postgresql") +
+  "://" +
+  configService.get("DB_USERNAME") +
+  ":" +
+  configService.get("DB_PASSWORD") +
+  "@" +
+  configService.get("DB_HOST") +
+  ":" +
+  configService.get("DB_PORT") +
+  "/" +
+  configService.get("DB_DATABASE");
 
 const getDatabaseOptions = () => ({
   useNewUrlParser: true,
