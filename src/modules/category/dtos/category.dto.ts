@@ -10,7 +10,7 @@ export class CategoryDto {
   @Exclude()
   title: string;
 
-  @Exclude()
+  @Expose()
   alias: string;
 
   // @Expose()
