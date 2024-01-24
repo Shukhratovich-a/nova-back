@@ -9,9 +9,9 @@ import { ProductEntity, ProductContentEntity, ProductImageEntity } from "@module
 
 import { CategoryEntity, CategoryContentEntity } from "./category.entity";
 
-// import { CategoryController } from './category.controller';
+import { CategoryController } from "./category.controller";
 
-// import { CategoryService } from "./category.service";
+import { CategoryService } from "./category.service";
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { CategoryEntity, CategoryContentEntity } from "./category.entity";
       ProductImageEntity,
     ]),
   ],
-  // controllers: [CategoryController],
-  // providers: [CategoryService, SubcategoryService, ProductService],
+  controllers: [CategoryController],
+  providers: [CategoryService],
 })
 export class CategoryModule {}
