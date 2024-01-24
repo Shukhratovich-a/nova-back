@@ -13,6 +13,7 @@ import { CategoryEntity, CategoryContentEntity } from "./category.entity";
 
 import { CategoryDto } from "./dtos/category.dto";
 import { CreateCategoryDto, CreateCategoryContentDto } from "./dtos/create-category.dto";
+import { UpdateCategoryDto, UpdateCategoryContentDto } from "./dtos/update-category.dto";
 
 @Injectable()
 export class CategoryService {
@@ -21,6 +22,7 @@ export class CategoryService {
     @InjectRepository(CategoryContentEntity) private readonly contentRepository: Repository<CategoryContentEntity>,
   ) {}
 
+  // FIND
   async findAll(language: LanguageEnum, { page, limit }: IPagination) {
     const categories = await this.categoryRepository.find({
       relations: { contents: true },
@@ -37,14 +39,24 @@ export class CategoryService {
     return parsedCategories;
   }
 
+  // CREATE
   async createCategory(categoryDto: CreateCategoryDto) {
     return await this.categoryRepository.save(this.categoryRepository.create(categoryDto));
   }
 
-  async createContent(contentRepository: CreateCategoryContentDto, categoryId: number) {
+  async createContent(contentDto: CreateCategoryContentDto, categoryId: number) {
     return await this.contentRepository.save(
-      this.contentRepository.create({ ...contentRepository, category: { id: categoryId } }),
+      this.contentRepository.create({ ...contentDto, category: { id: categoryId } }),
     );
+  }
+
+  // UPDATE
+  async updateCategory(categoryDto: UpdateCategoryDto, categoryId: number) {
+    return await this.categoryRepository.save({ ...categoryDto, id: categoryId });
+  }
+
+  async updateContent(contentDto: UpdateCategoryContentDto, contentId: number) {
+    return await this.contentRepository.save({ ...contentDto, id: contentId });
   }
 
   // PARSERS
@@ -58,36 +70,38 @@ export class CategoryService {
     return newCategory;
   }
 
+  // CHECKERS
+  async checkCategoryById(categoryId: number) {
+    return this.categoryRepository.findOne({ where: { id: categoryId } });
+  }
+
+  async checkContentById(contentId: number) {
+    return this.contentRepository.findOne({ where: { id: contentId }, relations: { category: true } });
+  }
+
+  async checkContentForExist(categoryId: number, language: LanguageEnum) {
+    return this.contentRepository.findOne({ where: { category: { id: categoryId }, language } });
+  }
+
+  // ASSETS
   async readCategories() {
-    const jsonArray = await csv().fromFile(join(process.cwd(), "uploads", "csv.csv"));
-    const categories = new Set();
-    jsonArray.forEach((product) => {
-      categories.add(product.name);
-    });
+    const jsonArray = await csv().fromFile(join(process.cwd(), "uploads", "categories.csv"));
+    const categories = [...new Set(jsonArray.map((category) => JSON.stringify(category)))].map((category) =>
+      JSON.parse(category),
+    );
 
-    const array = Array.from(categories);
-
-    return array;
+    return { categories, length: categories.length };
   }
 
   async addCategories() {
-    const categories = [
-      "СИФОНЫ ДЛЯ УМЫВАЛЬНИКА / МОЙКИ",
-      "ТРУБЫ И МАНЖЕТЫ ДЛЯ ПОДКЛЮЧЕНИЯ КАНАЛИЗАЦИИ",
-      "СИФОНЫ ДЛЯ ВАННЫ И ДУШЕВЫХ ПОДДОНОВ",
-      "СИДЕНЬЯ ДЛЯ УНИТАЗА",
-      "ШЛАНГИ ДЛЯ СТИРАЛЬНОЙ МАШИН",
-      "СЛИВНЫЕ БАЧКИ",
-      "АРМАТУРЫ ДЛЯ СЛИВНЫХ БАЧКОВ",
-      "ТРАПЫ САНТЕХНИЧЕСКИЕ",
-      "ДУШЕВЫЕ КАНАЛЫ",
-      "ИНСТАЛЛЯЦИЯ САНТЕХНИЧЕСКАЯ",
-    ];
+    const categories = await this.readCategories();
 
-    categories.forEach(async (category) => {
+    categories.categories.forEach(async (category) => {
       const { id } = await this.createCategory({ poster: "", alias: "" });
 
-      await this.createContent({ title: category, language: LanguageEnum.RU }, id);
+      await this.createContent({ title: category.ru, language: LanguageEnum.RU }, id);
+      await this.createContent({ title: category.en, language: LanguageEnum.EN }, id);
+      await this.createContent({ title: category.tr, language: LanguageEnum.TR }, id);
     });
 
     return true;
