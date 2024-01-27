@@ -13,6 +13,7 @@ import {
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryEntity } from "@modules/category/category.entity";
 import { ProductEntity } from "@modules/product/product.entity";
@@ -27,6 +28,9 @@ export class SubcategoryEntity extends BaseEntity {
 
   @Column({ name: "alias", type: "varchar" })
   alias: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
 
   @ManyToOne(() => CategoryEntity, (category) => category.subcategories, { nullable: false })
   @JoinColumn({ name: "category_id" })
