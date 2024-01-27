@@ -8,6 +8,7 @@ import * as csv from "csvtojson";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryEntity, CategoryContentEntity } from "./category.entity";
 
@@ -23,10 +24,10 @@ export class CategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
     const categories = await this.categoryRepository.find({
       relations: { contents: true },
-      where: { contents: { language } },
+      where: { contents: { language }, status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -41,7 +42,7 @@ export class CategoryService {
 
   // CREATE
   async createCategory(categoryDto: CreateCategoryDto) {
-    return await this.categoryRepository.save(this.categoryRepository.create(categoryDto));
+    return await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
   }
 
   async createContent(contentDto: CreateCategoryContentDto, categoryId: number) {
