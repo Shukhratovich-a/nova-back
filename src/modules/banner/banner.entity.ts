@@ -12,6 +12,7 @@ import {
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 @Entity("banners")
 export class BannerEntity extends BaseEntity {
@@ -20,6 +21,9 @@ export class BannerEntity extends BaseEntity {
 
   @Column({ name: "poster", type: "varchar", nullable: false })
   poster: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
 
   @OneToMany(() => BannerContentEntity, (content) => content.banner, { onDelete: "CASCADE" })
   contents: Relation<BannerContentEntity[]>;
