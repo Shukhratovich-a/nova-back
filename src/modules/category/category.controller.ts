@@ -15,6 +15,7 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryService } from "./category.service";
 
@@ -29,9 +30,10 @@ export class CategoryController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.categoryService.findAll(language, { page, limit });
+    return this.categoryService.findAll(language, status, { page, limit });
   }
 
   // POST
