@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { LanguageEnum } from "@/enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { BannerEntity, BannerContentEntity } from "./banner.entity";
 
@@ -22,10 +23,10 @@ export class BannerService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum) {
+  async findAll(language: LanguageEnum, status: StatusEnum) {
     const banners = await this.bannerRepository.find({
       relations: { contents: true },
-      where: { contents: { language } },
+      where: { contents: { language }, status },
     });
     if (!banners) return [];
 
