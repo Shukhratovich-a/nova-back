@@ -1,4 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+
+import { StatusEnum } from "@enums/status.enum";
 
 export class UpdateCategoryDto {
   @IsString()
@@ -8,6 +10,10 @@ export class UpdateCategoryDto {
   @IsString()
   @IsOptional()
   poster?: string;
+
+  @IsEnum(StatusEnum)
+  @IsOptional()
+  status?: StatusEnum;
 }
 
 export class UpdateCategoryContentDto {
