@@ -13,6 +13,7 @@ import {
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
 
@@ -26,6 +27,9 @@ export class CategoryEntity extends BaseEntity {
 
   @Column({ name: "alias", type: "varchar" })
   alias: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
 
   @OneToMany(() => CategoryContentEntity, (content) => content.category, { onDelete: "CASCADE" })
   contents: Relation<CategoryContentEntity[]>;
