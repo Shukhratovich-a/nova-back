@@ -1,16 +1,14 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
 
 import { LanguageEnum } from "@enums/language.enum";
 
 export class CreateBannerDto {
   @IsString()
-  @IsNotEmpty()
   poster: string;
 }
 
 export class CreateBannerContentDto {
   @IsString()
-  @IsNotEmpty()
   title: string;
 
   @IsString()
@@ -22,6 +20,5 @@ export class CreateBannerContentDto {
   subtitle?: string;
 
   @IsEnum(LanguageEnum)
-  @IsNotEmpty()
   language: LanguageEnum;
 }
