@@ -14,6 +14,7 @@ import {
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { BannerService } from "./banner.service";
 
@@ -28,8 +29,9 @@ export class BannerController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
   ) {
-    return this.bannerService.findAll(language);
+    return this.bannerService.findAll(language, status);
   }
 
   // POST
