@@ -12,6 +12,7 @@ import { CategoryEntity, CategoryContentEntity } from "./category.entity";
 import { CategoryController } from "./category.controller";
 
 import { CategoryService } from "./category.service";
+import { SubcategoryService } from "@modules/subcategory/subcategory.service";
 
 @Module({
   imports: [
@@ -26,6 +27,6 @@ import { CategoryService } from "./category.service";
     ]),
   ],
   controllers: [CategoryController],
-  providers: [CategoryService],
+  providers: [CategoryService, SubcategoryService],
 })
 export class CategoryModule {}
