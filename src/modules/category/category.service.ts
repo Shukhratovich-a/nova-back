@@ -57,6 +57,22 @@ export class CategoryService {
     return parsedCategories;
   }
 
+  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+    const category = await this.categoryRepository.findOne({
+      relations: { contents: true, subcategories: { contents: true } },
+      where: { alias: alias, contents: { language }, status, subcategories: { contents: { language } } },
+    });
+    if (!category) return null;
+
+    const parsedCategories: CategoryDto = this.parseCategory(category);
+
+    parsedCategories.subcategories = category.subcategories.map((subcategory) => {
+      return this.subcategoryService.parseSubcategory(subcategory);
+    });
+
+    return parsedCategories;
+  }
+
   // CREATE
   async createCategory(categoryDto: CreateCategoryDto) {
     return await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
