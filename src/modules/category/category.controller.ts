@@ -36,6 +36,15 @@ export class CategoryController {
     return this.categoryService.findAll(language, status, { page, limit });
   }
 
+  @Get("get-by-id/:categoryId")
+  async getById(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("categoryId", new ParseIntPipe()) categoryId: number,
+  ) {
+    return this.categoryService.findById(categoryId, language, status);
+  }
+
   // POST
   @Post("create-category")
   async createCategory(@Body(new ValidationPipe()) categoryDto: CreateCategoryDto) {
