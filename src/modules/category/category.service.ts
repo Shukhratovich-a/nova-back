@@ -10,6 +10,8 @@ import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryEntity, CategoryContentEntity } from "./category.entity";
 
+import { SubcategoryService } from "@modules/subcategory/subcategory.service";
+
 import { CategoryDto } from "./dtos/category.dto";
 import { CreateCategoryDto, CreateCategoryContentDto } from "./dtos/create-category.dto";
 import { UpdateCategoryDto, UpdateCategoryContentDto } from "./dtos/update-category.dto";
@@ -19,6 +21,7 @@ export class CategoryService {
   constructor(
     @InjectRepository(CategoryEntity) private readonly categoryRepository: Repository<CategoryEntity>,
     @InjectRepository(CategoryContentEntity) private readonly contentRepository: Repository<CategoryContentEntity>,
+    private readonly subcategoryService: SubcategoryService,
   ) {}
 
   // FIND
@@ -33,6 +36,22 @@ export class CategoryService {
 
     const parsedCategories: CategoryDto[] = categories.map((category) => {
       return this.parseCategory(category);
+    });
+
+    return parsedCategories;
+  }
+
+  async findById(categoryId: number, language: LanguageEnum, status: StatusEnum) {
+    const category = await this.categoryRepository.findOne({
+      relations: { contents: true, subcategories: { contents: true } },
+      where: { id: categoryId, contents: { language }, status, subcategories: { contents: { language } } },
+    });
+    if (!category) return null;
+
+    const parsedCategories: CategoryDto = this.parseCategory(category);
+
+    parsedCategories.subcategories = category.subcategories.map((subcategory) => {
+      return this.subcategoryService.parseSubcategory(subcategory);
     });
 
     return parsedCategories;
