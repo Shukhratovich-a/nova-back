@@ -6,8 +6,8 @@ export class CreateCategoryDto {
   @IsString()
   poster: string;
 
-  @IsString()
-  alias: string;
+  // @IsString()
+  // alias: string;
 }
 
 export class CreateCategoryContentDto {
