@@ -19,7 +19,7 @@ export class BannerEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "poster", type: "varchar", nullable: false })
+  @Column({ name: "poster", type: "varchar" })
   poster: string;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
