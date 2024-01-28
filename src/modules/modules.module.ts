@@ -5,6 +5,7 @@ import { BannerModule } from "./banner/banner.module";
 import { CategoryModule } from "./category/category.module";
 import { SubcategoryModule } from "./subcategory/subcategory.module";
 import { ProductModule } from "./product/product.module";
+import { ContactModule } from "./contact/contact.module";
 
-@Module({ imports: [FileModule, BannerModule, CategoryModule, SubcategoryModule, ProductModule] })
+@Module({ imports: [FileModule, BannerModule, CategoryModule, SubcategoryModule, ProductModule, ContactModule] })
 export class Modules {}
