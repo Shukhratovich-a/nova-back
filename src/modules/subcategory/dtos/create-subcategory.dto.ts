@@ -6,8 +6,8 @@ export class CreateSubcategoryDto {
   @IsString()
   poster: string;
 
-  @IsString()
-  alias: string;
+  // @IsString()
+  // alias: string;
 
   @IsNumber()
   categoryId: number;
