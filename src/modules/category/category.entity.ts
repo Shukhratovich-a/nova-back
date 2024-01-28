@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   Relation,
+  AfterInsert,
   // CreateDateColumn,
   // UpdateDateColumn,
 } from "typeorm";
@@ -22,10 +23,10 @@ export class CategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "poster", type: "varchar", nullable: false })
+  @Column({ name: "poster", type: "varchar" })
   poster: string;
 
-  @Column({ name: "alias", type: "varchar" })
+  @Column({ name: "alias", type: "varchar", nullable: true, unique: true })
   alias: string;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
@@ -42,6 +43,13 @@ export class CategoryEntity extends BaseEntity {
 
   // @UpdateDateColumn({ name: "update_at", type: "datetime" })
   // updateAt: Date;
+
+  @AfterInsert()
+  async afterInsert() {
+    this.alias = `category-${this.id + 10000}`;
+
+    this.save();
+  }
 }
 
 @Entity("category_contents")
