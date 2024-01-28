@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { join } from "path";
 import { Repository } from "typeorm";
 import { plainToClass } from "class-transformer";
-import * as csv from "csvtojson";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
@@ -82,29 +80,5 @@ export class CategoryService {
 
   async checkContentForExist(categoryId: number, language: LanguageEnum) {
     return this.contentRepository.findOne({ where: { category: { id: categoryId }, language } });
-  }
-
-  // ASSETS
-  async readCategories() {
-    const jsonArray = await csv().fromFile(join(process.cwd(), "uploads", "categories.csv"));
-    const categories = [...new Set(jsonArray.map((category) => JSON.stringify(category)))].map((category) =>
-      JSON.parse(category),
-    );
-
-    return { categories, length: categories.length };
-  }
-
-  async addCategories() {
-    const categories = await this.readCategories();
-
-    categories.categories.forEach(async (category) => {
-      const { id } = await this.createCategory({ poster: "", alias: "" });
-
-      await this.createContent({ title: category.ru, language: LanguageEnum.RU }, id);
-      await this.createContent({ title: category.en, language: LanguageEnum.EN }, id);
-      await this.createContent({ title: category.tr, language: LanguageEnum.TR }, id);
-    });
-
-    return true;
   }
 }
