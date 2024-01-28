@@ -78,15 +78,4 @@ export class CategoryController {
 
     return this.categoryService.updateContent(contentDto, contentId);
   }
-
-  // ASSETS
-  @Get("read")
-  async readDocument() {
-    return this.categoryService.readCategories();
-  }
-
-  @Get("add-categories")
-  async addCategories() {
-    return this.categoryService.addCategories();
-  }
 }
