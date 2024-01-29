@@ -1,5 +1,7 @@
 import { Exclude, Expose } from "class-transformer";
 
+import { CategoryDto } from "@modules/category/dtos/category.dto";
+
 export class SubcategoryDto {
   @Expose()
   id: number;
@@ -12,6 +14,9 @@ export class SubcategoryDto {
 
   @Expose()
   alias: string;
+
+  @Expose()
+  category: CategoryDto;
 
   // @Expose()
   // createAt: Date;
