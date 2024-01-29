@@ -7,6 +7,7 @@ import { SubcategoryModule } from "./subcategory/subcategory.module";
 import { ProductModule } from "./product/product.module";
 import { ContactModule } from "./contact/contact.module";
 import { CertificateModule } from "./certificate/certificate.module";
+import { CatalogModule } from "./catalog/catalog.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CertificateModule } from "./certificate/certificate.module";
     ProductModule,
     ContactModule,
     CertificateModule,
+    CatalogModule,
   ],
 })
 export class Modules {}
