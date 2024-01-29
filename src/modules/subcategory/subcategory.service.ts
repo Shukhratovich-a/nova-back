@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -10,6 +10,8 @@ import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryEntity, SubcategoryContentEntity } from "./subcategory.entity";
 
+import { CategoryService } from "@modules/category/category.service";
+
 import { SubcategoryDto } from "./dtos/subcategory.dto";
 import { CreateSubcategoryDto, CreateSubcategoryContentDto } from "./dtos/create-subcategory.dto";
 import { UpdateSubcategoryDto, UpdateSubcategoryContentDto } from "./dtos/update-subcategory.dto";
@@ -20,6 +22,8 @@ export class SubcategoryService {
     @InjectRepository(SubcategoryEntity) private readonly subcategoryRepository: Repository<SubcategoryEntity>,
     @InjectRepository(SubcategoryContentEntity)
     private readonly contentRepository: Repository<SubcategoryContentEntity>,
+    @Inject(forwardRef(() => CategoryService))
+    private readonly categoryService: CategoryService,
   ) {}
 
   // FIND
