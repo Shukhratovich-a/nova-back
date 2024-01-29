@@ -33,8 +33,8 @@ export class ContactController {
 
   // POST
   @Post("create-contact")
-  async createContact(@Body(new ValidationPipe()) categoryDto: CreateContactDto) {
-    return this.contactService.createContact(categoryDto);
+  async createContact(@Body(new ValidationPipe()) contactDto: CreateContactDto) {
+    return this.contactService.createContact(contactDto);
   }
 
   @Post("create-coord/:contactId")
