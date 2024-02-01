@@ -55,6 +55,9 @@ export class ProductController {
     const subcategory = await this.subcategoryService.checkSubcategoryById(productDto.subcategoryId);
     if (!subcategory) throw new BadRequestException("category not exists");
 
+    const product = await this.productService.checkProductByCode(productDto.code);
+    if (product) throw new BadRequestException("product exists");
+
     return this.productService.createProduct(productDto);
   }
 
