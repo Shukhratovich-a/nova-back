@@ -12,9 +12,9 @@ import {
   Index,
 } from "typeorm";
 
-import { StatusEnum } from "@/enums/status.enum";
-import { ProductEntity } from "../product/product.entity";
-import { LanguageEnum } from "@/enums/language.enum";
+import { LanguageEnum } from "@enums/language.enum";
+
+import { ProductEntity } from "@modules/product/product.entity";
 
 @Entity("detail_categories")
 export class DetailCategoryEntity extends BaseEntity {
