@@ -8,22 +8,27 @@ import {
   ManyToOne,
   JoinColumn,
   Relation,
-  // CreateDateColumn,
-  // UpdateDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
+import { ImageTypeEnum } from "@enums/image-type.enum";
 import { LanguageEnum } from "@enums/language.enum";
-import { ImageType } from "@enums/image-type.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
+import { DetailEntity } from "@modules/detail/detail.entity";
 
 @Entity("products")
 export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "purchase_price", type: "int", nullable: true })
-  purchasePrice: number;
+  @Column({ name: "code", type: "varchar" })
+  code: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
 
   @OneToMany(() => ProductContentEntity, (contents) => contents.product, { onDelete: "CASCADE" })
   contents: Relation<ProductContentEntity[]>;
@@ -31,15 +36,18 @@ export class ProductEntity extends BaseEntity {
   @OneToMany(() => ProductImageEntity, (images) => images.product, { onDelete: "CASCADE" })
   images: Relation<ProductImageEntity[]>;
 
+  @OneToMany(() => DetailEntity, (detail) => detail.product, { onDelete: "CASCADE" })
+  details: Relation<DetailEntity[]>;
+
   @ManyToOne(() => SubcategoryEntity, (subcategory) => subcategory.products, { nullable: false })
   @JoinColumn({ name: "subcategory_id" })
   subcategory: SubcategoryEntity;
 
-  // @CreateDateColumn({ name: "create_at", type: "datetime" })
-  // createAt: Date;
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
 
-  // @UpdateDateColumn({ name: "update_at", type: "datetime" })
-  // updateAt: Date;
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 }
 
 @Entity("product_contents")
@@ -50,12 +58,6 @@ export class ProductContentEntity extends BaseEntity {
 
   @Column({ name: "title", type: "varchar" })
   title: string;
-
-  @Column({ name: "alias", type: "varchar" })
-  alias: string;
-
-  @Column({ name: "volume", type: "varchar" })
-  volume: string;
 
   @Column({ name: "description", type: "varchar" })
   description: string;
@@ -80,8 +82,8 @@ export class ProductImageEntity extends BaseEntity {
   @Column({ name: "webp_path", type: "varchar" })
   webpPath: string;
 
-  @Column({ name: "type", type: "simple-enum", enum: ImageType })
-  type: ImageType;
+  @Column({ name: "type", type: "simple-enum", enum: ImageTypeEnum })
+  type: ImageTypeEnum;
 
   @ManyToOne(() => ProductEntity, (product) => product.images, { nullable: false })
   @JoinColumn({ name: "product_id" })
