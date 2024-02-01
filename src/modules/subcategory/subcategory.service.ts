@@ -11,6 +11,7 @@ import { StatusEnum } from "@enums/status.enum";
 import { SubcategoryEntity, SubcategoryContentEntity } from "./subcategory.entity";
 
 import { CategoryService } from "@modules/category/category.service";
+import { ProductService } from "@modules/product/product.service";
 
 import { SubcategoryDto } from "./dtos/subcategory.dto";
 import { CreateSubcategoryDto, CreateSubcategoryContentDto } from "./dtos/create-subcategory.dto";
@@ -24,6 +25,8 @@ export class SubcategoryService {
     private readonly contentRepository: Repository<SubcategoryContentEntity>,
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
+    @Inject(forwardRef(() => ProductService))
+    private readonly productService: ProductService,
   ) {}
 
   // FIND
@@ -43,6 +46,30 @@ export class SubcategoryService {
     return parsedSubcategories;
   }
 
+  async findById(subcategoryId: number, language: LanguageEnum, status: StatusEnum) {
+    const subcategory = await this.subcategoryRepository.findOne({
+      relations: { contents: true, products: { contents: true, images: true }, category: { contents: true } },
+      where: {
+        id: subcategoryId,
+        contents: { language },
+        status,
+        products: { contents: { language } },
+        category: { contents: { language } },
+      },
+    });
+    if (!subcategory) return null;
+
+    const parsedSubcategory: SubcategoryDto = this.parseSubcategory(subcategory);
+
+    parsedSubcategory.products = subcategory.products.map((product) => {
+      return this.productService.parseProduct(product);
+    });
+
+    parsedSubcategory.category = this.categoryService.parseCategory(subcategory.category);
+
+    return parsedSubcategory;
+  }
+
   // CREATE
   async createSubcategory(subcategoryDto: CreateSubcategoryDto) {
     return await this.subcategoryRepository.save(
@@ -57,7 +84,7 @@ export class SubcategoryService {
   }
 
   // UPDATE
-  async updateCategory(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
+  async updateSubcategory(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
     return await this.subcategoryRepository.save({ ...subcategoryDto, id: subcategoryId });
   }
 
@@ -66,14 +93,14 @@ export class SubcategoryService {
   }
 
   // PARSERS
-  parseSubcategory(category: SubcategoryEntity) {
-    const newCategory: SubcategoryDto = plainToClass(SubcategoryDto, category, { excludeExtraneousValues: true });
+  parseSubcategory(subcategory: SubcategoryEntity) {
+    const newSubcategory: SubcategoryDto = plainToClass(SubcategoryDto, subcategory, { excludeExtraneousValues: true });
 
-    if (category.contents && category.contents.length) {
-      newCategory.title = category.contents[0].title;
+    if (subcategory.contents && subcategory.contents.length) {
+      newSubcategory.title = subcategory.contents[0].title;
     }
 
-    return newCategory;
+    return newSubcategory;
   }
 
   // CHECKERS
