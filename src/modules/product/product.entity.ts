@@ -24,7 +24,7 @@ export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "code", type: "varchar" })
+  @Column({ name: "code", type: "varchar", unique: true })
   code: string;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
