@@ -1,6 +1,5 @@
-export enum ImageType {
-  PRIMARY = 'primary',
-  SECONDARY = 'secondary',
-  TERTIARY = 'tertiary',
-  QUATERNARY = 'quaternary',
+export enum ImageTypeEnum {
+  MAIN = "main",
+  SCHEME = "scheme",
+  BOX = "box",
 }
