@@ -9,8 +9,8 @@ import {
   JoinColumn,
   Relation,
   AfterInsert,
-  // CreateDateColumn,
-  // UpdateDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 import { LanguageEnum } from "@enums/language.enum";
@@ -38,11 +38,11 @@ export class CategoryEntity extends BaseEntity {
   @OneToMany(() => SubcategoryEntity, (subcategory) => subcategory.category, { onDelete: "CASCADE" })
   subcategories: Relation<SubcategoryEntity[]>;
 
-  // @CreateDateColumn({ name: "create_at", type: "datetime" })
-  // createAt: Date;
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
 
-  // @UpdateDateColumn({ name: "update_at", type: "datetime" })
-  // updateAt: Date;
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 
   @AfterInsert()
   async afterInsert() {
