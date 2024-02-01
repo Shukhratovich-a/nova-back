@@ -49,13 +49,13 @@ export class CategoryService {
     });
     if (!category) return null;
 
-    const parsedCategories: CategoryDto = this.parseCategory(category);
+    const parsedCategory: CategoryDto = this.parseCategory(category);
 
-    parsedCategories.subcategories = category.subcategories.map((subcategory) => {
+    parsedCategory.subcategories = category.subcategories.map((subcategory) => {
       return this.subcategoryService.parseSubcategory(subcategory);
     });
 
-    return parsedCategories;
+    return parsedCategory;
   }
 
   async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
@@ -65,13 +65,13 @@ export class CategoryService {
     });
     if (!category) return null;
 
-    const parsedCategories: CategoryDto = this.parseCategory(category);
+    const parsedCategory: CategoryDto = this.parseCategory(category);
 
-    parsedCategories.subcategories = category.subcategories.map((subcategory) => {
+    parsedCategory.subcategories = category.subcategories.map((subcategory) => {
       return this.subcategoryService.parseSubcategory(subcategory);
     });
 
-    return parsedCategories;
+    return parsedCategory;
   }
 
   // CREATE
