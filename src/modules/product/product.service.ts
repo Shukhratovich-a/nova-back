@@ -114,6 +114,10 @@ export class ProductService {
     return this.productRepository.findOne({ where: { id: productId } });
   }
 
+  async checkProductByCode(productCode: string) {
+    return this.productRepository.findOne({ where: { code: productCode } });
+  }
+
   async checkContentById(contentId: number) {
     return this.contentRepository.findOne({ where: { id: contentId }, relations: { product: true } });
   }
