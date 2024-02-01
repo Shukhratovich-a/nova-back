@@ -17,6 +17,7 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
+import { CategoryService } from "@modules/category/category.service";
 import { SubcategoryService } from "./subcategory.service";
 
 import { CreateSubcategoryDto, CreateSubcategoryContentDto } from "./dtos/create-subcategory.dto";
@@ -24,7 +25,10 @@ import { UpdateSubcategoryDto, UpdateSubcategoryContentDto } from "./dtos/update
 
 @Controller("subcategory")
 export class SubcategoryController {
-  constructor(private readonly subcategoryService: SubcategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly subcategoryService: SubcategoryService,
+  ) {}
 
   // GET
   @Get("get-all")
@@ -36,9 +40,21 @@ export class SubcategoryController {
     return this.subcategoryService.findAll(language, status, { page, limit });
   }
 
+  @Get("get-by-id/:subcategoryId")
+  async getById(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
+  ) {
+    return this.subcategoryService.findById(subcategoryId, language, status);
+  }
+
   // POST
   @Post("create-subcategory")
   async createCategory(@Body(new ValidationPipe()) subcategoryDto: CreateSubcategoryDto) {
+    const category = await this.categoryService.checkCategoryById(subcategoryDto.categoryId);
+    if (!category) throw new BadRequestException("category not exists");
+
     return this.subcategoryService.createSubcategory(subcategoryDto);
   }
 
@@ -62,10 +78,10 @@ export class SubcategoryController {
     @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
     @Body(new ValidationPipe()) subcategoryDto: UpdateSubcategoryDto,
   ) {
-    const category = await this.subcategoryService.checkSubcategoryById(subcategoryId);
-    if (!category) throw new BadRequestException("not found");
+    const subcategory = await this.subcategoryService.checkSubcategoryById(subcategoryId);
+    if (!subcategory) throw new BadRequestException("not found");
 
-    return this.subcategoryService.updateCategory(subcategoryDto, subcategoryId);
+    return this.subcategoryService.updateSubcategory(subcategoryDto, subcategoryId);
   }
 
   @Put("update-content/:contentId")
