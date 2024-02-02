@@ -9,6 +9,7 @@ import { DetailModule } from "./detail/detail.module";
 import { ContactModule } from "./contact/contact.module";
 import { CertificateModule } from "./certificate/certificate.module";
 import { CatalogModule } from "./catalog/catalog.module";
+import { NewsModule } from "./news/news.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CatalogModule } from "./catalog/catalog.module";
     ContactModule,
     CertificateModule,
     CatalogModule,
+    NewsModule,
   ],
 })
 export class Modules {}
