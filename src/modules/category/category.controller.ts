@@ -5,8 +5,9 @@ import {
   Query,
   Get,
   Post,
-  ValidationPipe,
   Put,
+  Delete,
+  ValidationPipe,
   ParseIntPipe,
   BadRequestException,
 } from "@nestjs/common";
@@ -19,8 +20,8 @@ import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryService } from "./category.service";
 
-import { CreateCategoryDto, CreateCategoryContentDto } from "./dtos/create-category.dto";
-import { UpdateCategoryDto, UpdateCategoryContentDto } from "./dtos/update-category.dto";
+import { CreateCategoryDto } from "./dtos/create-category.dto";
+import { UpdateCategoryDto } from "./dtos/update-category.dto";
 
 @Controller("category")
 export class CategoryController {
@@ -54,24 +55,26 @@ export class CategoryController {
     return this.categoryService.findByAlias(alias, language, status);
   }
 
+  @Get("get-with-contents")
+  async getAllWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.categoryService.findAllWithContents(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:categoryId")
+  async getOne(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("categoryId", new ParseIntPipe()) categoryId: number,
+  ) {
+    return this.categoryService.findOneWithContents(categoryId, status);
+  }
+
   // POST
   @Post("create-category")
   async createCategory(@Body(new ValidationPipe()) categoryDto: CreateCategoryDto) {
     return this.categoryService.createCategory(categoryDto);
-  }
-
-  @Post("create-content/:categoryId")
-  async createContent(
-    @Param("categoryId", new ParseIntPipe()) categoryId: number,
-    @Body(new ValidationPipe()) contentDto: CreateCategoryContentDto,
-  ) {
-    const category = await this.categoryService.checkCategoryById(categoryId);
-    if (!category) throw new BadRequestException("not found");
-
-    const oldContent = await this.categoryService.checkContentForExist(categoryId, contentDto.language);
-    if (oldContent) throw new BadRequestException("exists");
-
-    return this.categoryService.createContent(contentDto, categoryId);
   }
 
   // PUT
@@ -86,14 +89,12 @@ export class CategoryController {
     return this.categoryService.updateCategory(categoryDto, categoryId);
   }
 
-  @Put("update-content/:contentId")
-  async updateContent(
-    @Param("contentId", new ParseIntPipe()) contentId: number,
-    @Body(new ValidationPipe()) contentDto: UpdateCategoryContentDto,
-  ) {
-    const content = await this.categoryService.checkContentById(contentId);
-    if (!content) throw new BadRequestException("not found");
+  // DELETE
+  @Delete("delete-category/:categoryId")
+  async deleteCategory(@Param("categoryId", new ParseIntPipe()) categoryId: number) {
+    const category = await this.categoryService.checkCategoryById(categoryId);
+    if (!category) throw new BadRequestException("not found");
 
-    return this.categoryService.updateContent(contentDto, contentId);
+    return this.categoryService.deleteCategory(categoryId);
   }
 }

@@ -8,19 +8,18 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
-import { CategoryEntity, CategoryContentEntity } from "./category.entity";
+import { CategoryEntity } from "./category.entity";
 
 import { SubcategoryService } from "@modules/subcategory/subcategory.service";
 
 import { CategoryDto } from "./dtos/category.dto";
-import { CreateCategoryDto, CreateCategoryContentDto } from "./dtos/create-category.dto";
-import { UpdateCategoryDto, UpdateCategoryContentDto } from "./dtos/update-category.dto";
+import { CreateCategoryDto } from "./dtos/create-category.dto";
+import { UpdateCategoryDto } from "./dtos/update-category.dto";
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(CategoryEntity) private readonly categoryRepository: Repository<CategoryEntity>,
-    @InjectRepository(CategoryContentEntity) private readonly contentRepository: Repository<CategoryContentEntity>,
     @Inject(forwardRef(() => SubcategoryService))
     private readonly subcategoryService: SubcategoryService,
   ) {}
@@ -28,15 +27,14 @@ export class CategoryService {
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
     const categories = await this.categoryRepository.find({
-      relations: { contents: true },
-      where: { contents: { language }, status },
+      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
     if (!categories) return [];
 
     const parsedCategories: CategoryDto[] = categories.map((category) => {
-      return this.parseCategory(category);
+      return this.parseCategory(category, language);
     });
 
     return parsedCategories;
@@ -44,15 +42,15 @@ export class CategoryService {
 
   async findById(categoryId: number, language: LanguageEnum, status: StatusEnum) {
     const category = await this.categoryRepository.findOne({
-      relations: { contents: true, subcategories: { contents: true } },
-      where: { id: categoryId, contents: { language }, status, subcategories: { contents: { language } } },
+      relations: { subcategories: true },
+      where: { id: categoryId, status },
     });
     if (!category) return null;
 
-    const parsedCategory: CategoryDto = this.parseCategory(category);
+    const parsedCategory: CategoryDto = this.parseCategory(category, language);
 
     parsedCategory.subcategories = category.subcategories.map((subcategory) => {
-      return this.subcategoryService.parseSubcategory(subcategory);
+      return this.subcategoryService.parseSubcategory(subcategory, language);
     });
 
     return parsedCategory;
@@ -60,18 +58,38 @@ export class CategoryService {
 
   async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
     const category = await this.categoryRepository.findOne({
-      relations: { contents: true, subcategories: { contents: true } },
-      where: { alias: alias, contents: { language }, status, subcategories: { contents: { language } } },
+      relations: { subcategories: true },
+      where: { alias: alias, status },
     });
     if (!category) return null;
 
-    const parsedCategory: CategoryDto = this.parseCategory(category);
+    const parsedCategory: CategoryDto = this.parseCategory(category, language);
 
     parsedCategory.subcategories = category.subcategories.map((subcategory) => {
-      return this.subcategoryService.parseSubcategory(subcategory);
+      return this.subcategoryService.parseSubcategory(subcategory, language);
     });
 
     return parsedCategory;
+  }
+
+  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+    const [categories, total] = await this.categoryRepository.findAndCount({
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!categories) return [];
+
+    return { data: categories, total };
+  }
+
+  async findOneWithContents(categoryId: number, status: StatusEnum) {
+    const category = await this.categoryRepository.findOne({
+      where: { status, id: categoryId },
+    });
+    if (!category) return null;
+
+    return category;
   }
 
   // CREATE
@@ -79,28 +97,24 @@ export class CategoryService {
     return await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
   }
 
-  async createContent(contentDto: CreateCategoryContentDto, categoryId: number) {
-    return await this.contentRepository.save(
-      this.contentRepository.create({ ...contentDto, category: { id: categoryId } }),
-    );
-  }
-
   // UPDATE
   async updateCategory(categoryDto: UpdateCategoryDto, categoryId: number) {
     return await this.categoryRepository.save({ ...categoryDto, id: categoryId });
   }
 
-  async updateContent(contentDto: UpdateCategoryContentDto, contentId: number) {
-    return await this.contentRepository.save({ ...contentDto, id: contentId });
+  // DELETE
+  async deleteCategory(categoryId: number) {
+    return await this.categoryRepository.save({ status: StatusEnum.DELETED, id: categoryId });
   }
 
   // PARSERS
-  parseCategory(category: CategoryEntity) {
+  parseCategory(category: CategoryEntity, language: LanguageEnum) {
     const newCategory: CategoryDto = plainToClass(CategoryDto, category, { excludeExtraneousValues: true });
 
-    if (category.contents && category.contents.length) {
-      newCategory.title = category.contents[0].title;
-    }
+    if (language === LanguageEnum.RU) newCategory.title = category.titleRu;
+    if (language === LanguageEnum.EN) newCategory.title = category.titleEn;
+    if (language === LanguageEnum.TR) newCategory.title = category.titleTr;
+    if (language === LanguageEnum.AR) newCategory.title = category.titleAr;
 
     return newCategory;
   }
@@ -108,13 +122,5 @@ export class CategoryService {
   // CHECKERS
   async checkCategoryById(categoryId: number) {
     return this.categoryRepository.findOne({ where: { id: categoryId } });
-  }
-
-  async checkContentById(contentId: number) {
-    return this.contentRepository.findOne({ where: { id: contentId }, relations: { category: true } });
-  }
-
-  async checkContentForExist(categoryId: number, language: LanguageEnum) {
-    return this.contentRepository.findOne({ where: { category: { id: categoryId }, language } });
   }
 }

@@ -24,3 +24,35 @@ export class CategoryDto {
   // @Expose()
   // updateAt: Date;
 }
+
+export class CategoryAdminDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  poster: string;
+
+  @Exclude()
+  titleRu: string;
+
+  @Exclude()
+  titleEn: string;
+
+  @Exclude()
+  titleTr: string;
+
+  @Exclude()
+  titleAr: string;
+
+  @Expose()
+  alias: string;
+
+  @Exclude()
+  subcategories: SubcategoryDto[];
+
+  // @Expose()
+  // createAt: Date;
+
+  // @Expose()
+  // updateAt: Date;
+}

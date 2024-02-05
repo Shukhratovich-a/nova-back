@@ -1,19 +1,15 @@
 import {
   Entity,
   BaseEntity,
-  Index,
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToOne,
-  JoinColumn,
   Relation,
   AfterInsert,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
 
-import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
@@ -32,8 +28,17 @@ export class CategoryEntity extends BaseEntity {
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
 
-  @OneToMany(() => CategoryContentEntity, (content) => content.category, { onDelete: "CASCADE" })
-  contents: Relation<CategoryContentEntity[]>;
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
+
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
 
   @OneToMany(() => SubcategoryEntity, (subcategory) => subcategory.category, { onDelete: "CASCADE" })
   subcategories: Relation<SubcategoryEntity[]>;
@@ -50,21 +55,4 @@ export class CategoryEntity extends BaseEntity {
 
     this.save();
   }
-}
-
-@Entity("category_contents")
-@Index(["language", "category"], { unique: true })
-export class CategoryContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title", type: "varchar" })
-  title: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => CategoryEntity, (category) => category.contents, { nullable: false })
-  @JoinColumn({ name: "category_id" })
-  category: CategoryEntity;
 }
