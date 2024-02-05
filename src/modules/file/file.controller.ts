@@ -1,5 +1,8 @@
-import { Controller, UseInterceptors, Post, UploadedFile, ParseFilePipe } from "@nestjs/common";
+import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Res } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { Response } from "express";
+import * as path from "path";
+import * as fs from "fs";
 
 import { FileService } from "./file.service";
 
@@ -10,6 +13,17 @@ import { MFile } from "./mfile.class";
 @Controller("file")
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
+  @Get(":filename")
+  async downloadFile(@Res() res: Response): Promise<void> {
+    const filename = "pdf.pdf"; // Replace with your actual filename
+    const filePath = path.join(process.cwd(), "uploads", filename); // Adjust the path accordingly
+
+    res.setHeader("Content-Type", " application/pdf");
+
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  }
 
   @Post("upload")
   @UseInterceptors(FileInterceptor("file"))
