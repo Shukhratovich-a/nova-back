@@ -5,8 +5,9 @@ import {
   Query,
   Get,
   Post,
-  ValidationPipe,
   Put,
+  Delete,
+  ValidationPipe,
   ParseIntPipe,
   BadRequestException,
 } from "@nestjs/common";
@@ -20,8 +21,8 @@ import { StatusEnum } from "@enums/status.enum";
 import { CategoryService } from "@modules/category/category.service";
 import { SubcategoryService } from "./subcategory.service";
 
-import { CreateSubcategoryDto, CreateSubcategoryContentDto } from "./dtos/create-subcategory.dto";
-import { UpdateSubcategoryDto, UpdateSubcategoryContentDto } from "./dtos/update-subcategory.dto";
+import { CreateSubcategoryDto } from "./dtos/create-subcategory.dto";
+import { UpdateSubcategoryDto } from "./dtos/update-subcategory.dto";
 
 @Controller("subcategory")
 export class SubcategoryController {
@@ -49,6 +50,31 @@ export class SubcategoryController {
     return this.subcategoryService.findById(subcategoryId, language, status);
   }
 
+  @Get("get-with-contents")
+  async getAllWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.subcategoryService.findAllWithContents(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:subcategoryId")
+  async getOne(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
+  ) {
+    return this.subcategoryService.findOneWithContents(subcategoryId, status);
+  }
+
+  @Get("get-by-parent/:categoryId")
+  async getAllByParentId(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+    @Param("categoryId", new ParseIntPipe()) categoryId: number,
+  ) {
+    return this.subcategoryService.findAllByParentId(categoryId, status, { page, limit });
+  }
+
   // POST
   @Post("create-subcategory")
   async createCategory(@Body(new ValidationPipe()) subcategoryDto: CreateSubcategoryDto) {
@@ -56,20 +82,6 @@ export class SubcategoryController {
     if (!category) throw new BadRequestException("category not exists");
 
     return this.subcategoryService.createSubcategory(subcategoryDto);
-  }
-
-  @Post("create-content/:subcategoryId")
-  async createContent(
-    @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
-    @Body(new ValidationPipe()) contentDto: CreateSubcategoryContentDto,
-  ) {
-    const subcategory = await this.subcategoryService.checkSubcategoryById(subcategoryId);
-    if (!subcategory) throw new BadRequestException("not found");
-
-    const oldContent = await this.subcategoryService.checkContentForExist(subcategoryId, contentDto.language);
-    if (oldContent) throw new BadRequestException("exists");
-
-    return this.subcategoryService.createContent(contentDto, subcategoryId);
   }
 
   // PUT
@@ -84,14 +96,12 @@ export class SubcategoryController {
     return this.subcategoryService.updateSubcategory(subcategoryDto, subcategoryId);
   }
 
-  @Put("update-content/:contentId")
-  async updateContent(
-    @Param("contentId", new ParseIntPipe()) contentId: number,
-    @Body(new ValidationPipe()) contentDto: UpdateSubcategoryContentDto,
-  ) {
-    const content = await this.subcategoryService.checkContentById(contentId);
-    if (!content) throw new BadRequestException("not found");
+  // DELETE
+  @Delete("delete-subcategory/:subcategoryId")
+  async deleteSubcategory(@Param("subcategoryId", new ParseIntPipe()) subcategoryId: number) {
+    const subcategory = await this.subcategoryService.checkSubcategoryById(subcategoryId);
+    if (!subcategory) throw new BadRequestException("not found");
 
-    return this.subcategoryService.updateContent(contentDto, contentId);
+    return this.subcategoryService.deleteSubcategory(subcategoryId);
   }
 }

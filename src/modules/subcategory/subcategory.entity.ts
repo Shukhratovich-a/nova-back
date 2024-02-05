@@ -1,7 +1,6 @@
 import {
   Entity,
   BaseEntity,
-  Index,
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
@@ -9,11 +8,10 @@ import {
   JoinColumn,
   Relation,
   AfterInsert,
-  // CreateDateColumn,
-  // UpdateDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
-import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryEntity } from "@modules/category/category.entity";
@@ -33,21 +31,30 @@ export class SubcategoryEntity extends BaseEntity {
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
 
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
+
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+
   @ManyToOne(() => CategoryEntity, (category) => category.subcategories, { nullable: false })
   @JoinColumn({ name: "category_id" })
   category: CategoryEntity;
 
-  @OneToMany(() => SubcategoryContentEntity, (contents) => contents.subcategory, { onDelete: "CASCADE" })
-  contents: Relation<SubcategoryContentEntity[]>;
-
   @OneToMany(() => ProductEntity, (products) => products.subcategory, { onDelete: "CASCADE" })
   products: Relation<ProductEntity[]>;
 
-  // @CreateDateColumn({ name: "create_at", type: "datetime" })
-  // createAt: Date;
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
 
-  // @UpdateDateColumn({ name: "update_at", type: "datetime" })
-  // updateAt: Date;
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 
   @AfterInsert()
   async afterInsert() {
@@ -55,21 +62,4 @@ export class SubcategoryEntity extends BaseEntity {
 
     this.save();
   }
-}
-
-@Entity("subcategory_contents")
-@Index(["language", "subcategory"], { unique: true })
-export class SubcategoryContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title", type: "varchar" })
-  title: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => SubcategoryEntity, (subcategory) => subcategory.contents, { nullable: false })
-  @JoinColumn({ name: "subcategory_id" })
-  subcategory: SubcategoryEntity;
 }

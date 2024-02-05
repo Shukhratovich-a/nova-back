@@ -1,22 +1,25 @@
-import { IsEnum, IsNumber, IsString } from "class-validator";
-
-import { LanguageEnum } from "@enums/language.enum";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateSubcategoryDto {
   @IsString()
   poster: string;
 
-  // @IsString()
-  // alias: string;
+  @IsString()
+  @IsOptional()
+  titleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  titleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
 
   @IsNumber()
   categoryId: number;
-}
-
-export class CreateSubcategoryContentDto {
-  @IsString()
-  title: string;
-
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
 }

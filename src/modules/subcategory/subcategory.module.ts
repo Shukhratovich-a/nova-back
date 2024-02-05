@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CategoryModule } from "@modules/category/category.module";
 import { ProductModule } from "@modules/product/product.module";
 
-import { SubcategoryEntity, SubcategoryContentEntity } from "./subcategory.entity";
+import { SubcategoryEntity } from "./subcategory.entity";
 
 import { SubcategoryController } from "./subcategory.controller";
 
@@ -12,7 +12,7 @@ import { SubcategoryService } from "./subcategory.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SubcategoryEntity, SubcategoryContentEntity]),
+    TypeOrmModule.forFeature([SubcategoryEntity]),
     forwardRef(() => CategoryModule),
     forwardRef(() => ProductModule),
   ],

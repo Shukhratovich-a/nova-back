@@ -5,18 +5,25 @@ import { StatusEnum } from "@enums/status.enum";
 export class UpdateSubcategoryDto {
   @IsString()
   @IsOptional()
-  icon?: string;
+  poster?: string;
 
   @IsString()
   @IsOptional()
-  poster?: string;
+  titleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  titleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
 
   @IsEnum(StatusEnum)
   @IsOptional()
   status?: StatusEnum;
-}
-
-export class UpdateSubcategoryContentDto {
-  @IsString()
-  title: string;
 }
