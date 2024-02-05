@@ -9,6 +9,7 @@ import { LanguageEnum } from "@enums/language.enum";
 import { DetailContentEntity, DetailEntity, DetailCategoryEntity, DetailCategoryContentEntity } from "./detail.entity";
 
 import { DetailCategoryDto, DetailDto } from "./dtos/detail.dto";
+import { CreateDetailDto, CreateDetailContentDto } from "./dtos/create-detail.dto";
 
 @Injectable()
 export class DetailService {
@@ -20,6 +21,7 @@ export class DetailService {
     private readonly detailCategoryContentRepository: Repository<DetailCategoryContentEntity>,
   ) {}
 
+  // FIND
   async findAllCategories(language: LanguageEnum) {
     return this.detailCategoryRepository.find({ relations: { contents: true }, where: { contents: { language } } });
   }
@@ -31,6 +33,23 @@ export class DetailService {
     });
   }
 
+  // CREATE
+  async createDetail(detailDto: CreateDetailDto) {
+    return this.detailRepository.save(
+      this.detailRepository.create({ product: { id: detailDto.productId }, category: { id: detailDto.categoryId } }),
+    );
+  }
+
+  async createDetailContent(detailContentDto: CreateDetailContentDto, detailId: number) {
+    return this.detailContentRepository.save(
+      this.detailContentRepository.create({
+        ...detailContentDto,
+        detail: { id: detailId },
+      }),
+    );
+  }
+
+  // ASSETS
   async sortDetails(details: DetailEntity[], language: LanguageEnum) {
     if (!details || !details.length) return [];
 
@@ -54,6 +73,7 @@ export class DetailService {
     return newDetails;
   }
 
+  // PARSERS
   parseDetail(detail: DetailEntity) {
     const newDetail: DetailDto = plainToClass(DetailDto, detail, { excludeExtraneousValues: true });
 

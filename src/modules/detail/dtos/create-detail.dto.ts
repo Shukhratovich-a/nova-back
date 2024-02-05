@@ -31,7 +31,4 @@ export class CreateDetailContentDto {
 
   @IsEnum(LanguageEnum)
   language: LanguageEnum;
-
-  @IsNumber()
-  detailId: number;
 }
