@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Body,
   ValidationPipe,
   ParseIntPipe,
@@ -13,13 +14,14 @@ import {
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
+import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
 import { BannerService } from "./banner.service";
 
-import { CreateBannerContentDto, CreateBannerDto } from "./dtos/create-banner.dto";
-import { UpdateBannerContentDto, UpdateBannerDto } from "./dtos/update-banner.dto";
+import { CreateBannerDto } from "./dtos/create-banner.dto";
+import { UpdateBannerDto } from "./dtos/update-banner.dto";
 
 @Controller("banner")
 export class BannerController {
@@ -34,24 +36,26 @@ export class BannerController {
     return this.bannerService.findAll(language, status);
   }
 
+  @Get("get-with-count")
+  async getAllWithCount(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.bannerService.findAllWithCount(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:categoryId")
+  async getOneWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("categoryId", new ParseIntPipe()) categoryId: number,
+  ) {
+    return this.bannerService.findOneWithContents(categoryId, status);
+  }
+
   // POST
   @Post("create-banner")
   async createBanner(@Body(new ValidationPipe()) bannerDto: CreateBannerDto) {
     return this.bannerService.createBanner(bannerDto);
-  }
-
-  @Post("create-content/:bannerId")
-  async createContent(
-    @Param("bannerId", new ParseIntPipe()) bannerId: number,
-    @Body(new ValidationPipe()) contentDto: CreateBannerContentDto,
-  ) {
-    const banner = await this.bannerService.checkBannerById(bannerId);
-    if (!banner) throw new BadRequestException("not found");
-
-    const oldContent = await this.bannerService.checkContentForExist(bannerId, contentDto.language);
-    if (oldContent) throw new BadRequestException("exists");
-
-    return this.bannerService.createContent(contentDto, bannerId);
   }
 
   // PUT
@@ -66,14 +70,12 @@ export class BannerController {
     return this.bannerService.updateBanner(bannerDto, bannerId);
   }
 
-  @Put("update-content/:contentId")
-  async updateContent(
-    @Param("contentId", new ParseIntPipe()) contentId: number,
-    @Body(new ValidationPipe()) contentDto: UpdateBannerContentDto,
-  ) {
-    const content = await this.bannerService.checkContentById(contentId);
-    if (!content) throw new BadRequestException("not found");
+  // DELETE
+  @Delete("delete-banner/:bannerId")
+  async deleteBanner(@Param("bannerId", new ParseIntPipe()) bannerId: number) {
+    const banner = await this.bannerService.checkBannerById(bannerId);
+    if (!banner) throw new BadRequestException("not found");
 
-    return this.bannerService.updateContent(contentDto, contentId);
+    return this.bannerService.deleteBanner(bannerId);
   }
 }
