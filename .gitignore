@@ -37,4 +37,5 @@ lerna-debug.log*
 .env.dev
 /uploads
 /database
+/datas
 .vercel
