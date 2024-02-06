@@ -1,24 +1,54 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
-
-import { LanguageEnum } from "@enums/language.enum";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateBannerDto {
   @IsString()
   poster: string;
-}
-
-export class CreateBannerContentDto {
-  @IsString()
-  title: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+  titleRu?: string;
 
   @IsString()
   @IsOptional()
-  subtitle?: string;
+  titleEn?: string;
 
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionRu?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionEn?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionTr?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionAr?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleAr?: string;
 }
