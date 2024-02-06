@@ -2,39 +2,59 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
+import { plainToClass } from "class-transformer";
 
+import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
-import { BannerEntity, BannerContentEntity } from "./banner.entity";
+import { capitalize } from "@/utils/capitalize.utils";
 
-import { CreateBannerContentDto, CreateBannerDto } from "./dtos/create-banner.dto";
+import { BannerEntity } from "./banner.entity";
+
 import { BannerDto } from "./dtos/banner.dto";
-import { plainToClass } from "class-transformer";
-import { UpdateBannerContentDto, UpdateBannerDto } from "./dtos/update-banner.dto";
+import { CreateBannerDto } from "./dtos/create-banner.dto";
+import { UpdateBannerDto } from "./dtos/update-banner.dto";
 
 @Injectable()
 export class BannerService {
   constructor(
     @InjectRepository(BannerEntity)
     private readonly bannerRepository: Repository<BannerEntity>,
-    @InjectRepository(BannerContentEntity)
-    private readonly contentRepository: Repository<BannerContentEntity>,
   ) {}
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum) {
     const banners = await this.bannerRepository.find({
-      relations: { contents: true },
-      where: { contents: { language }, status },
+      where: { status },
     });
     if (!banners) return [];
 
     const parsedBanner: BannerDto[] = banners.map((banner) => {
-      return this.parseBanner(banner);
+      return this.parseBanner(banner, language);
     });
 
     return parsedBanner;
+  }
+
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+    const [banners, total] = await this.bannerRepository.findAndCount({
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!banners) return [];
+
+    return { data: banners, total };
+  }
+
+  async findOneWithContents(bannerId: number, status: StatusEnum) {
+    const banner = await this.bannerRepository.findOne({
+      where: { status, id: bannerId },
+    });
+    if (!banner) return null;
+
+    return banner;
   }
 
   // CREATE
@@ -42,19 +62,14 @@ export class BannerService {
     return await this.bannerRepository.save(this.bannerRepository.create(bannerDto));
   }
 
-  async createContent(contentDto: CreateBannerContentDto, bannerId: number) {
-    return await this.contentRepository.save(
-      this.contentRepository.create({ ...contentDto, banner: { id: bannerId } }),
-    );
-  }
-
   // UPDATE
   async updateBanner(bannerDto: UpdateBannerDto, bannerId: number) {
     return await this.bannerRepository.save({ ...bannerDto, id: bannerId });
   }
 
-  async updateContent(contentDto: UpdateBannerContentDto, contentId: number) {
-    return await this.contentRepository.save({ ...contentDto, id: contentId });
+  // DELETE
+  async deleteBanner(bannerId: number) {
+    return await this.bannerRepository.save({ status: StatusEnum.DELETED, id: bannerId });
   }
 
   // CHECKERS
@@ -62,23 +77,13 @@ export class BannerService {
     return this.bannerRepository.findOne({ where: { id: bannerId } });
   }
 
-  async checkContentById(bannerId: number) {
-    return this.contentRepository.findOne({ where: { id: bannerId }, relations: { banner: true } });
-  }
-
-  async checkContentForExist(bannerId: number, language: LanguageEnum) {
-    return this.contentRepository.findOne({ where: { banner: { id: bannerId }, language } });
-  }
-
   // PARSERS
-  parseBanner(banner: BannerEntity) {
+  parseBanner(banner: BannerEntity, language: LanguageEnum) {
     const newBanner: BannerDto = plainToClass(BannerDto, banner, { excludeExtraneousValues: true });
 
-    if (banner.contents && banner.contents.length) {
-      newBanner.title = banner.contents[0].title;
-      newBanner.description = banner.contents[0].description;
-      newBanner.subtitle = banner.contents[0].subtitle;
-    }
+    newBanner.title = banner[`title${capitalize(language)}`];
+    newBanner.description = banner[`description${capitalize(language)}`];
+    newBanner.subtitle = banner[`subtitle${capitalize(language)}`];
 
     return newBanner;
   }
