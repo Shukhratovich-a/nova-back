@@ -16,9 +16,9 @@ export class BannerDto {
   @Exclude()
   subtitle: string;
 
-  // @Expose()
-  // createAt: Date;
+  @Expose()
+  createAt: Date;
 
-  // @Expose()
-  // updateAt: Date;
+  @Expose()
+  updateAt: Date;
 }
