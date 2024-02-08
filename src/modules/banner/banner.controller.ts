@@ -53,29 +53,26 @@ export class BannerController {
   }
 
   // POST
-  @Post("create-banner")
-  async createBanner(@Body(new ValidationPipe()) bannerDto: CreateBannerDto) {
-    return this.bannerService.createBanner(bannerDto);
+  @Post("create")
+  async create(@Body(new ValidationPipe()) bannerDto: CreateBannerDto) {
+    return this.bannerService.create(bannerDto);
   }
 
   // PUT
-  @Put("update-banner/:bannerId")
-  async updateBanner(
-    @Param("bannerId", new ParseIntPipe()) bannerId: number,
-    @Body(new ValidationPipe()) bannerDto: UpdateBannerDto,
-  ) {
-    const banner = await this.bannerService.checkBannerById(bannerId);
+  @Put("update/:bannerId")
+  async update(@Param("bannerId", new ParseIntPipe()) bannerId: number, @Body(new ValidationPipe()) bannerDto: UpdateBannerDto) {
+    const banner = await this.bannerService.checkById(bannerId);
     if (!banner) throw new BadRequestException("not found");
 
-    return this.bannerService.updateBanner(bannerDto, bannerId);
+    return this.bannerService.update(bannerDto, bannerId);
   }
 
   // DELETE
-  @Delete("delete-banner/:bannerId")
-  async deleteBanner(@Param("bannerId", new ParseIntPipe()) bannerId: number) {
-    const banner = await this.bannerService.checkBannerById(bannerId);
+  @Delete("delete/:bannerId")
+  async delete(@Param("bannerId", new ParseIntPipe()) bannerId: number) {
+    const banner = await this.bannerService.checkById(bannerId);
     if (!banner) throw new BadRequestException("not found");
 
-    return this.bannerService.deleteBanner(bannerId);
+    return this.bannerService.delete(bannerId);
   }
 }
