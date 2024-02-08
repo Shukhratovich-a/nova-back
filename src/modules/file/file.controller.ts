@@ -30,20 +30,9 @@ export class FileController {
   async uploadFile(
     @UploadedFile(new ParseFilePipe())
     file: Express.Multer.File,
-  ): Promise<FileElementResponse[]> {
-    const saveArray: MFile[] = [new MFile(file)];
+  ): Promise<FileElementResponse> {
+    const saveArray: MFile = new MFile(file);
 
-    if (file.mimetype.includes("image")) {
-      const buffer = await this.fileService.convertToWebp(file.buffer);
-
-      saveArray.push(
-        new MFile({
-          originalname: `${file.originalname.split(".")[0]}.webp`,
-          buffer,
-        }),
-      );
-    }
-
-    return this.fileService.saveFiles(saveArray);
+    return this.fileService.saveFile(saveArray);
   }
 }
