@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  Query,
-  Get,
-  Post,
-  Put,
-  Delete,
-  ValidationPipe,
-  ParseIntPipe,
-  BadRequestException,
-} from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
@@ -55,7 +43,7 @@ export class CategoryController {
     return this.categoryService.findByAlias(alias, language, status);
   }
 
-  @Get("get-with-contents")
+  @Get("get-with-count")
   async getAllWithContents(
     @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
@@ -72,29 +60,26 @@ export class CategoryController {
   }
 
   // POST
-  @Post("create-category")
-  async createCategory(@Body(new ValidationPipe()) categoryDto: CreateCategoryDto) {
-    return this.categoryService.createCategory(categoryDto);
+  @Post("create")
+  async create(@Body() categoryDto: CreateCategoryDto) {
+    return this.categoryService.create(categoryDto);
   }
 
   // PUT
-  @Put("update-category/:categoryId")
-  async updateCategory(
-    @Param("categoryId", new ParseIntPipe()) categoryId: number,
-    @Body(new ValidationPipe()) categoryDto: UpdateCategoryDto,
-  ) {
-    const category = await this.categoryService.checkCategoryById(categoryId);
+  @Put("update/:categoryId")
+  async update(@Param("categoryId", new ParseIntPipe()) categoryId: number, @Body() categoryDto: UpdateCategoryDto) {
+    const category = await this.categoryService.checkById(categoryId);
     if (!category) throw new BadRequestException("not found");
 
-    return this.categoryService.updateCategory(categoryDto, categoryId);
+    return this.categoryService.update(categoryDto, categoryId);
   }
 
   // DELETE
-  @Delete("delete-category/:categoryId")
-  async deleteCategory(@Param("categoryId", new ParseIntPipe()) categoryId: number) {
-    const category = await this.categoryService.checkCategoryById(categoryId);
+  @Delete("delete/:categoryId")
+  async delete(@Param("categoryId", new ParseIntPipe()) categoryId: number) {
+    const category = await this.categoryService.checkById(categoryId);
     if (!category) throw new BadRequestException("not found");
 
-    return this.categoryService.deleteCategory(categoryId);
+    return this.categoryService.delete(categoryId);
   }
 }
