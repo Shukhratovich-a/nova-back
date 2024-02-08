@@ -8,6 +8,8 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
+import { capitalize } from "@utils/capitalize.utils";
+
 import { SubcategoryEntity } from "./subcategory.entity";
 
 import { CategoryService } from "@modules/category/category.service";
@@ -37,7 +39,7 @@ export class SubcategoryService {
     if (!subcategories) return [];
 
     const parsedSubcategories: SubcategoryDto[] = subcategories.map((subcategory) => {
-      return this.parseSubcategory(subcategory, language);
+      return this.parse(subcategory, language);
     });
 
     return parsedSubcategories;
@@ -45,27 +47,43 @@ export class SubcategoryService {
 
   async findById(subcategoryId: number, language: LanguageEnum, status: StatusEnum) {
     const subcategory = await this.subcategoryRepository.findOne({
-      relations: { products: { contents: true, images: true } },
+      relations: { products: true, category: true },
       where: {
         id: subcategoryId,
         status,
-        products: { contents: { language } },
       },
     });
     if (!subcategory) return null;
 
-    const parsedSubcategory: SubcategoryDto = this.parseSubcategory(subcategory, language);
+    const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
 
-    parsedSubcategory.products = subcategory.products.map((product) => {
-      return this.productService.parseProduct(product);
-    });
+    parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
 
-    parsedSubcategory.category = this.categoryService.parseCategory(subcategory.category, language);
+    parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
 
     return parsedSubcategory;
   }
 
-  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+    const subcategory = await this.subcategoryRepository.findOne({
+      relations: { products: true, category: true },
+      where: {
+        alias: alias,
+        status,
+      },
+    });
+    if (!subcategory) return null;
+
+    const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
+
+    parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
+
+    parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
+
+    return parsedSubcategory;
+  }
+
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       where: { status },
       take: limit,
@@ -97,36 +115,33 @@ export class SubcategoryService {
   }
 
   // CREATE
-  async createSubcategory(subcategoryDto: CreateSubcategoryDto) {
+  async create(subcategoryDto: CreateSubcategoryDto) {
     return await this.subcategoryRepository.save(
       this.subcategoryRepository.create({ ...subcategoryDto, category: { id: subcategoryDto.categoryId } }),
     );
   }
 
   // UPDATE
-  async updateSubcategory(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
+  async update(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
     return await this.subcategoryRepository.save({ ...subcategoryDto, id: subcategoryId });
   }
 
   // DELETE
-  async deleteSubcategory(subcategoryId: number) {
+  async delete(subcategoryId: number) {
     return await this.subcategoryRepository.save({ status: StatusEnum.DELETED, id: subcategoryId });
   }
 
   // PARSERS
-  parseSubcategory(subcategory: SubcategoryEntity, language: LanguageEnum) {
+  parse(subcategory: SubcategoryEntity, language: LanguageEnum) {
     const newSubcategory: SubcategoryDto = plainToClass(SubcategoryDto, subcategory, { excludeExtraneousValues: true });
 
-    if (language === LanguageEnum.RU) newSubcategory.title = subcategory.titleRu;
-    if (language === LanguageEnum.EN) newSubcategory.title = subcategory.titleEn;
-    if (language === LanguageEnum.TR) newSubcategory.title = subcategory.titleTr;
-    if (language === LanguageEnum.AR) newSubcategory.title = subcategory.titleAr;
+    newSubcategory.title = subcategory[`title${capitalize(language)}`];
 
     return newSubcategory;
   }
 
   // CHECKERS
-  async checkSubcategoryById(subcategoryId: number) {
+  async checkById(subcategoryId: number) {
     return this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
   }
 }
