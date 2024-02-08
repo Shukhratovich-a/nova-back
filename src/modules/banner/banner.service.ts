@@ -18,10 +18,7 @@ import { UpdateBannerDto } from "./dtos/update-banner.dto";
 
 @Injectable()
 export class BannerService {
-  constructor(
-    @InjectRepository(BannerEntity)
-    private readonly bannerRepository: Repository<BannerEntity>,
-  ) {}
+  constructor(@InjectRepository(BannerEntity) private readonly bannerRepository: Repository<BannerEntity>) {}
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum) {
@@ -30,9 +27,7 @@ export class BannerService {
     });
     if (!banners) return [];
 
-    const parsedBanner: BannerDto[] = banners.map((banner) => {
-      return this.parseBanner(banner, language);
-    });
+    const parsedBanner: BannerDto[] = banners.map((banner) => this.parse(banner, language));
 
     return parsedBanner;
   }
@@ -58,27 +53,27 @@ export class BannerService {
   }
 
   // CREATE
-  async createBanner(bannerDto: CreateBannerDto) {
+  async create(bannerDto: CreateBannerDto) {
     return await this.bannerRepository.save(this.bannerRepository.create(bannerDto));
   }
 
   // UPDATE
-  async updateBanner(bannerDto: UpdateBannerDto, bannerId: number) {
+  async update(bannerDto: UpdateBannerDto, bannerId: number) {
     return await this.bannerRepository.save({ ...bannerDto, id: bannerId });
   }
 
   // DELETE
-  async deleteBanner(bannerId: number) {
+  async delete(bannerId: number) {
     return await this.bannerRepository.save({ status: StatusEnum.DELETED, id: bannerId });
   }
 
   // CHECKERS
-  async checkBannerById(bannerId: number) {
+  async checkById(bannerId: number) {
     return this.bannerRepository.findOne({ where: { id: bannerId } });
   }
 
   // PARSERS
-  parseBanner(banner: BannerEntity, language: LanguageEnum) {
+  parse(banner: BannerEntity, language: LanguageEnum) {
     const newBanner: BannerDto = plainToClass(BannerDto, banner, { excludeExtraneousValues: true });
 
     newBanner.title = banner[`title${capitalize(language)}`];
