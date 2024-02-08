@@ -7,11 +7,11 @@ export class CertificateEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "name", type: "varchar" })
-  name: string;
+  @Column({ name: "title", type: "varchar" })
+  title: string;
 
-  @Column({ name: "image", type: "varchar" })
-  image: string;
+  @Column({ name: "poster", type: "varchar" })
+  poster: string;
 
   @Column({ name: "certificate", type: "varchar" })
   certificate: string;
