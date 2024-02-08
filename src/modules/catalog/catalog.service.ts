@@ -20,30 +20,30 @@ export class CatalogService {
   }
 
   // CREATE
-  async createCatalog(catalogDto: CreateCatalogDto) {
+  async create(catalogDto: CreateCatalogDto) {
     return await this.catalogRepository.save(this.catalogRepository.create({ ...catalogDto }));
   }
 
   // UPDATE
-  async updateCatalog(catalogDto: UpdateCatalogDto, catalogId: number) {
+  async update(catalogDto: UpdateCatalogDto, catalogId: number) {
     return await this.catalogRepository.save({ ...catalogDto, id: catalogId });
   }
 
   // UPDATE
-  async deleteCatalog(catalogId: number) {
+  async delete(catalogId: number) {
     return await this.catalogRepository.delete({ id: catalogId });
   }
 
   // CHECKERS
-  async checkCatalogById(catalogId: number) {
+  async checkById(catalogId: number) {
     return this.catalogRepository.findOne({ where: { id: catalogId } });
   }
 
-  async checkCatalogForExist(year: string, language: LanguageEnum) {
+  async checkForExist(year: string, language: LanguageEnum) {
     return this.catalogRepository.findOne({ where: { year, language } });
   }
 
-  async checkCatalogForExistById(catalogId: number, year: string, language: LanguageEnum) {
+  async checkForExistById(catalogId: number, year: string, language: LanguageEnum) {
     const catalog = await this.catalogRepository.findOne({ where: { year, language, id: Not(catalogId) } });
 
     return catalog;
