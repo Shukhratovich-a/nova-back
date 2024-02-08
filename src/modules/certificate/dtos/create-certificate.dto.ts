@@ -2,10 +2,10 @@ import { IsString } from "class-validator";
 
 export class CreateCertificateDto {
   @IsString()
-  name: string;
+  title: string;
 
   @IsString()
-  image: string;
+  poster: string;
 
   @IsString()
   certificate: string;

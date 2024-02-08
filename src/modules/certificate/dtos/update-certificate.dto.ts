@@ -5,15 +5,15 @@ import { StatusEnum } from "@enums/status.enum";
 export class UpdateCertificateDto {
   @IsString()
   @IsOptional()
-  name: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
-  image: string;
+  poster?: string;
 
   @IsString()
   @IsOptional()
-  certificate: string;
+  certificate?: string;
 
   @IsEnum(StatusEnum)
   @IsOptional()
