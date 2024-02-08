@@ -12,22 +12,17 @@ import { MFile } from "./mfile.class";
 
 @Injectable()
 export class FileService {
-  async saveFiles(files: MFile[]): Promise<FileElementResponse[]> {
+  async saveFile(file: MFile): Promise<FileElementResponse> {
     const dateFolder = format(new Date(), "yyyy-MM-dd");
     const uploadFolder = join(path, "uploads", dateFolder);
     await ensureDir(uploadFolder);
 
-    const res: FileElementResponse[] = [];
-    for (const file of files) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-      const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = extname(file.originalname);
+    const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
 
-      await writeFile(join(uploadFolder, filename), file.buffer);
-      res.push({ url: `/uploads/${dateFolder}/${filename}`, name: file.originalname });
-    }
-
-    return res;
+    await writeFile(join(uploadFolder, filename), file.buffer);
+    return { url: `/uploads/${dateFolder}/${filename}`, name: file.originalname };
   }
 
   convertToWebp(file: Buffer): Promise<Buffer> {
