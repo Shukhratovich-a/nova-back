@@ -8,6 +8,8 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
+import { capitalize } from "@utils/capitalize.utils";
+
 import { CategoryEntity } from "./category.entity";
 
 import { SubcategoryService } from "@modules/subcategory/subcategory.service";
@@ -33,9 +35,7 @@ export class CategoryService {
     });
     if (!categories) return [];
 
-    const parsedCategories: CategoryDto[] = categories.map((category) => {
-      return this.parseCategory(category, language);
-    });
+    const parsedCategories: CategoryDto[] = categories.map((category) => this.parse(category, language));
 
     return parsedCategories;
   }
@@ -47,11 +47,11 @@ export class CategoryService {
     });
     if (!category) return null;
 
-    const parsedCategory: CategoryDto = this.parseCategory(category, language);
+    const parsedCategory: CategoryDto = this.parse(category, language);
 
-    parsedCategory.subcategories = category.subcategories.map((subcategory) => {
-      return this.subcategoryService.parseSubcategory(subcategory, language);
-    });
+    parsedCategory.subcategories = category.subcategories.map((subcategory) =>
+      this.subcategoryService.parse(subcategory, language),
+    );
 
     return parsedCategory;
   }
@@ -63,11 +63,11 @@ export class CategoryService {
     });
     if (!category) return null;
 
-    const parsedCategory: CategoryDto = this.parseCategory(category, language);
+    const parsedCategory: CategoryDto = this.parse(category, language);
 
-    parsedCategory.subcategories = category.subcategories.map((subcategory) => {
-      return this.subcategoryService.parseSubcategory(subcategory, language);
-    });
+    parsedCategory.subcategories = category.subcategories.map((subcategory) =>
+      this.subcategoryService.parse(subcategory, language),
+    );
 
     return parsedCategory;
   }
@@ -93,34 +93,31 @@ export class CategoryService {
   }
 
   // CREATE
-  async createCategory(categoryDto: CreateCategoryDto) {
+  async create(categoryDto: CreateCategoryDto) {
     return await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
   }
 
   // UPDATE
-  async updateCategory(categoryDto: UpdateCategoryDto, categoryId: number) {
+  async update(categoryDto: UpdateCategoryDto, categoryId: number) {
     return await this.categoryRepository.save({ ...categoryDto, id: categoryId });
   }
 
   // DELETE
-  async deleteCategory(categoryId: number) {
+  async delete(categoryId: number) {
     return await this.categoryRepository.save({ status: StatusEnum.DELETED, id: categoryId });
   }
 
-  // PARSERS
-  parseCategory(category: CategoryEntity, language: LanguageEnum) {
-    const newCategory: CategoryDto = plainToClass(CategoryDto, category, { excludeExtraneousValues: true });
-
-    if (language === LanguageEnum.RU) newCategory.title = category.titleRu;
-    if (language === LanguageEnum.EN) newCategory.title = category.titleEn;
-    if (language === LanguageEnum.TR) newCategory.title = category.titleTr;
-    if (language === LanguageEnum.AR) newCategory.title = category.titleAr;
-
-    return newCategory;
+  // CHECKERS
+  async checkById(categoryId: number) {
+    return this.categoryRepository.findOne({ where: { id: categoryId } });
   }
 
-  // CHECKERS
-  async checkCategoryById(categoryId: number) {
-    return this.categoryRepository.findOne({ where: { id: categoryId } });
+  // PARSERS
+  parse(category: CategoryEntity, language: LanguageEnum) {
+    const newCategory: CategoryDto = plainToClass(CategoryDto, category, { excludeExtraneousValues: true });
+
+    newCategory.title = category[`title${capitalize(language)}`];
+
+    return newCategory;
   }
 }
