@@ -11,5 +11,6 @@ import { CertificateService } from "./certificate.service";
   imports: [TypeOrmModule.forFeature([CertificateEntity])],
   controllers: [CertificateController],
   providers: [CertificateService],
+  exports: [CertificateService],
 })
 export class CertificateModule {}
