@@ -1,7 +1,4 @@
-import { IsEnum, IsNumber, IsString } from "class-validator";
-
-import { LanguageEnum } from "@enums/language.enum";
-import { ImageTypeEnum } from "@enums/image-type.enum";
+import { IsNumber, IsString, IsOptional } from "class-validator";
 
 export class CreateProductDto {
   @IsString()
@@ -9,26 +6,48 @@ export class CreateProductDto {
 
   @IsNumber()
   subcategoryId: number;
-}
-
-export class CreateProductContentDto {
-  @IsString()
-  title: string;
 
   @IsString()
-  description: string;
-
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
-}
-
-export class CreateProductImageDto {
-  @IsString()
-  jpgPath: string;
+  @IsOptional()
+  titleRu: string;
 
   @IsString()
-  webpPath: string;
+  @IsOptional()
+  titleEn: string;
 
-  @IsEnum(ImageTypeEnum)
-  type: ImageTypeEnum;
+  @IsString()
+  @IsOptional()
+  titleTr: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionRu: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionEn: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionTr: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionAr: string;
+
+  @IsString()
+  @IsOptional()
+  mainImage: string;
+
+  @IsString()
+  @IsOptional()
+  boxImage: string;
+
+  @IsString()
+  @IsOptional()
+  schemeImage: string;
 }
