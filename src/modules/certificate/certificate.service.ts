@@ -13,9 +13,7 @@ import { UpdateCertificateDto } from "./dtos/update-certificate.dto";
 
 @Injectable()
 export class CertificateService {
-  constructor(
-    @InjectRepository(CertificateEntity) private readonly certificateRepository: Repository<CertificateEntity>,
-  ) {}
+  constructor(@InjectRepository(CertificateEntity) private readonly certificateRepository: Repository<CertificateEntity>) {}
 
   // FIND
   async findAll(status: StatusEnum, { page, limit }: IPagination) {
@@ -26,14 +24,39 @@ export class CertificateService {
     });
   }
 
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+    const [certificates, total] = await this.certificateRepository.findAndCount({
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!certificates) return [];
+
+    return { data: certificates, total };
+  }
+
+  async findOneWithContents(certificateId: number, status: StatusEnum) {
+    const certificate = await this.certificateRepository.findOne({
+      where: { status, id: certificateId },
+    });
+    if (!certificate) return null;
+
+    return certificate;
+  }
+
   // CREATE
-  async createCertificate(certificateDto: CreateCertificateDto) {
+  async create(certificateDto: CreateCertificateDto) {
     return await this.certificateRepository.save(this.certificateRepository.create({ ...certificateDto }));
   }
 
   // UPDATE
-  async updateCertificate(certificateDto: UpdateCertificateDto, certificateId: number) {
+  async update(certificateDto: UpdateCertificateDto, certificateId: number) {
     return await this.certificateRepository.save({ ...certificateDto, id: certificateId });
+  }
+
+  // DELETE
+  async delete(certificateId: number) {
+    return await this.certificateRepository.save({ status: StatusEnum.DELETED, id: certificateId });
   }
 
   // CHECKERS
