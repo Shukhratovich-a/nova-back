@@ -5,75 +5,95 @@ import { Repository } from "typeorm";
 import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
-import { ImageTypeEnum } from "@enums/image-type.enum";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
-import { ProductEntity, ProductContentEntity, ProductImageEntity } from "./product.entity";
+import { capitalize } from "@/utils/capitalize.utils";
 
-import { DetailService } from "../detail/detail.service";
+import { ProductEntity } from "./product.entity";
 
-import { ProductDto, ProductImageDto } from "./dtos/product.dto";
-import { CreateProductDto, CreateProductContentDto, CreateProductImageDto } from "./dtos/create-product.dto";
-import { UpdateProductDto, UpdateProductContentDto, UpdateProductImageDto } from "./dtos/update-product.dto";
+import { DetailService } from "@modules/detail/detail.service";
+
+import { ProductDto } from "./dtos/product.dto";
+import { CreateProductDto } from "./dtos/create-product.dto";
+import { UpdateProductDto } from "./dtos/update-product.dto";
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepository: Repository<ProductEntity>,
-    @InjectRepository(ProductContentEntity) private readonly contentRepository: Repository<ProductContentEntity>,
-    @InjectRepository(ProductImageEntity) private readonly imageRepository: Repository<ProductImageEntity>,
     @Inject(forwardRef(() => DetailService)) private readonly detailService: DetailService,
   ) {}
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
     const products = await this.productRepository.find({
-      relations: { contents: true, images: true },
-      where: { contents: { language }, status },
+      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
     if (!products) return [];
 
-    const parsedProducts: ProductDto[] = products.map((product) => this.parseProduct(product));
+    const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
 
     return parsedProducts;
   }
 
   async findById(productId: number, language: LanguageEnum, status: StatusEnum) {
     const product = await this.productRepository.findOne({
-      relations: { contents: true, images: true },
-      where: { id: productId, contents: { language }, status },
+      relations: { details: { type: true, category: true } },
+      where: { id: productId, status },
     });
     if (!product) return null;
 
-    const parsedProduct: ProductDto = this.parseProduct(product);
+    const parsedProduct: ProductDto = this.parse(product, language);
 
-    const details = await this.detailService.findDetailsById(product.id, language);
-    parsedProduct.detailCategories = await this.detailService.sortDetails(details, language);
+    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
     return parsedProduct;
   }
 
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+    const [products, total] = await this.productRepository.findAndCount({
+      relations: { subcategory: { category: true } },
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!products) return [];
+
+    return { data: products, total };
+  }
+
+  async findOneWithContents(productId: number, status: StatusEnum) {
+    const product = await this.productRepository.findOne({
+      relations: { subcategory: { category: true }, details: { type: true, category: true } },
+      where: { status, id: productId },
+    });
+    if (!product) return null;
+
+    return product;
+  }
+
+  async findAllByParentId(subcategoryId: number, status: StatusEnum, { page, limit }: IPagination) {
+    const [products, total] = await this.productRepository.findAndCount({
+      where: { status, subcategory: { id: subcategoryId } },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!products) return [];
+
+    return { data: products, total };
+  }
+
   // CREATE
-  async createProduct(productDto: CreateProductDto) {
+  async create(productDto: CreateProductDto) {
     return await this.productRepository.save(
       this.productRepository.create({ ...productDto, subcategory: { id: productDto.subcategoryId } }),
     );
   }
 
-  async createContent(contentDto: CreateProductContentDto, productId: number) {
-    return await this.contentRepository.save(
-      this.contentRepository.create({ ...contentDto, product: { id: productId } }),
-    );
-  }
-
-  async createImage(imageDto: CreateProductImageDto, productId: number) {
-    return await this.imageRepository.save(this.imageRepository.create({ ...imageDto, product: { id: productId } }));
-  }
-
   // UPDATE
-  async updateProduct(productDto: UpdateProductDto, productId: number) {
+  async update(productDto: UpdateProductDto, productId: number) {
     return await this.productRepository.save({
       ...productDto,
       id: productId,
@@ -81,56 +101,27 @@ export class ProductService {
     });
   }
 
-  async updateContent(contentDto: UpdateProductContentDto, contentId: number) {
-    return await this.contentRepository.save({ ...contentDto, id: contentId });
-  }
-
-  async updateImage(imageDto: UpdateProductImageDto, imageId: number) {
-    return await this.imageRepository.save({ ...imageDto, id: imageId });
+  // DELETE
+  async delete(productId: number) {
+    return await this.productRepository.save({ status: StatusEnum.DELETED, id: productId });
   }
 
   // PARSERS
-  parseProduct(product: ProductEntity) {
+  parse(product: ProductEntity, language: LanguageEnum) {
     const newProduct: ProductDto = plainToClass(ProductDto, product, { excludeExtraneousValues: true });
 
-    if (product.contents && product.contents.length) {
-      newProduct.title = product.contents[0].title;
-      newProduct.description = product.contents[0].description;
-    }
-
-    if (product.images && product.images.length) {
-      newProduct.images = product.images.map((image) => this.parseImage(image));
-    }
+    newProduct.title = product[`title${capitalize(language)}`];
+    newProduct.description = product[`description${capitalize(language)}`];
 
     return newProduct;
   }
 
-  parseImage(image: ProductImageEntity) {
-    return plainToClass(ProductImageDto, image, { excludeExtraneousValues: true });
-  }
-
   // CHECKERS
-  async checkProductById(productId: number) {
+  async checkById(productId: number) {
     return this.productRepository.findOne({ where: { id: productId } });
   }
 
-  async checkProductByCode(productCode: string) {
+  async checkByCode(productCode: string) {
     return this.productRepository.findOne({ where: { code: productCode } });
-  }
-
-  async checkContentById(contentId: number) {
-    return this.contentRepository.findOne({ where: { id: contentId }, relations: { product: true } });
-  }
-
-  async checkImageById(imageId: number) {
-    return this.imageRepository.findOne({ where: { id: imageId }, relations: { product: true } });
-  }
-
-  async checkContentForExist(productId: number, language: LanguageEnum) {
-    return this.contentRepository.findOne({ where: { product: { id: productId }, language } });
-  }
-
-  async checkImageForExist(productId: number, type: ImageTypeEnum) {
-    return this.imageRepository.findOne({ where: { product: { id: productId }, type } });
   }
 }
