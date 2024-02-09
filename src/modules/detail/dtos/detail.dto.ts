@@ -4,11 +4,11 @@ export class DetailDto {
   @Expose()
   id: number;
 
-  @Exclude()
-  name: string;
+  @Expose()
+  value: string;
 
   @Exclude()
-  value: string;
+  title: string;
 }
 
 export class DetailCategoryDto {

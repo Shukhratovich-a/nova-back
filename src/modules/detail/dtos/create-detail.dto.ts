@@ -1,34 +1,55 @@
-import { LanguageEnum } from "@/enums/language.enum";
-import { IsEnum, IsNumber, IsString } from "class-validator";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
-export class CreateDetailCategoryDto {}
-
-export class CreateDetailCategoryContentDto {
+export class CreateDetailCategoryDto {
   @IsString()
-  title: string;
+  titleRu: string;
 
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
+  @IsString()
+  titleEn: string;
 
-  @IsNumber()
-  detailCategoryId: number;
+  @IsString()
+  titleTr: string;
+
+  @IsString()
+  titleAr: string;
+}
+
+export class CreateDetailTypeDto {
+  @IsString()
+  titleRu: string;
+
+  @IsString()
+  titleEn: string;
+
+  @IsString()
+  titleTr: string;
+
+  @IsString()
+  titleAr: string;
 }
 
 export class CreateDetailDto {
-  @IsNumber()
-  productId: number;
-
-  @IsNumber()
-  categoryId: number;
-}
-
-export class CreateDetailContentDto {
   @IsString()
-  name: string;
+  valueEn: string;
 
   @IsString()
-  value: string;
+  valueRu: string;
 
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
+  @IsString()
+  valueTr: string;
+
+  @IsString()
+  valueAr: string;
+
+  @IsOptional()
+  @IsNumber()
+  typeId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  categoryId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  productId?: number;
 }

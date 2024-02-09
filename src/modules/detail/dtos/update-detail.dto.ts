@@ -1,43 +1,67 @@
-import { IsEnum, IsNumber, IsString, IsOptional } from "class-validator";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
-import { LanguageEnum } from "@enums/language.enum";
-
-export class UpdateDetailCategoryDto {}
-
-export class UpdateDetailCategoryContentDto {
-  @IsOptional()
+export class UpdateDetailCategoryDto {
   @IsString()
-  title: string;
-
   @IsOptional()
-  @IsNumber()
-  detailCategoryId: number;
+  titleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  titleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
+}
+
+export class UpdateDetailTypeDto {
+  @IsString()
+  @IsOptional()
+  titleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  titleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
 }
 
 export class UpdateDetailDto {
-  @IsOptional()
   @IsNumber()
-  productId: number;
-
   @IsOptional()
+  valueEn?: string;
+
   @IsNumber()
-  categoryId: number;
-}
-
-export class UpdateDetailContentDto {
   @IsOptional()
-  @IsString()
-  name: string;
+  valueRu?: string;
 
-  @IsOptional()
-  @IsString()
-  value: string;
-
-  @IsOptional()
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
-
-  @IsOptional()
   @IsNumber()
-  detailId: number;
+  @IsOptional()
+  valueTr?: string;
+
+  @IsNumber()
+  @IsOptional()
+  valueAr?: string;
+
+  @IsNumber()
+  @IsOptional()
+  typeId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  categoryId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  productId?: number;
 }
