@@ -4,15 +4,14 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
+  ManyToOne,
   Relation,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-  Index,
 } from "typeorm";
 
-import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { ProductEntity } from "@modules/product/product.entity";
 
@@ -21,28 +20,59 @@ export class DetailCategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @OneToMany(() => DetailEntity, (detail) => detail.category)
-  details: DetailEntity[];
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
 
-  @OneToMany(() => DetailCategoryContentEntity, (content) => content.detailCategory)
-  contents: DetailCategoryContentEntity[];
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
+
+  @OneToMany(() => DetailEntity, (detail) => detail.category, { onDelete: "CASCADE" })
+  details: Relation<DetailEntity[]>;
+
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
+
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 }
 
-@Entity("detail_category_contents")
-@Index(["language", "detailCategory"], { unique: true })
-export class DetailCategoryContentEntity extends BaseEntity {
+@Entity("detail_types")
+export class DetailTypeEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "title", type: "varchar" })
-  title: string;
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
 
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
 
-  @ManyToOne(() => DetailCategoryEntity, (detailCategory) => detailCategory.contents, { nullable: false })
-  @JoinColumn({ name: "detail_category_id" })
-  detailCategory: DetailCategoryEntity;
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
+
+  @OneToMany(() => DetailEntity, (detail) => detail.type, { onDelete: "CASCADE" })
+  details: Relation<DetailEntity[]>;
+
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
+
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 }
 
 @Entity("details")
@@ -50,32 +80,36 @@ export class DetailEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @OneToMany(() => DetailContentEntity, (content) => content.detail)
-  contents: DetailContentEntity[];
+  @Column({ name: "value_en", type: "varchar", nullable: true })
+  valueEn: string;
 
-  @ManyToOne(() => ProductEntity, (product) => product.details)
+  @Column({ name: "value_ru", type: "varchar", nullable: true })
+  valueRu: string;
+
+  @Column({ name: "value_tr", type: "varchar", nullable: true })
+  valueTr: string;
+
+  @Column({ name: "value_ar", type: "varchar", nullable: true })
+  valueAr: string;
+
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
+
+  @ManyToOne(() => DetailTypeEntity, (type) => type.details, { nullable: true, onDelete: "CASCADE" })
+  @JoinColumn({ name: "type_id" })
+  type?: DetailTypeEntity | null;
+
+  @ManyToOne(() => DetailCategoryEntity, (category) => category.details, { nullable: true, onDelete: "CASCADE" })
+  @JoinColumn({ name: "category_id" })
+  category?: DetailCategoryEntity | null;
+
+  @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: false, onDelete: "CASCADE" })
+  @JoinColumn({ name: "product_id" })
   product: ProductEntity;
 
-  @ManyToOne(() => DetailCategoryEntity, (category) => category.details, { nullable: false })
-  category: DetailCategoryEntity;
-}
+  @CreateDateColumn({ name: "create_at", type: "datetime" })
+  createAt: Date;
 
-@Entity("detail_contents")
-@Index(["language", "detail"], { unique: true })
-export class DetailContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "name", type: "varchar", nullable: true })
-  name: string;
-
-  @Column({ name: "value", type: "varchar" })
-  value: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => DetailEntity, (detail) => detail.contents, { nullable: false })
-  @JoinColumn({ name: "detail_id" })
-  detail: DetailEntity;
+  @UpdateDateColumn({ name: "update_at", type: "datetime" })
+  updateAt: Date;
 }
