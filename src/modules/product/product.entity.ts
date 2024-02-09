@@ -1,7 +1,6 @@
 import {
   Entity,
   BaseEntity,
-  Index,
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
@@ -12,8 +11,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-import { ImageTypeEnum } from "@enums/image-type.enum";
-import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
@@ -27,14 +24,41 @@ export class ProductEntity extends BaseEntity {
   @Column({ name: "code", type: "varchar", unique: true })
   code: string;
 
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
+
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+
+  @Column({ name: "description_ru", type: "varchar", nullable: true })
+  descriptionRu: string;
+
+  @Column({ name: "description_en", type: "varchar", nullable: true })
+  descriptionEn: string;
+
+  @Column({ name: "description_tr", type: "varchar", nullable: true })
+  descriptionTr: string;
+
+  @Column({ name: "description_ar", type: "varchar", nullable: true })
+  descriptionAr: string;
+
+  @Column({ name: "main_image", type: "varchar", nullable: true })
+  mainImage: string;
+
+  @Column({ name: "box_image", type: "varchar", nullable: true })
+  boxImage: string;
+
+  @Column({ name: "scheme_image", type: "varchar", nullable: true })
+  schemeImage: string;
+
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
-
-  @OneToMany(() => ProductContentEntity, (contents) => contents.product, { onDelete: "CASCADE" })
-  contents: Relation<ProductContentEntity[]>;
-
-  @OneToMany(() => ProductImageEntity, (images) => images.product, { onDelete: "CASCADE" })
-  images: Relation<ProductImageEntity[]>;
 
   @OneToMany(() => DetailEntity, (detail) => detail.product, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
@@ -48,44 +72,4 @@ export class ProductEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-}
-
-@Entity("product_contents")
-@Index(["language", "product"], { unique: true })
-export class ProductContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title", type: "varchar" })
-  title: string;
-
-  @Column({ name: "description", type: "varchar" })
-  description: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => ProductEntity, (product) => product.contents, { nullable: false })
-  @JoinColumn({ name: "product_id" })
-  product: ProductEntity;
-}
-
-@Entity("product_images")
-@Index(["type", "product"], { unique: true })
-export class ProductImageEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "jpg_path", type: "varchar" })
-  jpgPath: string;
-
-  @Column({ name: "webp_path", type: "varchar" })
-  webpPath: string;
-
-  @Column({ name: "type", type: "simple-enum", enum: ImageTypeEnum })
-  type: ImageTypeEnum;
-
-  @ManyToOne(() => ProductEntity, (product) => product.images, { nullable: false })
-  @JoinColumn({ name: "product_id" })
-  product: ProductEntity;
 }
