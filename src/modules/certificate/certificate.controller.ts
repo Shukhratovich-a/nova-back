@@ -1,15 +1,4 @@
-import {
-  Controller,
-  ValidationPipe,
-  ParseIntPipe,
-  Get,
-  Post,
-  Put,
-  Param,
-  Query,
-  Body,
-  BadRequestException,
-} from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
@@ -34,21 +23,43 @@ export class CertificateController {
     return this.certificateService.findAll(status, { page, limit });
   }
 
+  @Get("get-with-count")
+  async getAllWithCount(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.certificateService.findAllWithCount(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:certificateId")
+  async getOne(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("certificateId", new ParseIntPipe()) certificateId: number,
+  ) {
+    return this.certificateService.findOneWithContents(certificateId, status);
+  }
+
   // POST
   @Post("create")
-  async createCertificate(@Body(new ValidationPipe()) certificateDto: CreateCertificateDto) {
-    return this.certificateService.createCertificate(certificateDto);
+  async create(@Body() certificateDto: CreateCertificateDto) {
+    return this.certificateService.create(certificateDto);
   }
 
   // PUT
   @Put("update/:certificateId")
-  async updateCertificate(
-    @Param("certificateId", new ParseIntPipe()) certificateId: number,
-    @Body(new ValidationPipe()) certificateDto: UpdateCertificateDto,
-  ) {
+  async update(@Param("certificateId", new ParseIntPipe()) certificateId: number, @Body() certificateDto: UpdateCertificateDto) {
     const certificate = await this.certificateService.checkCertificateById(certificateId);
     if (!certificate) throw new BadRequestException("not found");
 
-    return this.certificateService.updateCertificate(certificateDto, certificateId);
+    return this.certificateService.update(certificateDto, certificateId);
+  }
+
+  // DELETE
+  @Delete("delete/:certificateId")
+  async delete(@Param("certificateId", new ParseIntPipe()) certificateId: number) {
+    const certificate = await this.certificateService.checkCertificateById(certificateId);
+    if (!certificate) throw new BadRequestException("not found");
+
+    return this.certificateService.delete(certificateId);
   }
 }
