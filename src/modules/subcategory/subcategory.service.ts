@@ -96,6 +96,7 @@ export class SubcategoryService {
 
   async findOneWithContents(subcategoryId: number, status: StatusEnum) {
     const category = await this.subcategoryRepository.findOne({
+      relations: { category: true },
       where: { status, id: subcategoryId },
     });
     if (!category) return null;
@@ -105,6 +106,7 @@ export class SubcategoryService {
 
   async findAllByParentId(categoryId: number, status: StatusEnum, { page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
+      relations: { category: true },
       where: { status, category: { id: categoryId } },
       take: limit,
       skip: (page - 1) * limit || 0,
