@@ -1,18 +1,16 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { DetailEntity, DetailContentEntity, DetailCategoryEntity, DetailCategoryContentEntity } from "./detail.entity";
+import { DetailCategoryEntity, DetailEntity, DetailTypeEntity } from "./detail.entity";
 
-import { DetailController } from "./detail.controller";
+import { DetailController, DetailTypeController, DetailCategoryController } from "./detail.controller";
 
-import { DetailService } from "./detail.service";
+import { DetailService, DetailTypeService, DetailCategoryService } from "./detail.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([DetailEntity, DetailContentEntity, DetailCategoryEntity, DetailCategoryContentEntity]),
-  ],
-  controllers: [DetailController],
-  providers: [DetailService],
-  exports: [DetailService],
+  imports: [TypeOrmModule.forFeature([DetailCategoryEntity, DetailTypeEntity, DetailEntity])],
+  controllers: [DetailController, DetailTypeController, DetailCategoryController],
+  providers: [DetailService, DetailTypeService, DetailCategoryService],
+  exports: [DetailService, DetailTypeService, DetailCategoryService],
 })
 export class DetailModule {}
