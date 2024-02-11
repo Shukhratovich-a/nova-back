@@ -1,4 +1,18 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
-@Module({})
+import { ProductModule } from "@modules/product/product.module";
+
+import { VideoEntity } from "./video.entity";
+
+import { VideoController } from "./video.controller";
+
+import { VideoService } from "./video.service";
+
+@Module({
+  imports: [TypeOrmModule.forFeature([VideoEntity]), forwardRef(() => ProductModule)],
+  controllers: [VideoController],
+  providers: [VideoService],
+  exports: [VideoService],
+})
 export class VideoModule {}
