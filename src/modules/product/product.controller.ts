@@ -39,8 +39,9 @@ export class ProductController {
   async getAllWithCount(
     @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
+    @Query("code") code: string,
   ) {
-    return this.productService.findAllWithCount(status, { page, limit });
+    return this.productService.findAllWithCount(status, { page, limit }, code);
   }
 
   @Get("get-one-with-contents/:productId")
