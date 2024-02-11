@@ -1,52 +1,49 @@
 import {
   Entity,
   BaseEntity,
-  Index,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
+  ManyToMany,
+  JoinTable,
   Relation,
-  AfterInsert,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
 
-import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
+
+import { ProductEntity } from "@modules/product/product.entity";
 
 @Entity("videos")
 export class VideoEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
+  @Column({ name: "title_en", type: "varchar" })
+  titleEn: string;
+
+  @Column({ name: "title_ru", type: "varchar" })
+  titleRu: string;
+
+  @Column({ name: "title_tr", type: "varchar" })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar" })
+  titleAr: string;
+
+  @Column({ name: "video", type: "varchar" })
+  video: string;
+
+  @ManyToMany(() => ProductEntity, { nullable: true })
+  @JoinTable()
+  products: Relation<ProductEntity[]>;
+
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
-
-  @OneToMany(() => VideoContentEntity, (content) => content.video, { onDelete: "CASCADE" })
-  contents: Relation<VideoContentEntity[]>;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-}
-
-@Entity("video_contents")
-@Index(["language", "video"], { unique: true })
-export class VideoContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title", type: "varchar" })
-  title: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => VideoEntity, (video) => video.contents, { nullable: false })
-  @JoinColumn({ name: "video_id" })
-  video: VideoEntity;
 }
