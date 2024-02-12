@@ -10,6 +10,7 @@ import { ContactModule } from "./contact/contact.module";
 import { CertificateModule } from "./certificate/certificate.module";
 import { CatalogModule } from "./catalog/catalog.module";
 import { NewsModule } from "./news/news.module";
+import { TagModule } from "./tag/tag.module";
 import { VideoModule } from "./video/video.module";
 
 @Module({
@@ -24,6 +25,7 @@ import { VideoModule } from "./video/video.module";
     CertificateModule,
     CatalogModule,
     NewsModule,
+    TagModule,
     VideoModule,
   ],
 })
