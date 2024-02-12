@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Param,
-  Query,
-  Get,
-  Post,
-  ValidationPipe,
-  Put,
-  ParseIntPipe,
-  BadRequestException,
-} from "@nestjs/common";
+import { Body, Controller, Param, Query, Get, Post, Put, Delete, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
@@ -19,8 +8,8 @@ import { StatusEnum } from "@enums/status.enum";
 
 import { NewsService } from "./news.service";
 
-import { CreateNewsDto, CreateNewsContentDto } from "./dto/create-news.dto";
-import { UpdateNewsDto, UpdateNewsContentDto } from "./dto/update-news.dto";
+import { CreateNewsDto } from "./dto/create-news.dto";
+import { UpdateNewsDto } from "./dto/update-news.dto";
 
 @Controller("news")
 export class NewsController {
@@ -56,44 +45,25 @@ export class NewsController {
 
   // POST
   @Post("create-news")
-  async createNews(@Body(new ValidationPipe()) newsDto: CreateNewsDto) {
+  async createNews(@Body() newsDto: CreateNewsDto) {
     return this.newsService.createNews(newsDto);
-  }
-
-  @Post("create-content/:newsId")
-  async createContent(
-    @Param("newsId", new ParseIntPipe()) newsId: number,
-    @Body(new ValidationPipe()) contentDto: CreateNewsContentDto,
-  ) {
-    const news = await this.newsService.checkNewsById(newsId);
-    if (!news) throw new BadRequestException("news not exists");
-
-    const oldContent = await this.newsService.checkContentForExist(newsId, contentDto.language);
-    if (oldContent) throw new BadRequestException("content exists");
-
-    return this.newsService.createContent(contentDto, newsId);
   }
 
   // PUT
   @Put("update-news/:newsId")
-  async updateNews(
-    @Param("newsId", new ParseIntPipe()) newsId: number,
-    @Body(new ValidationPipe()) newsDto: UpdateNewsDto,
-  ) {
-    const news = await this.newsService.checkNewsById(newsId);
+  async updateNews(@Param("newsId", new ParseIntPipe()) newsId: number, @Body() newsDto: UpdateNewsDto) {
+    const news = await this.newsService.checkById(newsId);
     if (!news) return new BadRequestException("news not exists");
 
     return this.newsService.updateNews(newsDto, newsId);
   }
 
-  @Put("update-content/:contentId")
-  async updateContent(
-    @Param("contentId", new ParseIntPipe()) contentId: number,
-    @Body(new ValidationPipe()) contentDto: UpdateNewsContentDto,
-  ) {
-    const content = await this.newsService.checkContentById(contentId);
-    if (!content) throw new BadRequestException("content not exists");
+  // DELETE
+  @Delete("delete/:newsId")
+  async delete(@Param("newsId", new ParseIntPipe()) newsId: number) {
+    const category = await this.newsService.checkById(newsId);
+    if (!category) throw new BadRequestException("not found");
 
-    return this.newsService.updateContent(contentDto, contentId);
+    return this.newsService.delete(newsId);
   }
 }

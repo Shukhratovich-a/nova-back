@@ -27,9 +27,6 @@ export class NewsDto {
   @Exclude()
   body: string;
 
-  @Exclude()
-  tag: string;
-
   @Expose()
   createAt: Date;
 

@@ -12,6 +12,42 @@ export class UpdateNewsDto {
   @IsOptional()
   image?: string;
 
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleAr?: string;
+
+  @IsString()
+  @IsOptional()
+  bodyRu?: string;
+
+  @IsString()
+  @IsOptional()
+  bodyEn?: string;
+
+  @IsString()
+  @IsOptional()
+  bodyTr?: string;
+
+  @IsString()
+  @IsOptional()
+  bodyAr?: string;
+
   @IsEnum(NewsTypeEnum)
   @IsOptional()
   type?: NewsTypeEnum;
@@ -19,22 +55,4 @@ export class UpdateNewsDto {
   @IsEnum(StatusEnum)
   @IsOptional()
   status?: StatusEnum;
-}
-
-export class UpdateNewsContentDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  subtitle?: string;
-
-  @IsString()
-  @IsOptional()
-  body?: string;
-
-  @IsString()
-  @IsOptional()
-  tag?: string;
 }

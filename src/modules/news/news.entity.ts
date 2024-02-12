@@ -1,12 +1,10 @@
 import {
   Entity,
   BaseEntity,
-  Index,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
-  ManyToOne,
-  JoinColumn,
+  ManyToMany,
+  JoinTable,
   Relation,
   CreateDateColumn,
   UpdateDateColumn,
@@ -15,8 +13,9 @@ import {
 } from "typeorm";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
-import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
+
+import { TagEntity } from "@modules/tag/tag.entity";
 
 @Entity("news")
 export class NewsEntity extends BaseEntity {
@@ -32,8 +31,45 @@ export class NewsEntity extends BaseEntity {
   @Column({ name: "image", type: "varchar", nullable: true })
   image?: string;
 
-  @OneToMany(() => NewsContentEntity, (content) => content.news, { onDelete: "CASCADE" })
-  contents: Relation<NewsContentEntity[]>;
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
+
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+
+  @Column({ name: "subtitle_ru", type: "varchar", nullable: true })
+  subtitleRu: string;
+
+  @Column({ name: "subtitle_en", type: "varchar", nullable: true })
+  subtitleEn: string;
+
+  @Column({ name: "subtitle_tr", type: "varchar", nullable: true })
+  subtitleTr: string;
+
+  @Column({ name: "subtitle_ar", type: "varchar", nullable: true })
+  subtitleAr: string;
+
+  @Column({ name: "body_ru", type: "varchar", nullable: true })
+  bodyRu: string;
+
+  @Column({ name: "body_en", type: "varchar", nullable: true })
+  bodyEn: string;
+
+  @Column({ name: "body_tr", type: "varchar", nullable: true })
+  bodyTr: string;
+
+  @Column({ name: "body_ar", type: "varchar", nullable: true })
+  bodyAr: string;
+
+  @ManyToMany(() => TagEntity, { nullable: true })
+  @JoinTable({ name: "news_tags" })
+  tags: Relation<TagEntity[]>;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
@@ -68,30 +104,4 @@ export class NewsEntity extends BaseEntity {
     }
     this.save();
   }
-}
-
-@Entity("news_contents")
-@Index(["language", "news"], { unique: true })
-export class NewsContentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title", type: "varchar" })
-  title: string;
-
-  @Column({ name: "subtitle", type: "varchar", nullable: true })
-  subtitle: string;
-
-  @Column({ name: "body", type: "varchar" })
-  body: string;
-
-  @Column({ name: "tag", type: "varchar" })
-  tag: string;
-
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
-
-  @ManyToOne(() => NewsEntity, (news) => news.contents, { nullable: false })
-  @JoinColumn({ name: "news_id" })
-  news: NewsEntity;
 }
