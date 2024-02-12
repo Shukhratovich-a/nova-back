@@ -35,7 +35,7 @@ export class VideoEntity extends BaseEntity {
   video: string;
 
   @ManyToMany(() => ProductEntity, { nullable: true })
-  @JoinTable()
+  @JoinTable({ name: "video_products" })
   products: Relation<ProductEntity[]>;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
