@@ -43,14 +43,30 @@ export class NewsController {
     return this.newsService.findByAlias(alias, language, status);
   }
 
+  @Get("get-with-count")
+  async getAllWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.newsService.findAllWithContents(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:newsId")
+  async getOne(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("newsId", new ParseIntPipe()) newsId: number,
+  ) {
+    return this.newsService.findOneWithContents(newsId, status);
+  }
+
   // POST
-  @Post("create-news")
+  @Post("create")
   async createNews(@Body() newsDto: CreateNewsDto) {
     return this.newsService.createNews(newsDto);
   }
 
   // PUT
-  @Put("update-news/:newsId")
+  @Put("update/:newsId")
   async updateNews(@Param("newsId", new ParseIntPipe()) newsId: number, @Body() newsDto: UpdateNewsDto) {
     const news = await this.newsService.checkById(newsId);
     if (!news) return new BadRequestException("news not exists");
@@ -61,8 +77,8 @@ export class NewsController {
   // DELETE
   @Delete("delete/:newsId")
   async delete(@Param("newsId", new ParseIntPipe()) newsId: number) {
-    const category = await this.newsService.checkById(newsId);
-    if (!category) throw new BadRequestException("not found");
+    const news = await this.newsService.checkById(newsId);
+    if (!news) throw new BadRequestException("not found");
 
     return this.newsService.delete(newsId);
   }

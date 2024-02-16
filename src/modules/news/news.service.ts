@@ -21,27 +21,34 @@ export class NewsService {
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const news = await this.newsRepository.find({
-      where: { status },
+    const [news, total] = await this.newsRepository.findAndCount({
+      relations: { tags: true },
+      where: [{ status }, { tags: { status } }],
       take: limit,
       skip: (page - 1) * limit || 0,
     });
     if (!news) return [];
 
     const parsedNews: NewsDto[] = news.map((item) => {
-      return this.parseNews(item, language);
+      const newItem = this.parseNews(item, language);
+
+      newItem.tags = item.tags.map((tag) => tag[`title${capitalize(language)}`]);
+
+      return newItem;
     });
 
-    return parsedNews;
+    return { data: parsedNews, total };
   }
 
   async findById(newsId: number, language: LanguageEnum, status: StatusEnum) {
     const news = await this.newsRepository.findOne({
-      where: { id: newsId, status },
+      relations: { tags: true },
+      where: { id: newsId, status, tags: { status: status } },
     });
     if (!news) return [];
 
     const parsedNews: NewsDto = this.parseNews(news, language);
+    parsedNews.tags = news.tags.map((tag) => tag[`title${capitalize(language)}`]);
 
     return parsedNews;
   }
@@ -55,6 +62,28 @@ export class NewsService {
     const parsedNews: NewsDto = this.parseNews(news, language);
 
     return parsedNews;
+  }
+
+  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+    const [news, total] = await this.newsRepository.findAndCount({
+      relations: { tags: true },
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!news) return [];
+
+    return { data: news, total };
+  }
+
+  async findOneWithContents(newsId: number, status: StatusEnum) {
+    const news = await this.newsRepository.findOne({
+      relations: { tags: true },
+      where: { status, id: newsId },
+    });
+    if (!news) return null;
+
+    return news;
   }
 
   // CREATE
