@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
-import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
@@ -12,7 +11,6 @@ import { capitalize } from "@utils/capitalize.utils";
 
 import { TagEntity } from "./tag.entity";
 
-import { TagDto } from "./dto/tag.dto";
 import { CreateTagDto } from "./dto/create-tag.dto";
 import { UpdateTagDto } from "./dto/update-tag.dto";
 
@@ -21,28 +19,24 @@ export class TagService {
   constructor(@InjectRepository(TagEntity) private readonly tagRepository: Repository<TagEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const tags = await this.tagRepository.find({
+  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+    const [tags, total] = await this.tagRepository.findAndCount({
       where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
     if (!tags) return [];
 
-    const parsedTags: TagDto[] = tags.map((tag) => this.parse(tag, language));
-
-    return parsedTags;
+    return { data: tags, total };
   }
 
-  async findById(tagId: number, language: LanguageEnum, status: StatusEnum) {
+  async findOneWithContents(tagId: number, status: StatusEnum) {
     const tag = await this.tagRepository.findOne({
-      where: { id: tagId, status },
+      where: { status, id: tagId },
     });
-    if (!tag) return [];
+    if (!tag) return null;
 
-    const parsedTags: TagDto = this.parse(tag, language);
-
-    return parsedTags;
+    return tag;
   }
 
   // CREATE
@@ -67,10 +61,6 @@ export class TagService {
 
   // PARSERS
   parse(tag: TagEntity, language: LanguageEnum) {
-    const newTag: TagDto = plainToClass(TagDto, tag, { excludeExtraneousValues: true });
-
-    newTag.title = tag[`title${capitalize(language)}`];
-
-    return newTag;
+    return tag[`title${capitalize(language)}`];
   }
 }
