@@ -1,4 +1,5 @@
 import { Exclude, Expose } from "class-transformer";
+import { IsNumber } from "class-validator";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
 
@@ -27,9 +28,16 @@ export class NewsDto {
   @Exclude()
   body: string;
 
+  tags: string[];
+
   @Expose()
   createAt: Date;
 
   @Expose()
   updateAt: Date;
+}
+
+export class NewsTagDto {
+  @IsNumber()
+  id: number;
 }
