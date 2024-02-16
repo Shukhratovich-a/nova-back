@@ -1,6 +1,9 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsString, IsArray, IsEnum, IsOptional, ValidateNested } from "class-validator";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
+
+import { NewsTagDto } from "./news.dto";
 
 export class CreateNewsDto {
   @IsString()
@@ -65,4 +68,9 @@ export class CreateNewsDto {
   @IsEnum(NewsTypeEnum)
   @IsOptional()
   type?: NewsTypeEnum;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NewsTagDto)
+  tags: NewsTagDto[];
 }
