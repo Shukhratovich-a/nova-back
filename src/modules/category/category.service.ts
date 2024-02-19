@@ -28,7 +28,7 @@ export class CategoryService {
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const categories = await this.categoryRepository.find({
+    const [categories, total] = await this.categoryRepository.findAndCount({
       where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
@@ -37,7 +37,29 @@ export class CategoryService {
 
     const parsedCategories: CategoryDto[] = categories.map((category) => this.parse(category, language));
 
-    return parsedCategories;
+    return { data: parsedCategories, total };
+  }
+
+  // FIND
+  async findAllWithChildren(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
+    const [categories, total] = await this.categoryRepository.findAndCount({
+      relations: { subcategories: true },
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!categories) return [];
+
+    const parsedCategories: CategoryDto[] = categories.map((category) => {
+      const newCategory = this.parse(category, language);
+      newCategory.subcategories = category.subcategories.map((subcategory) =>
+        this.subcategoryService.parse(subcategory, language),
+      );
+
+      return newCategory;
+    });
+
+    return { data: parsedCategories, total };
   }
 
   async findById(categoryId: number, language: LanguageEnum, status: StatusEnum) {

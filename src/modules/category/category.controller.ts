@@ -25,6 +25,16 @@ export class CategoryController {
     return this.categoryService.findAll(language, status, { page, limit });
   }
 
+  // GET
+  @Get("get-all-with-children")
+  async getAllWithChildren(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.categoryService.findAllWithChildren(language, status, { page, limit });
+  }
+
   @Get("get-by-id/:categoryId")
   async getById(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
