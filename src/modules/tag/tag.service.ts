@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
@@ -37,6 +37,22 @@ export class TagService {
     if (!tag) return null;
 
     return tag;
+  }
+
+  async findByLanguage(tags: string[], language: LanguageEnum, status: StatusEnum) {
+    const currentTags = await this.tagRepository.find({
+      where: [
+        { titleEn: In(tags), status },
+        { titleRu: In(tags), status },
+        { titleTr: In(tags), status },
+        { titleAr: In(tags), status },
+      ],
+    });
+    if (!currentTags) return null;
+
+    const parsedTags = currentTags.map((tag) => this.parse(tag, language));
+
+    return parsedTags;
   }
 
   // CREATE
