@@ -20,13 +20,14 @@ export class NewsService {
   constructor(@InjectRepository(NewsEntity) private readonly newsRepository: Repository<NewsEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const [news, total] = await this.newsRepository.findAndCount({
-      relations: { tags: true },
-      where: [{ status }, { tags: { status } }],
-      take: limit,
-      skip: (page - 1) * limit || 0,
-    });
+  async findAll(language: LanguageEnum, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+    const [news, total] = await this.newsRepository
+      .createQueryBuilder("news")
+      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .where("news.status = :status", { status })
+      .take(Number(limit))
+      .skip((page - 1) * Number(limit) || 0)
+      .getManyAndCount();
     if (!news) return [];
 
     const parsedNews: NewsDto[] = news.map((item) => {
@@ -41,11 +42,13 @@ export class NewsService {
   }
 
   async findById(newsId: number, language: LanguageEnum, status: StatusEnum) {
-    const news = await this.newsRepository.findOne({
-      relations: { tags: true },
-      where: { id: newsId, status, tags: { status: status } },
-    });
-    if (!news) return [];
+    const news = await this.newsRepository
+      .createQueryBuilder("news")
+      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .where("news.id = :id", { id: newsId })
+      .andWhere("news.status = :status", { status })
+      .getOne();
+    if (!news) return null;
 
     const parsedNews: NewsDto = this.parseNews(news, language);
     parsedNews.tags = news.tags.map((tag) => tag[`title${capitalize(language)}`]);
@@ -54,14 +57,46 @@ export class NewsService {
   }
 
   async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
-    const news = await this.newsRepository.findOne({
-      where: { alias: alias, status },
-    });
-    if (!news) return [];
+    const news = await this.newsRepository
+      .createQueryBuilder("news")
+      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .where("news.alias = :alias", { alias })
+      .andWhere("news.status = :status", { status })
+      .getOne();
+    if (!news) return null;
 
     const parsedNews: NewsDto = this.parseNews(news, language);
+    parsedNews.tags = news.tags.map((tag) => tag[`title${capitalize(language)}`]);
 
     return parsedNews;
+  }
+
+  async findAllByTags(
+    tags: string[],
+    newsId: number,
+    language: LanguageEnum,
+    status: StatusEnum,
+    { page = 1, limit = 10 }: IPagination,
+  ) {
+    const searchTags = tags.map((tag) => `'${tag}'`).toString();
+
+    const [news, total] = await this.newsRepository
+      .createQueryBuilder("news")
+      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .where("news.status = :status", { status })
+      .andWhere("news.id != :id", { id: newsId ? newsId : "" })
+      .orderBy(`CASE WHEN tags.title${capitalize(language)} IN (${searchTags}) THEN 0 ELSE 1 END`, "ASC")
+      .addOrderBy(`tags.title${capitalize(language)}`, "DESC")
+      .addOrderBy(`news.createAt`, "ASC")
+      .getManyAndCount();
+    if (!news) return [];
+
+    const parsedNews: NewsDto[] = news.slice((Number(page) - 1) * Number(limit), Number(page) * Number(limit)).map((item) => {
+      const newItem = this.parseNews(item, language);
+      newItem.tags = item.tags.map((tag) => tag[`title${capitalize(language)}`]);
+      return newItem;
+    });
+    return { data: parsedNews, total };
   }
 
   async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {

@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Query, Get, Post, Put, Delete, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
+import { ParseArrayPipe } from "@pipes/array-parse.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
@@ -41,6 +42,17 @@ export class NewsController {
     @Param("alias") alias: string,
   ) {
     return this.newsService.findByAlias(alias, language, status);
+  }
+
+  @Get("get-by-tags")
+  async getAllByTags(
+    @Query("newsId") newsId: number,
+    @Query("tags", new ParseArrayPipe()) tags: string[],
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.newsService.findAllByTags(tags, newsId, language, status, { page, limit });
   }
 
   @Get("get-with-count")
