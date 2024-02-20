@@ -40,7 +40,6 @@ export class CategoryService {
     return { data: parsedCategories, total };
   }
 
-  // FIND
   async findAllWithChildren(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
       relations: { subcategories: true },
