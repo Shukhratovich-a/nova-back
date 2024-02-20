@@ -23,61 +23,53 @@ import { UpdateSubcategoryDto } from "./dtos/update-subcategory.dto";
 export class SubcategoryService {
   constructor(
     @InjectRepository(SubcategoryEntity) private readonly subcategoryRepository: Repository<SubcategoryEntity>,
-    @Inject(forwardRef(() => CategoryService))
-    private readonly categoryService: CategoryService,
-    @Inject(forwardRef(() => ProductService))
-    private readonly productService: ProductService,
+    @Inject(forwardRef(() => CategoryService)) private readonly categoryService: CategoryService,
+    @Inject(forwardRef(() => ProductService)) private readonly productService: ProductService,
   ) {}
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const subcategories = await this.subcategoryRepository.find({
-      where: { status },
-      take: limit,
-      skip: (page - 1) * limit || 0,
-    });
+    const [subcategories, total] = await this.subcategoryRepository
+      .createQueryBuilder("subcategory")
+      .where("subcategory.status = :status", { status })
+      .take(limit)
+      .skip((page - 1) * limit || 0)
+      .getManyAndCount();
     if (!subcategories) return [];
-
     const parsedSubcategories: SubcategoryDto[] = subcategories.map((subcategory) => {
       return this.parse(subcategory, language);
     });
 
-    return parsedSubcategories;
+    return { data: parsedSubcategories, total };
   }
 
   async findById(subcategoryId: number, language: LanguageEnum, status: StatusEnum) {
-    const subcategory = await this.subcategoryRepository.findOne({
-      relations: { products: true, category: true },
-      where: {
-        id: subcategoryId,
-        status,
-      },
-    });
+    const subcategory = await this.subcategoryRepository
+      .createQueryBuilder("subcategory")
+      .leftJoinAndSelect("subcategory.products", "product", "product.status = :status", { status })
+      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
+      .where("subcategory.id = :id", { id: subcategoryId })
+      .getOne();
     if (!subcategory) return null;
 
     const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
-
     parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
-
     parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
 
     return parsedSubcategory;
   }
 
   async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
-    const subcategory = await this.subcategoryRepository.findOne({
-      relations: { products: true, category: true },
-      where: {
-        alias: alias,
-        status,
-      },
-    });
+    const subcategory = await this.subcategoryRepository
+      .createQueryBuilder("subcategory")
+      .leftJoinAndSelect("subcategory.products", "product", "product.status = :status", { status })
+      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
+      .where("subcategory.alias = :alias", { alias })
+      .getOne();
     if (!subcategory) return null;
 
     const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
-
     parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
-
     parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
 
     return parsedSubcategory;
