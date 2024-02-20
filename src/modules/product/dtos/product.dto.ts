@@ -16,8 +16,13 @@ export class ProductDto {
   description: string;
 
   @Expose()
-  images: ProductImageDto[];
+  mainImage: string;
 
+  @Expose()
+  boxImage: string;
+
+  @Expose()
+  schemeImage: string;
   @Exclude()
   detailCategories: DetailCategoryDto[];
 
@@ -26,18 +31,4 @@ export class ProductDto {
 
   @Expose()
   updateAt: Date;
-}
-
-export class ProductImageDto {
-  @Expose()
-  id: number;
-
-  @Expose()
-  jpgPath: string;
-
-  @Expose()
-  webpPath: string;
-
-  @Expose()
-  type: string;
 }
