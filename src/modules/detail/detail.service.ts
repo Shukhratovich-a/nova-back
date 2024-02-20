@@ -204,6 +204,8 @@ export class DetailService {
   parse(detail: DetailEntity, language: LanguageEnum) {
     const newDetail: DetailDto = plainToClass(DetailDto, detail, { excludeExtraneousValues: true });
 
+    newDetail.value = detail[`value${capitalize(language)}`];
+
     if (detail.type) {
       newDetail.title = detail.type[`title${capitalize(language)}`];
     } else {
