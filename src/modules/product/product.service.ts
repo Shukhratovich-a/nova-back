@@ -26,24 +26,46 @@ export class ProductService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
-    const products = await this.productRepository.find({
-      where: { status },
-      take: limit,
-      skip: (page - 1) * limit || 0,
-    });
+  async findAll(language: LanguageEnum, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+    const [products, total] = await this.productRepository
+      .createQueryBuilder("product")
+      .where("product.status = :status", { status })
+      .take(Number(limit))
+      .skip((Number(page) - 1) * Number(limit) || 0)
+      .getManyAndCount();
     if (!products) return [];
 
     const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
 
-    return parsedProducts;
+    return { data: parsedProducts, total };
   }
 
   async findById(productId: number, language: LanguageEnum, status: StatusEnum) {
-    const product = await this.productRepository.findOne({
-      relations: { details: { type: true, category: true } },
-      where: { id: productId, status },
-    });
+    const product = await this.productRepository
+      .createQueryBuilder("product")
+      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
+      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
+      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .where("product.id = :id", { id: productId })
+      .andWhere("product.status = :status", { status })
+      .getOne();
+    if (!product) return null;
+
+    const parsedProduct: ProductDto = this.parse(product, language);
+
+    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
+    return parsedProduct;
+  }
+
+  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+    const product = await this.productRepository
+      .createQueryBuilder("product")
+      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
+      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
+      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .where("product.alias = :alias", { alias })
+      .andWhere("product.status = :status", { status })
+      .getOne();
     if (!product) return null;
 
     const parsedProduct: ProductDto = this.parse(product, language);
