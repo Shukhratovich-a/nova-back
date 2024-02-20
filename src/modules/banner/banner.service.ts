@@ -22,14 +22,14 @@ export class BannerService {
 
   // FIND
   async findAll(language: LanguageEnum, status: StatusEnum) {
-    const banners = await this.bannerRepository.find({
+    const [banners, total] = await this.bannerRepository.findAndCount({
       where: { status },
     });
     if (!banners) return [];
 
     const parsedBanner: BannerDto[] = banners.map((banner) => this.parse(banner, language));
 
-    return parsedBanner;
+    return { data: parsedBanner, total };
   }
 
   async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
