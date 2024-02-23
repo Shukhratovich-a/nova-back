@@ -1,6 +1,9 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 
 import { StatusEnum } from "@enums/status.enum";
+
+import { CreateDetailDto } from "@modules/detail/dtos/create-detail.dto";
 
 export class UpdateProductDto {
   @IsString()
@@ -58,4 +61,10 @@ export class UpdateProductDto {
   @IsEnum(StatusEnum)
   @IsOptional()
   status?: StatusEnum;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateDetailDto)
+  details?: CreateDetailDto[];
 }
