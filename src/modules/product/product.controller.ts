@@ -79,11 +79,15 @@ export class ProductController {
     const productById = await this.productService.checkById(productId);
     if (!productById) throw new BadRequestException("not found");
 
-    const subcategory = await this.subcategoryService.checkById(productDto.subcategoryId);
-    if (!subcategory) throw new BadRequestException("category not exists");
+    if (productDto.subcategoryId) {
+      const subcategory = await this.subcategoryService.checkById(productDto.subcategoryId);
+      if (!subcategory) throw new BadRequestException("category not exists");
+    }
 
-    const product = await this.productService.checkByCode(productDto.code);
-    if (product) throw new BadRequestException("product exists");
+    if (productDto.code) {
+      const product = await this.productService.checkByCode(productDto.code, productId);
+      if (product) throw new BadRequestException("product exists");
+    }
 
     return this.productService.update(productDto, productId);
   }
