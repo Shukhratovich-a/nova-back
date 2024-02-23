@@ -77,13 +77,21 @@ export class SubcategoryService {
 
   async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
-      where: { status },
+      relations: { category: true },
+      where: { status, category: { status } },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
     if (!subcategories) return [];
 
-    return { data: subcategories, total };
+    return {
+      data: subcategories.map((subcategory) => {
+        subcategory.poster = process.env.HOST + subcategory.poster;
+
+        return subcategory;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(subcategoryId: number, status: StatusEnum) {
@@ -92,6 +100,8 @@ export class SubcategoryService {
       where: { status, id: subcategoryId },
     });
     if (!category) return null;
+
+    category.poster = process.env.HOST + category.poster;
 
     return category;
   }
@@ -105,7 +115,15 @@ export class SubcategoryService {
     });
     if (!subcategories) return [];
 
-    return { data: subcategories, total };
+    return {
+      data: subcategories.map((subcategory) => {
+        subcategory.poster = process.env.HOST + subcategory.poster;
+        subcategory.category.poster = process.env.HOST + subcategory.category.poster;
+
+        return subcategory;
+      }),
+      total,
+    };
   }
 
   // CREATE
