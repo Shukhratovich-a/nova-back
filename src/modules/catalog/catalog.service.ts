@@ -1,12 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { Not, Repository } from "typeorm";
+import { Repository } from "typeorm";
+import { plainToClass } from "class-transformer";
 
+import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
+
+import { capitalize } from "@utils/capitalize.utils";
 
 import { CatalogEntity } from "./catalog.entity";
 
+import { CatalogDto } from "./dtos/catalog.dto";
 import { CreateCatalogDto } from "./dtos/create-catalog.dto";
 import { UpdateCatalogDto } from "./dtos/update-catalog.dto";
 
@@ -16,7 +22,42 @@ export class CatalogService {
 
   // FIND
   async findAll(language: LanguageEnum) {
-    return await this.catalogRepository.find({ where: { language } });
+    const [catalogs, total] = await this.catalogRepository.findAndCount();
+
+    const parsedCatalogs = catalogs.map((catalog) => this.parse(catalog, language));
+
+    return { data: parsedCatalogs, total };
+  }
+
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+    const [catalogs, total] = await this.catalogRepository.findAndCount({
+      where: { status },
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!catalogs) return [];
+
+    return {
+      data: catalogs.map((catalog) => {
+        catalog.poster = process.env.HOST + catalog.poster;
+        catalog.catalog = process.env.HOST + catalog.catalog;
+
+        return catalog;
+      }),
+      total,
+    };
+  }
+
+  async findOneWithContents(catalogId: number, status: StatusEnum) {
+    const catalog = await this.catalogRepository.findOne({
+      where: { status, id: catalogId },
+    });
+    if (!catalog) return null;
+
+    catalog.poster = process.env.HOST + catalog.poster;
+    catalog.catalog = process.env.HOST + catalog.catalog;
+
+    return catalog;
   }
 
   // CREATE
@@ -29,7 +70,7 @@ export class CatalogService {
     return await this.catalogRepository.save({ ...catalogDto, id: catalogId });
   }
 
-  // UPDATE
+  // DELETE
   async delete(catalogId: number) {
     return await this.catalogRepository.delete({ id: catalogId });
   }
@@ -39,13 +80,13 @@ export class CatalogService {
     return this.catalogRepository.findOne({ where: { id: catalogId } });
   }
 
-  async checkForExist(year: string, language: LanguageEnum) {
-    return this.catalogRepository.findOne({ where: { year, language } });
-  }
+  // PARSERS
+  async parse(catalog: CatalogEntity, language: LanguageEnum) {
+    const newCatalog: CatalogDto = plainToClass(CatalogDto, catalog, { excludeExtraneousValues: true });
 
-  async checkForExistById(catalogId: number, year: string, language: LanguageEnum) {
-    const catalog = await this.catalogRepository.findOne({ where: { year, language, id: Not(catalogId) } });
+    newCatalog.title = catalog[`title${capitalize(language)}`];
+    newCatalog.subtitle = catalog[`subtitle${capitalize(language)}`];
 
-    return catalog;
+    return newCatalog;
   }
 }
