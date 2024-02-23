@@ -32,7 +32,15 @@ export class CertificateService {
     });
     if (!certificates) return [];
 
-    return { data: certificates, total };
+    return {
+      data: certificates.map((certificate) => {
+        certificate.poster = process.env.HOST + certificate.poster;
+        certificate.certificate = process.env.HOST + certificate.certificate;
+
+        return certificate;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(certificateId: number, status: StatusEnum) {
@@ -40,6 +48,9 @@ export class CertificateService {
       where: { status, id: certificateId },
     });
     if (!certificate) return null;
+
+    certificate.poster = process.env.HOST + certificate.poster;
+    certificate.certificate = process.env.HOST + certificate.certificate;
 
     return certificate;
   }
