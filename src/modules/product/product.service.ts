@@ -1,14 +1,14 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { Like, Repository } from "typeorm";
+import { FindOptionsWhere, Like, Not, Repository } from "typeorm";
 import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
-import { capitalize } from "@/utils/capitalize.utils";
+import { capitalize } from "@utils/capitalize.utils";
 
 import { ProductEntity } from "./product.entity";
 
@@ -86,7 +86,16 @@ export class ProductService {
     });
     if (!products) return [];
 
-    return { data: products, total };
+    return {
+      data: products.map((product) => {
+        if (product.mainImage) product.mainImage = process.env.HOST + product.mainImage;
+        if (product.schemeImage) product.schemeImage = process.env.HOST + product.schemeImage;
+        if (product.boxImage) product.boxImage = process.env.HOST + product.boxImage;
+
+        return product;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(productId: number, status: StatusEnum) {
@@ -95,6 +104,10 @@ export class ProductService {
       where: { status, id: productId },
     });
     if (!product) return null;
+
+    if (product.mainImage) product.mainImage = process.env.HOST + product.mainImage;
+    if (product.schemeImage) product.schemeImage = process.env.HOST + product.schemeImage;
+    if (product.boxImage) product.boxImage = process.env.HOST + product.boxImage;
 
     return product;
   }
@@ -107,23 +120,49 @@ export class ProductService {
     });
     if (!products) return [];
 
-    return { data: products, total };
+    return {
+      data: products.map((product) => {
+        if (product.mainImage) product.mainImage = process.env.HOST + product.mainImage;
+        if (product.schemeImage) product.schemeImage = process.env.HOST + product.schemeImage;
+        if (product.boxImage) product.boxImage = process.env.HOST + product.boxImage;
+
+        return product;
+      }),
+      total,
+    };
   }
 
   // CREATE
   async create(productDto: CreateProductDto) {
-    return await this.productRepository.save(
-      this.productRepository.create({ ...productDto, subcategory: { id: productDto.subcategoryId } }),
+    const product = await this.productRepository.save(
+      this.productRepository.create({
+        ...productDto,
+        subcategory: { id: productDto.subcategoryId },
+      }),
     );
+
+    if (productDto.details) {
+      productDto.details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
+    }
+
+    return product;
   }
 
   // UPDATE
-  async update(productDto: UpdateProductDto, productId: number) {
-    return await this.productRepository.save({
+  async update({ details, ...productDto }: UpdateProductDto, productId: number) {
+    const product = await this.productRepository.save({
       ...productDto,
       id: productId,
       subcategory: { id: productDto.subcategoryId },
     });
+
+    if (details) {
+      if (await this.detailService.deleteByParent(productId)) {
+        details.forEach((detail) => this.detailService.create({ ...detail, productId }));
+      }
+    }
+
+    return product;
   }
 
   // DELETE
@@ -146,7 +185,10 @@ export class ProductService {
     return this.productRepository.findOne({ where: { id: productId } });
   }
 
-  async checkByCode(productCode: string) {
-    return this.productRepository.findOne({ where: { code: productCode } });
+  async checkByCode(productCode: string, productId?: number) {
+    const where: FindOptionsWhere<ProductEntity> = { code: productCode };
+    if (productId) where.id = Not(productId);
+
+    return this.productRepository.findOne({ where });
   }
 }
