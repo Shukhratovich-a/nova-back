@@ -39,19 +39,7 @@ export class UpdateDetailTypeDto {
 export class UpdateDetailDto {
   @IsNumber()
   @IsOptional()
-  valueEn?: string;
-
-  @IsNumber()
-  @IsOptional()
-  valueRu?: string;
-
-  @IsNumber()
-  @IsOptional()
-  valueTr?: string;
-
-  @IsNumber()
-  @IsOptional()
-  valueAr?: string;
+  value?: string;
 
   @IsNumber()
   @IsOptional()
