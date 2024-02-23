@@ -1,9 +1,8 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 @Entity("catalogs", { orderBy: { year: "DESC" } })
-@Index(["language", "year"], { unique: true })
 export class CatalogEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -11,11 +10,28 @@ export class CatalogEntity extends BaseEntity {
   @Column({ name: "poster", type: "varchar" })
   poster: string;
 
-  @Column({ name: "title", type: "varchar" })
-  title: string;
+  @Column({ name: "title_ru", type: "varchar", nullable: true })
+  titleRu: string;
 
-  @Column({ name: "subtitle", type: "varchar" })
-  subtitle: string;
+  @Column({ name: "title_en", type: "varchar", nullable: true })
+  titleEn: string;
+
+  @Column({ name: "title_tr", type: "varchar", nullable: true })
+  titleTr: string;
+
+  @Column({ name: "title_ar", type: "varchar", nullable: true })
+  titleAr: string;
+  @Column({ name: "subtitle_ru", type: "varchar", nullable: true })
+  subtitleRu: string;
+
+  @Column({ name: "subtitle_en", type: "varchar", nullable: true })
+  subtitleEn: string;
+
+  @Column({ name: "subtitle_tr", type: "varchar", nullable: true })
+  subtitleTr: string;
+
+  @Column({ name: "subtitle_ar", type: "varchar", nullable: true })
+  subtitleAr: string;
 
   @Column({ name: "catalog", type: "varchar" })
   catalog: string;
@@ -23,8 +39,8 @@ export class CatalogEntity extends BaseEntity {
   @Column({ name: "year", type: "varchar" })
   year: string;
 
-  @Column({ name: "language", type: "simple-enum", enum: LanguageEnum })
-  language: LanguageEnum;
+  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
+  status: StatusEnum;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
