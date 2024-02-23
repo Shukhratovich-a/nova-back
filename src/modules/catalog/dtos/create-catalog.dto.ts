@@ -1,23 +1,43 @@
-import { IsEnum, IsString } from "class-validator";
-
-import { LanguageEnum } from "@enums/language.enum";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateCatalogDto {
   @IsString()
   poster: string;
 
   @IsString()
-  title: string;
+  @IsOptional()
+  titleRu?: string;
 
   @IsString()
-  subtitle: string;
+  @IsOptional()
+  titleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  titleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  titleAr?: string;
+  @IsString()
+  @IsOptional()
+  subtitleRu?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleEn?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleTr?: string;
+
+  @IsString()
+  @IsOptional()
+  subtitleAr?: string;
 
   @IsString()
   catalog: string;
 
   @IsString()
   year: string;
-
-  @IsEnum(LanguageEnum)
-  language: LanguageEnum;
 }
