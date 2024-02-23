@@ -8,12 +8,13 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
+import { capitalize } from "@utils/capitalize.utils";
+
 import { NewsEntity } from "./news.entity";
 
 import { NewsDto } from "./dto/news.dto";
 import { CreateNewsDto } from "./dto/create-news.dto";
 import { UpdateNewsDto } from "./dto/update-news.dto";
-import { capitalize } from "@/utils/capitalize.utils";
 
 @Injectable()
 export class NewsService {
@@ -108,7 +109,15 @@ export class NewsService {
     });
     if (!news) return [];
 
-    return { data: news, total };
+    return {
+      data: news.map((item) => {
+        item.poster = process.env.HOST + item.poster;
+        if (item.image) item.image = process.env.HOST + item.image;
+
+        return item;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(newsId: number, status: StatusEnum) {
@@ -117,6 +126,9 @@ export class NewsService {
       where: { status, id: newsId },
     });
     if (!news) return null;
+
+    news.poster = process.env.HOST + news.poster;
+    if (news.image) news.image = process.env.HOST + news.image;
 
     return news;
   }
