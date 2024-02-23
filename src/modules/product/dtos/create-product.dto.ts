@@ -1,4 +1,7 @@
-import { IsNumber, IsString, IsOptional } from "class-validator";
+import { IsNumber, IsString, IsOptional, IsArray, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
+
+import { CreateDetailDto } from "@modules/detail/dtos/create-detail.dto";
 
 export class CreateProductDto {
   @IsString()
@@ -50,4 +53,10 @@ export class CreateProductDto {
   @IsString()
   @IsOptional()
   schemeImage: string;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateDetailDto)
+  details?: CreateDetailDto[];
 }
