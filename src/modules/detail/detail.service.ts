@@ -195,6 +195,16 @@ export class DetailService {
     return await this.detailRepository.save({ status: StatusEnum.DELETED, id: typeId });
   }
 
+  async deleteByParent(parentId: number) {
+    const details = await this.detailRepository.find({ where: { product: { id: parentId } } });
+
+    details.forEach(async (detail) => {
+      await this.detailRepository.delete(detail.id);
+    });
+
+    return true;
+  }
+
   // CHECKERS
   async checkById(detailId: number) {
     return this.detailRepository.findOne({ where: { id: detailId } });
@@ -203,8 +213,6 @@ export class DetailService {
   // PARSERS
   parse(detail: DetailEntity, language: LanguageEnum) {
     const newDetail: DetailDto = plainToClass(DetailDto, detail, { excludeExtraneousValues: true });
-
-    newDetail.value = detail[`value${capitalize(language)}`];
 
     if (detail.type) {
       newDetail.title = detail.type[`title${capitalize(language)}`];
