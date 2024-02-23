@@ -101,7 +101,13 @@ export class CategoryService {
     });
     if (!categories) return [];
 
-    return { data: categories, total };
+    return {
+      data: categories.map((category) => {
+        category.poster = process.env.HOST + category.poster;
+        return category;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(categoryId: number, status: StatusEnum) {
@@ -109,6 +115,8 @@ export class CategoryService {
       where: { status, id: categoryId },
     });
     if (!category) return null;
+
+    category.poster = process.env.HOST + category.poster;
 
     return category;
   }
