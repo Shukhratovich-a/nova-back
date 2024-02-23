@@ -40,7 +40,14 @@ export class BannerService {
     });
     if (!banners) return [];
 
-    return { data: banners, total };
+    return {
+      data: banners.map((banner) => {
+        banner.poster = process.env.HOST + banner.poster;
+
+        return banner;
+      }),
+      total,
+    };
   }
 
   async findOneWithContents(bannerId: number, status: StatusEnum) {
@@ -48,6 +55,8 @@ export class BannerService {
       where: { status, id: bannerId },
     });
     if (!banner) return null;
+
+    banner.poster = process.env.HOST + banner.poster;
 
     return banner;
   }
