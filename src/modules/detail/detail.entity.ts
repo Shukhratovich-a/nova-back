@@ -80,17 +80,8 @@ export class DetailEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "value_en", type: "varchar", nullable: true })
-  valueEn: string;
-
-  @Column({ name: "value_ru", type: "varchar", nullable: true })
-  valueRu: string;
-
-  @Column({ name: "value_tr", type: "varchar", nullable: true })
-  valueTr: string;
-
-  @Column({ name: "value_ar", type: "varchar", nullable: true })
-  valueAr: string;
+  @Column({ name: "value", type: "varchar", nullable: true })
+  value: string;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
   status: StatusEnum;
@@ -103,7 +94,7 @@ export class DetailEntity extends BaseEntity {
   @JoinColumn({ name: "category_id" })
   category?: DetailCategoryEntity | null;
 
-  @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: false, onDelete: "CASCADE" })
+  @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "product_id" })
   product: ProductEntity;
 
