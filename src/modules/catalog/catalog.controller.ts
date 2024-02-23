@@ -2,7 +2,9 @@ import { Controller, Get, Post, Put, Delete, Body, Param, Query, ParseIntPipe, B
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
+import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
+import { StatusEnum } from "@enums/status.enum";
 
 import { CatalogService } from "./catalog.service";
 
@@ -21,12 +23,25 @@ export class CatalogController {
     return this.catalogService.findAll(language);
   }
 
+  @Get("get-with-count")
+  async getAllWithCount(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.catalogService.findAllWithCount(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:catalogId")
+  async getOneWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("catalogId", new ParseIntPipe()) catalogId: number,
+  ) {
+    return this.catalogService.findOneWithContents(catalogId, status);
+  }
+
   // POST
   @Post("create")
   async create(@Body() catalogDto: CreateCatalogDto) {
-    const catalog = await this.catalogService.checkForExist(catalogDto.year, catalogDto.language);
-    if (catalog) throw new BadRequestException("exists");
-
     return this.catalogService.create(catalogDto);
   }
 
@@ -35,13 +50,6 @@ export class CatalogController {
   async update(@Param("catalogId", new ParseIntPipe()) catalogId: number, @Body() catalogDto: UpdateCatalogDto) {
     const catalog = await this.catalogService.checkById(catalogId);
     if (!catalog) throw new BadRequestException("not found");
-
-    const oldCatalog = await this.catalogService.checkForExistById(
-      catalogId,
-      catalogDto.year || catalog.year,
-      catalogDto.language || catalog.language,
-    );
-    if (oldCatalog) throw new BadRequestException("exists");
 
     return this.catalogService.update(catalogDto, catalogId);
   }
