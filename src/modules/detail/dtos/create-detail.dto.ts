@@ -30,16 +30,7 @@ export class CreateDetailTypeDto {
 
 export class CreateDetailDto {
   @IsString()
-  valueEn: string;
-
-  @IsString()
-  valueRu: string;
-
-  @IsString()
-  valueTr: string;
-
-  @IsString()
-  valueAr: string;
+  value: string;
 
   @IsOptional()
   @IsNumber()
