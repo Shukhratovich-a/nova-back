@@ -44,12 +44,12 @@ export class BannerController {
     return this.bannerService.findAllWithCount(status, { page, limit });
   }
 
-  @Get("get-one-with-contents/:categoryId")
+  @Get("get-one-with-contents/:bannerId")
   async getOneWithContents(
     @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("categoryId", new ParseIntPipe()) categoryId: number,
+    @Param("bannerId", new ParseIntPipe()) bannerId: number,
   ) {
-    return this.bannerService.findOneWithContents(categoryId, status);
+    return this.bannerService.findOneWithContents(bannerId, status);
   }
 
   // POST
