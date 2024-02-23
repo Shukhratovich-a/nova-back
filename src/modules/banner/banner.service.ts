@@ -8,7 +8,7 @@ import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
 import { StatusEnum } from "@enums/status.enum";
 
-import { capitalize } from "@/utils/capitalize.utils";
+import { capitalize } from "@utils/capitalize.utils";
 
 import { BannerEntity } from "./banner.entity";
 
