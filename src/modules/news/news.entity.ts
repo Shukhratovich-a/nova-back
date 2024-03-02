@@ -17,7 +17,7 @@ import { StatusEnum } from "@enums/status.enum";
 
 import { TagEntity } from "@modules/tag/tag.entity";
 
-@Entity("news")
+@Entity("news", { orderBy: { createAt: "ASC" } })
 export class NewsEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
