@@ -57,6 +57,23 @@ export class ProductService {
     return parsedProduct;
   }
 
+  async findByCode(productCode: string, language: LanguageEnum, status: StatusEnum) {
+    const product = await this.productRepository
+      .createQueryBuilder("product")
+      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
+      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
+      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .where("product.code = :code", { code: productCode })
+      .andWhere("product.status = :status", { status })
+      .getOne();
+    if (!product) return null;
+
+    const parsedProduct: ProductDto = this.parse(product, language);
+
+    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
+    return parsedProduct;
+  }
+
   async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")

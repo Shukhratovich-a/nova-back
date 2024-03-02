@@ -35,6 +35,15 @@ export class ProductController {
     return this.productService.findById(productId, language, status);
   }
 
+  @Get("get-by-code/:productCode")
+  async getByCode(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("productCode") productCode: string,
+  ) {
+    return this.productService.findByCode(productCode, language, status);
+  }
+
   @Get("get-with-count")
   async getAllWithCount(
     @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
