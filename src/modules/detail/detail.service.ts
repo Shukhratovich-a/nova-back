@@ -16,6 +16,8 @@ import { DetailCategoryDto, DetailDto } from "./dtos/detail.dto";
 import { CreateDetailDto, CreateDetailCategoryDto, CreateDetailTypeDto } from "./dtos/create-detail.dto";
 import { UpdateDetailDto, UpdateDetailCategoryDto, UpdateDetailTypeDto } from "./dtos/update-detail.dto";
 
+import { other } from "./detail.constants";
+
 // DETAIL CATEGORY
 @Injectable()
 export class DetailCategoryService {
@@ -243,8 +245,8 @@ export class DetailService {
 
     const otherDetails = details.filter((detail) => !detail.category);
     const otherCategory: DetailCategoryDto = {
-      id: null,
-      title: "other",
+      id: Date.now(),
+      title: other[`title${capitalize(language)}`],
       details: otherDetails.map((detail) => this.parse(detail, language)),
     };
     newDetails.push(otherCategory);
