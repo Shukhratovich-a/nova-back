@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { FindOptionsWhere, Like, Not, Repository } from "typeorm";
@@ -13,6 +13,7 @@ import { capitalize } from "@utils/capitalize.utils";
 import { ProductEntity } from "./product.entity";
 
 import { DetailService } from "@modules/detail/detail.service";
+import { PdfService } from "@modules/pdf/pdf.service";
 
 import { ProductDto } from "./dtos/product.dto";
 import { CreateProductDto } from "./dtos/create-product.dto";
@@ -23,6 +24,7 @@ export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepository: Repository<ProductEntity>,
     @Inject(forwardRef(() => DetailService)) private readonly detailService: DetailService,
+    @Inject(forwardRef(() => PdfService)) private readonly pdfService: PdfService,
   ) {}
 
   // FIND
@@ -151,6 +153,9 @@ export class ProductService {
 
   // CREATE
   async create(productDto: CreateProductDto) {
+    const pdfStatus = await this.pdfService.createProductPdf(productDto);
+    if (!pdfStatus) throw new BadRequestException();
+
     const product = await this.productRepository.save(
       this.productRepository.create({
         ...productDto,
