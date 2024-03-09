@@ -1,8 +1,9 @@
-import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Res } from "@nestjs/common";
+import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Res, Param, StreamableFile } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+
 import { Response } from "express";
-import * as path from "path";
-import * as fs from "fs";
+import { join } from "path";
+import { createReadStream } from "fs";
 
 import { FileService } from "./file.service";
 
@@ -14,15 +15,29 @@ import { MFile } from "./mfile.class";
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @Get(":filename")
-  async downloadFile(@Res() res: Response): Promise<void> {
-    const filename = "pdf.pdf"; // Replace with your actual filename
-    const filePath = path.join(process.cwd(), "uploads", filename); // Adjust the path accordingly
+  @Get("get-product-file/:code")
+  async getProductFile(@Param("code") code: string, @Res() res: Response): Promise<void> {
+    const filename = `${code}.pdf`;
+    const filePath = join(process.cwd(), "uploads", "product-files", filename);
 
     res.setHeader("Content-Type", " application/pdf");
 
-    const fileStream = fs.createReadStream(filePath);
+    const fileStream = createReadStream(filePath);
     fileStream.pipe(res);
+  }
+
+  @Get("download-product-file/:code")
+  async downloadProductFile(@Param("code") code: string, @Res({ passthrough: true }) res: Response) {
+    const filename = `${code}.pdf`;
+    const filePath = join(process.cwd(), "uploads", "product-files", filename);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${code}.pdf"`,
+    });
+
+    const fileStream = createReadStream(filePath);
+    return new StreamableFile(fileStream);
   }
 
   @Post("upload")
