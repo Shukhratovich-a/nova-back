@@ -18,24 +18,6 @@ import { FileService } from "./file.service";
       rootPath: join(path, "uploads"),
       serveRoot: "/uploads",
     }),
-
-    MulterModule.registerAsync({
-      useFactory: () => ({
-        storage: diskStorage({
-          destination: async (req, file, cb) => {
-            const dateFolder = format(new Date(), "yyyy-MM-dd_kk-mm");
-            const uploadFolder = join(path, "uploads", "other", dateFolder);
-            await ensureDir(uploadFolder);
-
-            cb(null, uploadFolder);
-          },
-          filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-            cb(null, `${file.fieldname}-${uniqueSuffix}-${file.originalname}`);
-          },
-        }),
-      }),
-    }),
   ],
   controllers: [FileController],
   providers: [FileService],
