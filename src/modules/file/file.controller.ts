@@ -10,6 +10,8 @@ import { diskStorage } from "multer";
 import { FileService } from "./file.service";
 
 import { FileElementResponse } from "./dto/file-element.dto";
+import { format } from "date-fns";
+import { ensureDir } from "fs-extra";
 
 @Controller("file")
 export class FileController {
@@ -44,7 +46,15 @@ export class FileController {
   @UseInterceptors(
     FileInterceptor("file", {
       storage: diskStorage({
-        destination: "./uploads/other",
+        destination: async (req, file, cb) => {
+          const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
+          const uploadFolder = join(path, "uploads", "other", dateFolder);
+          await ensureDir(uploadFolder);
+
+          console.log(uploadFolder);
+
+          cb(null, uploadFolder);
+        },
         filename: (_, file, cb) => {
           const name = file.originalname.split(".")[0];
           const extension = extname(file.originalname);
