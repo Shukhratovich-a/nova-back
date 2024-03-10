@@ -2,14 +2,18 @@ import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Re
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { Response } from "express";
-import { extname, join } from "path";
-import { createReadStream, ensureDir } from "fs-extra";
-import { diskStorage } from "multer";
-import { format } from "date-fns";
+import { join, parse, sep } from "path";
 import { path } from "app-root-path";
+import { createReadStream } from "fs";
+
+import { FileService } from "./file.service";
+
+import { FileElementResponse } from "./dto/file-element.dto";
 
 @Controller("file")
 export class FileController {
+  constructor(private readonly fileService: FileService) {}
+
   @Get("get-product-file/:code")
   async getProductFile(@Param("code") code: string, @Res() res: Response): Promise<void> {
     const filename = `${code}.pdf`;
@@ -36,25 +40,12 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: async (req, file, cb) => {
-          const dateFolder = format(new Date(), "yyyy-MM-dd_kk-mm");
-          const uploadFolder = join(path, "uploads", "other", dateFolder);
-          await ensureDir(uploadFolder);
+  @UseInterceptors(FileInterceptor("file"))
+  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
+    const parsedPath = parse(file.path);
 
-          cb(null, uploadFolder);
-        },
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          cb(null, `${file.fieldname}-${uniqueSuffix}-${file.originalname}`);
-        },
-      }),
-    }),
-  )
-  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File) {
-    console.log(file);
-    return { message: "File uploaded successfully!", filename: file.filename };
+    const url = parsedPath.dir.replace(path, "").split(sep).join("/") + `/${parsedPath.base}`;
+
+    return { url, name: file.filename };
   }
 }
