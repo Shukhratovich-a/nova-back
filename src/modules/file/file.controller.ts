@@ -51,8 +51,6 @@ export class FileController {
           const uploadFolder = join(path, "uploads", "other", dateFolder);
           await ensureDir(uploadFolder);
 
-          console.log(uploadFolder);
-
           cb(null, uploadFolder);
         },
         filename: (_, file, cb) => {
