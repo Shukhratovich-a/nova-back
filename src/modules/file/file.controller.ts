@@ -4,7 +4,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { extname, join, parse, sep } from "path";
 import { path } from "app-root-path";
-import { createReadStream } from "fs";
+import { createReadStream, mkdir } from "fs";
 import { diskStorage } from "multer";
 
 import { FileService } from "./file.service";
@@ -50,7 +50,13 @@ export class FileController {
           const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
           const uploadFolder = `./uploads/other/${dateFolder}`;
 
-          console.log(path);
+          mkdir(uploadFolder, () => {
+            try {
+              console.log("success");
+            } catch (error) {
+              console.log(error);
+            }
+          });
 
           cb(null, uploadFolder);
         },
