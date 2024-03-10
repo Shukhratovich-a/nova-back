@@ -14,6 +14,19 @@ import { diskStorage } from "multer";
 import { format } from "date-fns";
 import { path } from "app-root-path";
 
+const storage = diskStorage({
+  destination: "./uploads",
+  filename: (req, file, cb) => {
+    const name = file.originalname.split(".")[0];
+    const extension = extname(file.originalname);
+    const randomName = Array(32)
+      .fill(null)
+      .map(() => Math.round(Math.random() * 16).toString(16))
+      .join("");
+    cb(null, `${name}-${randomName}${extension}`);
+  },
+});
+
 @Controller("file")
 export class FileController {
   constructor(private readonly fileService: FileService) {}
@@ -44,25 +57,10 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: join(path, "uploads", format(new Date(), "yyyy-MM-dd")),
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-          const ext = extname(file.originalname);
-          const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
-    @UploadedFile(new ParseFilePipe())
-    file: Express.Multer.File,
-  ) {
-    return file.filename;
+  @UseInterceptors(FileInterceptor("file", { storage }))
+  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File) {
+    console.log(file);
+    return { message: "File uploaded successfully!", filename: file.filename };
 
     // const saveArray: MFile = new MFile(file);
     // return this.fileService.saveFile(saveArray);
