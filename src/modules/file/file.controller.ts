@@ -4,33 +4,10 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from "express";
 import { extname, join } from "path";
 import { createReadStream } from "fs";
-
-import { FileService } from "./file.service";
-
-import { FileElementResponse } from "./dto/file-element.dto";
-
-import { MFile } from "./mfile.class";
 import { diskStorage } from "multer";
-import { format } from "date-fns";
-import { path } from "app-root-path";
-
-const storage = diskStorage({
-  destination: "./uploads",
-  filename: (req, file, cb) => {
-    const name = file.originalname.split(".")[0];
-    const extension = extname(file.originalname);
-    const randomName = Array(32)
-      .fill(null)
-      .map(() => Math.round(Math.random() * 16).toString(16))
-      .join("");
-    cb(null, `${name}-${randomName}${extension}`);
-  },
-});
 
 @Controller("file")
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
-
   @Get("get-product-file/:code")
   async getProductFile(@Param("code") code: string, @Res() res: Response): Promise<void> {
     const filename = `${code}.pdf`;
@@ -57,12 +34,24 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(FileInterceptor("file", { storage }))
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: diskStorage({
+        destination: "./uploads/other",
+        filename: (_, file, cb) => {
+          const name = file.originalname.split(".")[0];
+          const extension = extname(file.originalname);
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join("");
+          cb(null, `${name}-${randomName}${extension}`);
+        },
+      }),
+    }),
+  )
   async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File) {
     console.log(file);
     return { message: "File uploaded successfully!", filename: file.filename };
-
-    // const saveArray: MFile = new MFile(file);
-    // return this.fileService.saveFile(saveArray);
   }
 }
