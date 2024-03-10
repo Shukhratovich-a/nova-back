@@ -5,6 +5,7 @@ import { Response } from "express";
 import { join, parse, sep } from "path";
 import { path } from "app-root-path";
 import { createReadStream } from "fs";
+import { diskStorage } from "multer";
 
 import { FileService } from "./file.service";
 
@@ -40,7 +41,20 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: diskStorage({
+        destination: async (req, file, cb) => {
+          const uploadFolder = join(path, "uploads", "other");
+          cb(null, uploadFolder);
+        },
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+          cb(null, `${file.fieldname}-${uniqueSuffix}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
   async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
     const parsedPath = parse(file.path);
 
