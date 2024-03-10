@@ -49,7 +49,6 @@ export class FileController {
         destination: async (req, file, cb) => {
           const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
           const uploadFolder = join(path, "uploads", "other", dateFolder);
-          await ensureDir(uploadFolder);
 
           cb(null, uploadFolder);
         },
