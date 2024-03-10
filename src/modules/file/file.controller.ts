@@ -48,7 +48,9 @@ export class FileController {
       storage: diskStorage({
         destination: async (req, file, cb) => {
           const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
-          const uploadFolder = join(path, "uploads", "other", dateFolder);
+          const uploadFolder = `./uploads/other/${dateFolder}`;
+
+          console.log(path);
 
           cb(null, uploadFolder);
         },
