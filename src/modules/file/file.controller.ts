@@ -2,7 +2,7 @@ import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Re
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { Response } from "express";
-import { join } from "path";
+import { extname, join } from "path";
 import { createReadStream } from "fs";
 
 import { FileService } from "./file.service";
@@ -10,6 +10,9 @@ import { FileService } from "./file.service";
 import { FileElementResponse } from "./dto/file-element.dto";
 
 import { MFile } from "./mfile.class";
+import { diskStorage } from "multer";
+import { format } from "date-fns";
+import { path } from "app-root-path";
 
 @Controller("file")
 export class FileController {
@@ -41,13 +44,27 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: diskStorage({
+        destination: join(path, "uploads", format(new Date(), "yyyy-MM-dd")),
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+
+          const ext = extname(file.originalname);
+          const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+    }),
+  )
   async uploadFile(
     @UploadedFile(new ParseFilePipe())
     file: Express.Multer.File,
-  ): Promise<FileElementResponse> {
-    const saveArray: MFile = new MFile(file);
+  ) {
+    return file.filename;
 
-    return this.fileService.saveFile(saveArray);
+    // const saveArray: MFile = new MFile(file);
+    // return this.fileService.saveFile(saveArray);
   }
 }
