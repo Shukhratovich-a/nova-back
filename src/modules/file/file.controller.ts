@@ -6,12 +6,11 @@ import { extname, join, parse, sep } from "path";
 import { path } from "app-root-path";
 import { createReadStream, mkdir } from "fs";
 import { diskStorage } from "multer";
+import { format } from "date-fns";
 
 import { FileService } from "./file.service";
 
 import { FileElementResponse } from "./dto/file-element.dto";
-import { format } from "date-fns";
-import { ensureDir } from "fs-extra";
 
 @Controller("file")
 export class FileController {
@@ -50,15 +49,12 @@ export class FileController {
           const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
           const uploadFolder = `./uploads/other/${dateFolder}`;
 
-          mkdir(uploadFolder, () => {
-            try {
-              console.log("success");
-            } catch (error) {
-              console.log(error);
+          mkdir(uploadFolder, { recursive: true }, (error) => {
+            if (error) {
+              console.error("Error creating directory:", error);
             }
+            cb(error, uploadFolder);
           });
-
-          cb(null, uploadFolder);
         },
         filename: (_, file, cb) => {
           const name = file.originalname.split(".")[0];
@@ -75,7 +71,7 @@ export class FileController {
   async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
     const parsedPath = parse(file.path);
 
-    const url = parsedPath.dir.replace(path, "").split(sep).join("/") + `/${parsedPath.base}`;
+    const url = `/${parsedPath.dir.replace(path, "").split(sep).join("/")}/${parsedPath.base}`;
 
     return { url, name: file.filename };
   }
