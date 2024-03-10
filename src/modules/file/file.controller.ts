@@ -2,10 +2,10 @@ import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Re
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { Response } from "express";
-import { extname, join } from "path";
-import { createReadStream } from "fs";
-import { diskStorage } from "multer";
-import { format } from "date-fns";
+import { join, parse, sep } from "path";
+import { createReadStream } from "fs-extra";
+import { FileElementResponse } from "./dto/file-element.dto";
+import { path } from "app-root-path";
 
 @Controller("file")
 export class FileController {
@@ -35,24 +35,12 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: `./uploads/other/${format(new Date(), "yyyy-MM-dd")}`,
-        filename: (_, file, cb) => {
-          const name = file.originalname.split(".")[0];
-          const extension = extname(file.originalname);
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          cb(null, `${name}-${randomName}${extension}`);
-        },
-      }),
-    }),
-  )
-  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File) {
-    console.log(file);
-    return { message: "File uploaded successfully!", filename: file.filename };
+  @UseInterceptors(FileInterceptor("file"))
+  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
+    const parsedPath = parse(file.path);
+
+    const url = parsedPath.dir.replace(path, "").split(sep).join("/") + `/${parsedPath.base}`;
+
+    return { url, name: file.filename };
   }
 }
