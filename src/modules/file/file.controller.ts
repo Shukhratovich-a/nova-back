@@ -5,6 +5,7 @@ import { Response } from "express";
 import { extname, join } from "path";
 import { createReadStream } from "fs";
 import { diskStorage } from "multer";
+import { format } from "date-fns";
 
 @Controller("file")
 export class FileController {
@@ -37,7 +38,7 @@ export class FileController {
   @UseInterceptors(
     FileInterceptor("file", {
       storage: diskStorage({
-        destination: "./uploads/other",
+        destination: `./uploads/other/${format(new Date(), "yyyy-MM-dd")}`,
         filename: (_, file, cb) => {
           const name = file.originalname.split(".")[0];
           const extension = extname(file.originalname);
