@@ -30,8 +30,6 @@
     "app-root-path": "^3.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "csv": "^6.3.6",
-    "csvtojson": "^2.0.10",
     "date-fns": "^3.3.1",
     "pdf-lib": "^1.17.1",
     "pg": "^8.11.3",
@@ -39,8 +37,7 @@
     "rxjs": "^7.2.0",
     "sharp": "^0.33.2",
     "sqlite3": "^5.1.7",
-    "typeorm": "^0.3.19",
-    "xlsx": "^0.18.5"
+    "typeorm": "^0.3.19"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
