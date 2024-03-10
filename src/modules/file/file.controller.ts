@@ -57,8 +57,11 @@ export class FileController {
       }),
     }),
   )
-  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File) {
-    console.log(file);
-    return { message: "File uploaded successfully!", filename: file.filename };
+  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
+    const parsedPath = parse(file.path);
+
+    const url = parsedPath.dir.replace(path, "").split(sep).join("/") + `/${parsedPath.base}`;
+
+    return { url, name: file.filename };
   }
 }
