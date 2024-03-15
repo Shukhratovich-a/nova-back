@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Query, Get, Post, Put, ParseIntPipe, BadRequestException, Delete } from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 

@@ -1,16 +1,4 @@
-import {
-  Controller,
-  Param,
-  Query,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  ValidationPipe,
-  ParseIntPipe,
-  BadRequestException,
-} from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
@@ -54,13 +42,13 @@ export class BannerController {
 
   // POST
   @Post("create")
-  async create(@Body(new ValidationPipe()) bannerDto: CreateBannerDto) {
+  async create(@Body() bannerDto: CreateBannerDto) {
     return this.bannerService.create(bannerDto);
   }
 
   // PUT
   @Put("update/:bannerId")
-  async update(@Param("bannerId", new ParseIntPipe()) bannerId: number, @Body(new ValidationPipe()) bannerDto: UpdateBannerDto) {
+  async update(@Param("bannerId", new ParseIntPipe()) bannerId: number, @Body() bannerDto: UpdateBannerDto) {
     const banner = await this.bannerService.checkById(bannerId);
     if (!banner) throw new BadRequestException("not found");
 
