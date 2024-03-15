@@ -26,7 +26,7 @@ export class ContactEntity extends BaseEntity {
   @Column({ name: "city", type: "varchar", nullable: true })
   city: string;
 
-  @Column({ name: "map", type: "varchar" })
+  @Column({ name: "map", type: "varchar", nullable: true })
   map: string;
 
   @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
