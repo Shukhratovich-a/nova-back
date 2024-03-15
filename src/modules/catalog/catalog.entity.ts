@@ -21,6 +21,7 @@ export class CatalogEntity extends BaseEntity {
 
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
+
   @Column({ name: "subtitle_ru", type: "varchar", nullable: true })
   subtitleRu: string;
 
