@@ -42,6 +42,31 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
+  async search(language: LanguageEnum, searchText: string, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+    const [products, total] = await this.productRepository.findAndCount({
+      relations: { subcategory: true },
+      where: [
+        { code: Like(`%${searchText}%`), status },
+        { titleAr: Like(`%${searchText}%`), status },
+        { titleEn: Like(`%${searchText}%`), status },
+        { titleRu: Like(`%${searchText}%`), status },
+        { titleTr: Like(`%${searchText}%`), status },
+        { subcategory: { titleAr: Like(`%${searchText}%`), status }, status },
+        { subcategory: { titleEn: Like(`%${searchText}%`), status }, status },
+        { subcategory: { titleRu: Like(`%${searchText}%`), status }, status },
+        { subcategory: { titleTr: Like(`%${searchText}%`), status }, status },
+      ],
+      take: Number(limit),
+      skip: (Number(page) - 1) * Number(limit) || 0,
+      order: { code: "ASC" },
+    });
+    if (!products) return [];
+
+    const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
+
+    return { data: parsedProducts, total };
+  }
+
   async findById(productId: number, language: LanguageEnum, status: StatusEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
