@@ -19,14 +19,9 @@ export class CreateContactDto {
   @IsOptional()
   city?: string;
 
+  @IsString()
+  map: string;
+
   @IsEnum(ContactTypeEnum)
   type: ContactTypeEnum;
-}
-
-export class CreateCoordDto {
-  @IsString()
-  longitude: string;
-
-  @IsString()
-  latitude: string;
 }

@@ -24,6 +24,10 @@ export class UpdateContactDto {
   @IsOptional()
   city?: string;
 
+  @IsString()
+  @IsOptional()
+  map?: string;
+
   @IsEnum(ContactTypeEnum)
   @IsOptional()
   type?: ContactTypeEnum;
@@ -31,14 +35,4 @@ export class UpdateContactDto {
   @IsEnum(StatusEnum)
   @IsOptional()
   status?: StatusEnum;
-}
-
-export class UpdateCoordDto {
-  @IsString()
-  @IsOptional()
-  longitude?: string;
-
-  @IsString()
-  @IsOptional()
-  latitude?: string;
 }
