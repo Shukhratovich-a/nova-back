@@ -16,7 +16,6 @@ import { UpdateProductDto } from "./dtos/update-product.dto";
 export class ProductController {
   constructor(private readonly subcategoryService: SubcategoryService, private readonly productService: ProductService) {}
 
-  // GET
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
@@ -24,6 +23,16 @@ export class ProductController {
     @Query() { page, limit }: IPagination,
   ) {
     return this.productService.findAll(language, status, { page, limit });
+  }
+
+  @Get("search")
+  async searchProducts(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query("q") searchText: string,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.productService.search(language, searchText, status, { page, limit });
   }
 
   @Get("get-by-id/:productId")
