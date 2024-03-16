@@ -9,6 +9,7 @@ import { ContactEntity } from "./contact.entity";
 
 import { CreateContactDto } from "./dtos/create-contact.dto";
 import { UpdateContactDto } from "./dtos/update-contact.dto";
+import { IPagination } from "@/interfaces/pagination.interface";
 
 @Injectable()
 export class ContactService {
@@ -19,6 +20,31 @@ export class ContactService {
     return this.contactRepository.find({
       where: { status },
     });
+  }
+
+  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+    const where: Record<string, unknown> = { status };
+
+    const [products, total] = await this.contactRepository.findAndCount({
+      where,
+      take: limit,
+      skip: (page - 1) * limit || 0,
+    });
+    if (!products) return [];
+
+    return {
+      data: products,
+      total,
+    };
+  }
+
+  async findOneWithContents(contactId: number, status: StatusEnum) {
+    const contact = await this.contactRepository.findOne({
+      where: { status, id: contactId },
+    });
+    if (!contact) return null;
+
+    return contact;
   }
 
   // CREATE

@@ -3,6 +3,7 @@ import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, B
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { StatusEnum } from "@enums/status.enum";
+import { IPagination } from "@/interfaces/pagination.interface";
 
 import { ContactService } from "./contact.service";
 
@@ -18,14 +19,30 @@ export class ContactController {
     return this.contactService.findAll(status);
   }
 
+  @Get("get-with-count")
+  async getAllWithCount(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    return this.contactService.findAllWithCount(status, { page, limit });
+  }
+
+  @Get("get-one-with-contents/:contactId")
+  async getOneWithContents(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Param("contactId", new ParseIntPipe()) contactId: number,
+  ) {
+    return this.contactService.findOneWithContents(contactId, status);
+  }
+
   // POST
-  @Post("create-contact")
+  @Post("create")
   async createContact(@Body() contactDto: CreateContactDto) {
     return this.contactService.createContact(contactDto);
   }
 
   // PUT
-  @Put("update-contact/:contactId")
+  @Put("update/:contactId")
   async updateContact(@Param("contactId", new ParseIntPipe()) contactId: number, @Body() contactDto: UpdateContactDto) {
     const contact = await this.contactService.checkById(contactId);
     if (!contact) throw new BadRequestException("not found");
