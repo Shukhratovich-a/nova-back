@@ -4,12 +4,12 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { StatusEnum } from "@enums/status.enum";
+import { IPagination } from "@/interfaces/pagination.interface";
 
 import { ContactEntity } from "./contact.entity";
 
 import { CreateContactDto } from "./dtos/create-contact.dto";
 import { UpdateContactDto } from "./dtos/update-contact.dto";
-import { IPagination } from "@/interfaces/pagination.interface";
 
 @Injectable()
 export class ContactService {
