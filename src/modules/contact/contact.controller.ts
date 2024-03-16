@@ -20,10 +20,10 @@ export class ContactController {
     return this.contactService.findAll(status);
   }
 
-  @Get("get-by-type")
+  @Get("get-by-type/:type")
   async getByType(
     @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query("type", new EnumValidationPipe(ContactTypeEnum, { defaultValue: ContactTypeEnum.CENTRAL })) type: ContactTypeEnum,
+    @Param("type", new EnumValidationPipe(ContactTypeEnum, { defaultValue: ContactTypeEnum.CENTRAL })) type: ContactTypeEnum,
   ) {
     return this.contactService.findByType(type, status);
   }
