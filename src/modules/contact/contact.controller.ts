@@ -3,6 +3,7 @@ import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, B
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { StatusEnum } from "@enums/status.enum";
+import { ContactTypeEnum } from "@enums/contact-type.enum";
 import { IPagination } from "@/interfaces/pagination.interface";
 
 import { ContactService } from "./contact.service";
@@ -17,6 +18,14 @@ export class ContactController {
   @Get("get-all")
   async getAll(@Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum) {
     return this.contactService.findAll(status);
+  }
+
+  @Get("get-by-type")
+  async getByType(
+    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
+    @Query("type", new EnumValidationPipe(ContactTypeEnum, { defaultValue: ContactTypeEnum.CENTRAL })) type: ContactTypeEnum,
+  ) {
+    return this.contactService.findByType(type, status);
   }
 
   @Get("get-with-count")

@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { StatusEnum } from "@enums/status.enum";
+import { ContactTypeEnum } from "@/enums/contact-type.enum";
 import { IPagination } from "@/interfaces/pagination.interface";
 
 import { ContactEntity } from "./contact.entity";
@@ -19,6 +20,12 @@ export class ContactService {
   async findAll(status: StatusEnum) {
     return this.contactRepository.find({
       where: { status },
+    });
+  }
+
+  async findByType(type: ContactTypeEnum, status: StatusEnum) {
+    return this.contactRepository.find({
+      where: { status, type },
     });
   }
 
