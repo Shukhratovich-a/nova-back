@@ -67,7 +67,6 @@ export class VideoService {
       where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
-      order: { products: { code: "ASC" } },
     });
     if (!videos) return [];
 
