@@ -81,7 +81,7 @@ export class CatalogService {
   }
 
   // PARSERS
-  async parse(catalog: CatalogEntity, language: LanguageEnum) {
+  parse(catalog: CatalogEntity, language: LanguageEnum) {
     const newCatalog: CatalogDto = plainToClass(CatalogDto, catalog, { excludeExtraneousValues: true });
 
     newCatalog.title = catalog[`title${capitalize(language)}`];
