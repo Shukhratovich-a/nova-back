@@ -39,3 +39,4 @@ lerna-debug.log*
 /database
 /datas
 .vercel
+.env

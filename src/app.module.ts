@@ -8,7 +8,7 @@ import { Modules } from "@modules/modules.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: ".env.dev" }),
+    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
