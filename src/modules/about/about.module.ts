@@ -13,4 +13,4 @@ import { AboutService } from "./about.service";
   providers: [AboutService],
   exports: [AboutService],
 })
-export class BannerModule {}
+export class AboutModule {}
