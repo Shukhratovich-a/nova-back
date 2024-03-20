@@ -1,5 +1,6 @@
 import { Exclude, Expose } from "class-transformer";
 
+import { SubcategoryDto } from "@/modules/subcategory/dtos/subcategory.dto";
 import { DetailCategoryDto } from "@modules/detail/dtos/detail.dto";
 
 export class ProductDto {
@@ -22,7 +23,11 @@ export class ProductDto {
   boxImage: string;
 
   @Expose()
+  subcategory?: SubcategoryDto;
+
+  @Expose()
   schemeImage: string;
+
   @Exclude()
   detailCategories: DetailCategoryDto[];
 
