@@ -12,6 +12,7 @@ import { capitalize } from "@utils/capitalize.utils";
 
 import { ProductEntity } from "./product.entity";
 
+import { SubcategoryService } from "../subcategory/subcategory.service";
 import { DetailService } from "@modules/detail/detail.service";
 import { PdfService } from "@modules/pdf/pdf.service";
 
@@ -23,6 +24,7 @@ import { UpdateProductDto } from "./dtos/update-product.dto";
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity) private readonly productRepository: Repository<ProductEntity>,
+    @Inject(forwardRef(() => SubcategoryService)) private readonly subcategorySevice: SubcategoryService,
     @Inject(forwardRef(() => DetailService)) private readonly detailService: DetailService,
     @Inject(forwardRef(() => PdfService)) private readonly pdfService: PdfService,
   ) {}
@@ -87,9 +89,11 @@ export class ProductService {
   async findByCode(productCode: string, language: LanguageEnum, status: StatusEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
+      .leftJoinAndSelect("product.subcategory", "subcategory", "subcategory.status = :status", { status })
+      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
       .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
       .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
-      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .leftJoinAndSelect("detail.category", "detail_category", "detail_category.status = :status", { status })
       .where("product.code = :code", { code: productCode })
       .andWhere("product.status = :status", { status })
       .getOne();
@@ -223,6 +227,10 @@ export class ProductService {
 
     newProduct.title = product[`title${capitalize(language)}`];
     newProduct.description = product[`description${capitalize(language)}`];
+
+    if (product.subcategory) {
+      newProduct.subcategory = this.subcategorySevice.parse(product.subcategory, language);
+    }
 
     return newProduct;
   }
