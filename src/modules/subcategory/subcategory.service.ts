@@ -54,7 +54,6 @@ export class SubcategoryService {
 
     const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
     parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
-    parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
 
     return parsedSubcategory;
   }
@@ -148,6 +147,10 @@ export class SubcategoryService {
     const newSubcategory: SubcategoryDto = plainToClass(SubcategoryDto, subcategory, { excludeExtraneousValues: true });
 
     newSubcategory.title = subcategory[`title${capitalize(language)}`];
+
+    if (subcategory.category) {
+      newSubcategory.category = this.categoryService.parse(subcategory.category, language);
+    }
 
     return newSubcategory;
   }
