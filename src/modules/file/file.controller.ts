@@ -21,6 +21,7 @@ import { FileService } from "./file.service";
 
 import { MFile } from "./mfile.class";
 import { FileElementResponse } from "./dto/file-element.dto";
+import { readFile } from "fs-extra";
 
 @Controller("file")
 export class FileController {
@@ -98,6 +99,43 @@ export class FileController {
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileElementResponse> {
     if (file.mimetype.includes("image")) {
       const buffer = await this.fileService.convertToWebp(file.buffer);
+
+      const save: MFile = new MFile({
+        originalname: `${file.originalname.split(".")[0]}.webp`,
+        buffer,
+      });
+
+      return this.fileService.saveFile(save);
+    }
+
+    const save: MFile = new MFile(file);
+
+    return this.fileService.saveFile(save);
+  }
+
+  @Post("upload-product-scheme")
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor("file"))
+  async uploadProductScheme(@UploadedFile() file: Express.Multer.File): Promise<FileElementResponse> {
+    if (!(file.mimetype.includes("image") || file.mimetype.includes("pdf"))) throw new BadRequestException();
+
+    if (file.mimetype.includes("image")) {
+      const buffer = await this.fileService.convertToWebp(file.buffer);
+
+      const save: MFile = new MFile({
+        originalname: `${file.originalname.split(".")[0]}.webp`,
+        buffer,
+      });
+
+      return this.fileService.saveFile(save);
+    }
+
+    if (file.mimetype.includes("pdf")) {
+      const response = await this.fileService.convertPdfToPng(file.buffer);
+
+      const imageBuffer = await readFile(join(process.cwd(), response.path));
+
+      const buffer = await this.fileService.convertToWebp(imageBuffer);
 
       const save: MFile = new MFile({
         originalname: `${file.originalname.split(".")[0]}.webp`,
