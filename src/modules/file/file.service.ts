@@ -46,6 +46,9 @@ export class FileService {
         saveFilename: randomName,
         savePath: uploadFolder,
         format: "png",
+        width: 1000,
+        height: 1000,
+        preserveAspectRatio: true,
       };
       const convert = fromBuffer(buffer, options);
       const pageToConvertAsImage = 1;
