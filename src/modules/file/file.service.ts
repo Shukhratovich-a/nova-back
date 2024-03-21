@@ -58,22 +58,9 @@ export class FileService {
     }
   }
 
-  // async detachImage(filePath: string) {
-  //   const inputFile = join(process.cwd(), filePath);
-  //   const outputFile = join(process.cwd(), "uploads", "image.png");
-
-  //   // sharp(inputFile)
-  //   //   .trim()
-  //   //   .toFile(outputFile, (err, info) => {
-  //   //     if (err) {
-  //   //       console.error(err);
-  //   //     } else {
-  //   //       console.log("Image processed successfully:", info);
-  //   //     }
-  //   //   });
-
-  //   // return true;
-  // }
+  async convertToWebpAndTrim(buffer: Buffer): Promise<Buffer> {
+    return sharp(buffer).trim().webp().toBuffer();
+  }
 
   convertToWebp(file: Buffer): Promise<Buffer> {
     return sharp(file).webp().toBuffer();
