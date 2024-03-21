@@ -28,8 +28,8 @@ export class FileService {
   }
 
   async convertPdfToPng(filePath: string) {
-    const inputFile = join(path, filePath);
-    const outputFile = join(path, "uploads", "image.png");
+    const inputFile = join(process.cwd(), filePath);
+    const outputFile = join(process.cwd(), "uploads", "image.png");
 
     try {
       const command = `convert ${inputFile}[0] ${outputFile}`;
