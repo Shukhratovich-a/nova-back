@@ -1,10 +1,22 @@
-import { Controller, UseInterceptors, Get, Post, UploadedFile, ParseFilePipe, Res, Param, StreamableFile } from "@nestjs/common";
+import {
+  Controller,
+  UseInterceptors,
+  Get,
+  Post,
+  UploadedFile,
+  ParseFilePipe,
+  Res,
+  Param,
+  StreamableFile,
+  Query,
+  BadRequestException,
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { Response } from "express";
 import { extname, join, parse, sep } from "path";
 import { path } from "app-root-path";
-import { createReadStream, mkdir } from "fs";
+import { createReadStream, existsSync, mkdir } from "fs";
 import { diskStorage } from "multer";
 import { format } from "date-fns";
 
@@ -15,6 +27,47 @@ import { FileElementResponse } from "./dto/file-element.dto";
 @Controller("file")
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
+  @Get("get-file")
+  async getFile(@Query("file") file: string, @Res() res: Response): Promise<void> {
+    try {
+      const parsedFile = parse(file);
+
+      const filename = parsedFile.base;
+      const filePath = join(process.cwd(), parsedFile.dir, filename);
+
+      const isExists = existsSync(filePath);
+      if (!isExists) throw new BadRequestException();
+
+      if (parsedFile.ext === ".pdf") res.setHeader("Content-Type", " application/pdf");
+
+      const fileStream = createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch {
+      throw new BadRequestException();
+    }
+  }
+
+  @Get("download-file")
+  async downloadFile(@Query("file") file: string, @Res() res: Response): Promise<void> {
+    try {
+      const parsedFile = parse(file);
+
+      const filename = parsedFile.base;
+      const filePath = join(process.cwd(), parsedFile.dir, filename);
+
+      const isExists = existsSync(filePath);
+      if (!isExists) throw new BadRequestException();
+
+      if (parsedFile.ext === ".pdf") res.setHeader("Content-Type", " application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+      const fileStream = createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch {
+      throw new BadRequestException();
+    }
+  }
 
   @Get("get-product-file/:code")
   async getProductFile(@Param("code") code: string, @Res() res: Response): Promise<void> {
