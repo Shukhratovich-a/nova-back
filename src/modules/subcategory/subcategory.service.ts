@@ -131,7 +131,11 @@ export class SubcategoryService {
 
   // UPDATE
   async update(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
-    return await this.subcategoryRepository.save({ ...subcategoryDto, id: subcategoryId });
+    return await this.subcategoryRepository.save({
+      ...subcategoryDto,
+      id: subcategoryId,
+      category: { id: subcategoryDto.categoryId },
+    });
   }
 
   // DELETE

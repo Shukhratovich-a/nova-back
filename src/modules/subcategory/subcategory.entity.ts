@@ -38,11 +38,11 @@ export class SubcategoryEntity extends BaseEntity {
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.subcategories, { nullable: false })
+  @ManyToOne(() => CategoryEntity, (category) => category.subcategories, { nullable: true, onDelete: "SET NULL" })
   @JoinColumn({ name: "category_id" })
   category: CategoryEntity;
 
-  @OneToMany(() => ProductEntity, (products) => products.subcategory, { onDelete: "CASCADE" })
+  @OneToMany(() => ProductEntity, (products) => products.subcategory)
   products: Relation<ProductEntity[]>;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })

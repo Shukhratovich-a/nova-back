@@ -58,7 +58,7 @@ export class ProductEntity extends BaseEntity {
   @OneToMany(() => DetailEntity, (detail) => detail.product, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
 
-  @ManyToOne(() => SubcategoryEntity, (subcategory) => subcategory.products, { nullable: false })
+  @ManyToOne(() => SubcategoryEntity, (subcategory) => subcategory.products, { nullable: true, onDelete: "SET NULL" })
   @JoinColumn({ name: "subcategory_id" })
   subcategory: SubcategoryEntity;
 

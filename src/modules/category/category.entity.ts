@@ -35,7 +35,7 @@ export class CategoryEntity extends BaseEntity {
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
 
-  @OneToMany(() => SubcategoryEntity, (subcategory) => subcategory.category, { onDelete: "CASCADE" })
+  @OneToMany(() => SubcategoryEntity, (subcategory) => subcategory.category)
   subcategories: Relation<SubcategoryEntity[]>;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
