@@ -27,10 +27,7 @@ export class ContactService {
   }
 
   async findAllWithCount({ page, limit }: IPagination) {
-    const where: Record<string, unknown> = { status };
-
     const [products, total] = await this.contactRepository.findAndCount({
-      where,
       take: limit,
       skip: (page - 1) * limit || 0,
     });

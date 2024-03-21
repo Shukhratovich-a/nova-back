@@ -22,9 +22,9 @@ export class SubcategoryDto {
   @Expose()
   products: ProductDto[];
 
-  // @Expose()
-  // createAt: Date;
+  @Expose()
+  createAt: Date;
 
-  // @Expose()
-  // updateAt: Date;
+  @Expose()
+  updateAt: Date;
 }
