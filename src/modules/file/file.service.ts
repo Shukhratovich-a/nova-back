@@ -28,23 +28,28 @@ export class FileService {
   }
 
   async convertPdfToPng(filePath: string) {
+    console.log("path", path);
+    console.log("process", process.cwd());
+
     const inputFile = join(process.cwd(), filePath);
-    const outputFile = join(process.cwd(), "uploads", "image.png");
+    const outputFile = join(process.cwd(), "uploads");
 
     try {
-      const command = `convert ${inputFile}[0] ${outputFile}`;
+      const options = {
+        density: 100,
+        saveFilename: "untitled",
+        savePath: outputFile,
+        format: "png",
+        width: 600,
+        height: 600,
+      };
+      const convert = fromPath(inputFile, options);
+      const pageToConvertAsImage = 1;
 
-      // Execute the command
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`PDF converted to PNG: ${outputFile}`);
+      convert(pageToConvertAsImage, { responseType: "image" }).then((resolve) => {
+        console.log("Page 1 is now converted as image");
+
+        return resolve;
       });
     } catch (error) {
       console.log(error);
