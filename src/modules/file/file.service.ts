@@ -16,9 +16,14 @@ export class FileService {
     const uploadFolder = join(process.cwd(), "uploads", "other", dateFolder);
     await ensureDir(uploadFolder);
 
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = extname(file.originalname);
-    const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
+    const name = file.originalname.split(".")[0];
+    const extension = extname(file.originalname);
+    const randomName = Array(32)
+      .fill(null)
+      .map(() => Math.round(Math.random() * 16).toString(16))
+      .join("");
+
+    const filename = `${name}-${randomName}${extension}`;
 
     await writeFile(join(uploadFolder, filename), file.buffer);
     return { url: `/uploads/other/${dateFolder}/${filename}`, name: file.originalname };
