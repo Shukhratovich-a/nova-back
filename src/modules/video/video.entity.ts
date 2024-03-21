@@ -8,9 +8,8 @@ import {
   Relation,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
-
-import { StatusEnum } from "@enums/status.enum";
 
 import { ProductEntity } from "@modules/product/product.entity";
 
@@ -38,12 +37,12 @@ export class VideoEntity extends BaseEntity {
   @JoinTable({ name: "video_products" })
   products: Relation<ProductEntity[]>;
 
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
-
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 }

@@ -1,9 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
-import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
-
 import { IPagination } from "@interfaces/pagination.interface";
-import { StatusEnum } from "@enums/status.enum";
 
 import { CertificateService } from "./certificate.service";
 
@@ -16,27 +13,18 @@ export class CertificateController {
 
   // GET
   @Get("get-all")
-  async getAll(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.certificateService.findAll(status, { page, limit });
+  async getAll(@Query() { page, limit }: IPagination) {
+    return this.certificateService.findAll({ page, limit });
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.certificateService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.certificateService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:certificateId")
-  async getOne(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("certificateId", new ParseIntPipe()) certificateId: number,
-  ) {
-    return this.certificateService.findOneWithContents(certificateId, status);
+  async getOne(@Param("certificateId", new ParseIntPipe()) certificateId: number) {
+    return this.certificateService.findOneWithContents(certificateId);
   }
 
   // POST

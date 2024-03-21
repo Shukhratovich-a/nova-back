@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -29,9 +28,8 @@ export class CatalogService {
     return { data: parsedCatalogs, total };
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [catalogs, total] = await this.catalogRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -48,9 +46,9 @@ export class CatalogService {
     };
   }
 
-  async findOneWithContents(catalogId: number, status: StatusEnum) {
+  async findOneWithContents(catalogId: number) {
     const catalog = await this.catalogRepository.findOne({
-      where: { status, id: catalogId },
+      where: { id: catalogId },
     });
     if (!catalog) return null;
 
@@ -72,7 +70,7 @@ export class CatalogService {
 
   // DELETE
   async delete(catalogId: number) {
-    return await this.catalogRepository.delete({ id: catalogId });
+    return await this.catalogRepository.softDelete({ id: catalogId });
   }
 
   // CHECKERS

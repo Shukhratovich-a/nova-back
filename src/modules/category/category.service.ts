@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -27,9 +26,8 @@ export class CategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -40,10 +38,9 @@ export class CategoryService {
     return { data: parsedCategories, total };
   }
 
-  async findAllWithChildren(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithChildren(language: LanguageEnum, { page, limit }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
       relations: { subcategories: true },
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -61,10 +58,10 @@ export class CategoryService {
     return { data: parsedCategories, total };
   }
 
-  async findById(categoryId: number, language: LanguageEnum, status: StatusEnum) {
+  async findById(categoryId: number, language: LanguageEnum) {
     const category = await this.categoryRepository.findOne({
       relations: { subcategories: true },
-      where: { id: categoryId, status },
+      where: { id: categoryId },
     });
     if (!category) return null;
 
@@ -77,10 +74,10 @@ export class CategoryService {
     return parsedCategory;
   }
 
-  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+  async findByAlias(alias: string, language: LanguageEnum) {
     const category = await this.categoryRepository.findOne({
       relations: { subcategories: true },
-      where: { alias: alias, status },
+      where: { alias: alias },
     });
     if (!category) return null;
 
@@ -93,9 +90,8 @@ export class CategoryService {
     return parsedCategory;
   }
 
-  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithContents({ page, limit }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -110,9 +106,9 @@ export class CategoryService {
     };
   }
 
-  async findOneWithContents(categoryId: number, status: StatusEnum) {
+  async findOneWithContents(categoryId: number) {
     const category = await this.categoryRepository.findOne({
-      where: { status, id: categoryId },
+      where: { id: categoryId },
     });
     if (!category) return null;
 
@@ -133,7 +129,7 @@ export class CategoryService {
 
   // DELETE
   async delete(categoryId: number) {
-    return await this.categoryRepository.save({ status: StatusEnum.DELETED, id: categoryId });
+    return await this.categoryRepository.softDelete(categoryId);
   }
 
   // CHECKERS

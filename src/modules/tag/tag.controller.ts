@@ -5,7 +5,6 @@ import { ParseArrayPipe } from "@pipes/array-parse.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { TagService } from "./tag.service";
 
@@ -18,28 +17,21 @@ export class TagController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.tagService.findAllWithContents(status, { page, limit });
+  async getAllWithContents(@Query() { page, limit }: IPagination) {
+    return this.tagService.findAllWithContents({ page, limit });
   }
 
   @Get("get-one-with-contents/:tagId")
-  async getOne(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("tagId", new ParseIntPipe()) tagId: number,
-  ) {
-    return this.tagService.findOneWithContents(tagId, status);
+  async getOne(@Param("tagId", new ParseIntPipe()) tagId: number) {
+    return this.tagService.findOneWithContents(tagId);
   }
 
   @Get("get-by-language")
   async getByLanguage(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
     @Query("tags", new ParseArrayPipe()) tags: string[],
   ) {
-    return this.tagService.findByLanguage(tags, language, status);
+    return this.tagService.findByLanguage(tags, language);
   }
 
   // POST

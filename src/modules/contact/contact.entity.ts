@@ -1,6 +1,13 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  BaseEntity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from "typeorm";
 
-import { StatusEnum } from "@enums/status.enum";
 import { ContactTypeEnum } from "@enums/contact-type.enum";
 
 @Entity("contacts")
@@ -29,12 +36,12 @@ export class ContactEntity extends BaseEntity {
   @Column({ name: "map", type: "varchar", nullable: true })
   map: string;
 
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
-
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 }

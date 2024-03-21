@@ -2,7 +2,6 @@ import { Type } from "class-transformer";
 import { IsString, IsOptional, IsEnum, IsArray, ValidateNested } from "class-validator";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { NewsTagDto } from "./news.dto";
 
@@ -66,10 +65,6 @@ export class UpdateNewsDto {
   @IsEnum(NewsTypeEnum)
   @IsOptional()
   type?: NewsTypeEnum;
-
-  @IsEnum(StatusEnum)
-  @IsOptional()
-  status?: StatusEnum;
 
   @IsArray()
   @IsOptional()

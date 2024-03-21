@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { CatalogService } from "./catalog.service";
 
@@ -24,19 +23,13 @@ export class CatalogController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.catalogService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.catalogService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:catalogId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("catalogId", new ParseIntPipe()) catalogId: number,
-  ) {
-    return this.catalogService.findOneWithContents(catalogId, status);
+  async getOneWithContents(@Param("catalogId", new ParseIntPipe()) catalogId: number) {
+    return this.catalogService.findOneWithContents(catalogId);
   }
 
   // POST

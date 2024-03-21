@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -26,10 +25,9 @@ export class VideoService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
     const videos = await this.videoRepository.find({
       relations: { products: true },
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
       order: { products: { code: "ASC" } },
@@ -47,10 +45,10 @@ export class VideoService {
     return parsedVideos;
   }
 
-  async findById(videoId: number, language: LanguageEnum, status: StatusEnum) {
+  async findById(videoId: number, language: LanguageEnum) {
     const video = await this.videoRepository.findOne({
       relations: { products: true },
-      where: { id: videoId, status },
+      where: { id: videoId },
       order: { products: { code: "ASC" } },
     });
     if (!video) return null;
@@ -61,10 +59,9 @@ export class VideoService {
     return parsedVideo;
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [videos, total] = await this.videoRepository.findAndCount({
       relations: { products: true },
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -73,10 +70,10 @@ export class VideoService {
     return { data: videos, total };
   }
 
-  async findOneWithContents(videoId: number, status: StatusEnum) {
+  async findOneWithContents(videoId: number) {
     const video = await this.videoRepository.findOne({
       relations: { products: true },
-      where: { status, id: videoId },
+      where: { id: videoId },
       order: { products: { code: "ASC" } },
     });
     if (!video) return null;
@@ -84,10 +81,10 @@ export class VideoService {
     return video;
   }
 
-  async findAllByParentId(videoId: number, status: StatusEnum, { page, limit }: IPagination) {
+  async findAllByParentId(videoId: number, { page, limit }: IPagination) {
     const [videos, total] = await this.videoRepository.findAndCount({
       relations: { products: true },
-      where: { status, products: { id: videoId } },
+      where: { products: { id: videoId } },
       take: limit,
       skip: (page - 1) * limit || 0,
       order: { products: { code: "ASC" } },
@@ -109,7 +106,7 @@ export class VideoService {
 
   // DELETE
   async delete(videoId: number) {
-    return await this.videoRepository.save({ status: StatusEnum.DELETED, id: videoId });
+    return await this.videoRepository.softDelete(videoId);
   }
 
   // PARSERS

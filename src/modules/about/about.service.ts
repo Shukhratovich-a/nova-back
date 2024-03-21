@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -21,10 +20,8 @@ export class AboutService {
   constructor(@InjectRepository(AboutEntity) private readonly aboutRepository: Repository<AboutEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum) {
-    const [abouts, total] = await this.aboutRepository.findAndCount({
-      where: { status },
-    });
+  async findAll(language: LanguageEnum) {
+    const [abouts, total] = await this.aboutRepository.findAndCount();
     if (!abouts) return [];
 
     const parsedAbouts: AboutDto[] = abouts.map((about) => this.parse(about, language));
@@ -32,9 +29,8 @@ export class AboutService {
     return { data: parsedAbouts, total };
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [abouts, total] = await this.aboutRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -50,9 +46,9 @@ export class AboutService {
     };
   }
 
-  async findOneWithContents(aboutId: number, status: StatusEnum) {
+  async findOneWithContents(aboutId: number) {
     const about = await this.aboutRepository.findOne({
-      where: { status, id: aboutId },
+      where: { id: aboutId },
     });
     if (!about) return null;
 
@@ -73,7 +69,7 @@ export class AboutService {
 
   // DELETE
   async delete(aboutId: number) {
-    return await this.aboutRepository.save({ status: StatusEnum.DELETED, id: aboutId });
+    return await this.aboutRepository.softDelete(aboutId);
   }
 
   // CHECKERS

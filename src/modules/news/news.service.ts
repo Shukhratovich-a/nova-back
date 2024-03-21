@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -21,11 +20,10 @@ export class NewsService {
   constructor(@InjectRepository(NewsEntity) private readonly newsRepository: Repository<NewsEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const [news, total] = await this.newsRepository
       .createQueryBuilder("news")
-      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
-      .where("news.status = :status", { status })
+      .leftJoinAndSelect("news.tags", "tags")
       .take(Number(limit))
       .skip((page - 1) * Number(limit) || 0)
       .getManyAndCount();
@@ -42,12 +40,11 @@ export class NewsService {
     return { data: parsedNews, total };
   }
 
-  async findById(newsId: number, language: LanguageEnum, status: StatusEnum) {
+  async findById(newsId: number, language: LanguageEnum) {
     const news = await this.newsRepository
       .createQueryBuilder("news")
-      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .leftJoinAndSelect("news.tags", "tags")
       .where("news.id = :id", { id: newsId })
-      .andWhere("news.status = :status", { status })
       .getOne();
     if (!news) return null;
 
@@ -57,12 +54,11 @@ export class NewsService {
     return parsedNews;
   }
 
-  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+  async findByAlias(alias: string, language: LanguageEnum) {
     const news = await this.newsRepository
       .createQueryBuilder("news")
-      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
+      .leftJoinAndSelect("news.tags", "tags")
       .where("news.alias = :alias", { alias })
-      .andWhere("news.status = :status", { status })
       .getOne();
     if (!news) return null;
 
@@ -72,19 +68,12 @@ export class NewsService {
     return parsedNews;
   }
 
-  async findAllByTags(
-    tags: string[],
-    newsId: number,
-    language: LanguageEnum,
-    status: StatusEnum,
-    { page = 1, limit = 10 }: IPagination,
-  ) {
+  async findAllByTags(tags: string[], newsId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const searchTags = tags.map((tag) => `'${tag}'`).toString();
 
     const [news, total] = await this.newsRepository
       .createQueryBuilder("news")
-      .leftJoinAndSelect("news.tags", "tags", "tags.status = :status", { status })
-      .where("news.status = :status", { status })
+      .leftJoinAndSelect("news.tags", "tags")
       .andWhere("news.id != :id", { id: newsId ? newsId : "" })
       .orderBy(`CASE WHEN tags.title${capitalize(language)} IN (${searchTags}) THEN 0 ELSE 1 END`, "ASC")
       .addOrderBy(`tags.title${capitalize(language)}`, "DESC")
@@ -100,10 +89,9 @@ export class NewsService {
     return { data: parsedNews, total };
   }
 
-  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithContents({ page, limit }: IPagination) {
     const [news, total] = await this.newsRepository.findAndCount({
       relations: { tags: true },
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -120,10 +108,10 @@ export class NewsService {
     };
   }
 
-  async findOneWithContents(newsId: number, status: StatusEnum) {
+  async findOneWithContents(newsId: number) {
     const news = await this.newsRepository.findOne({
       relations: { tags: true },
-      where: { status, id: newsId },
+      where: { id: newsId },
     });
     if (!news) return null;
 
@@ -145,7 +133,7 @@ export class NewsService {
 
   // DELETE
   async delete(newsId: number) {
-    return await this.newsRepository.save({ status: StatusEnum.DELETED, id: newsId });
+    return await this.newsRepository.softDelete(newsId);
   }
 
   // CHECKERS

@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -28,10 +27,9 @@ export class SubcategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository
       .createQueryBuilder("subcategory")
-      .where("subcategory.status = :status", { status })
       .take(limit)
       .skip((page - 1) * limit || 0)
       .getManyAndCount();
@@ -43,11 +41,11 @@ export class SubcategoryService {
     return { data: parsedSubcategories, total };
   }
 
-  async findById(subcategoryId: number, language: LanguageEnum, status: StatusEnum) {
+  async findById(subcategoryId: number, language: LanguageEnum) {
     const subcategory = await this.subcategoryRepository
       .createQueryBuilder("subcategory")
-      .leftJoinAndSelect("subcategory.products", "product", "product.status = :status", { status })
-      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
+      .leftJoinAndSelect("subcategory.products", "product")
+      .leftJoinAndSelect("subcategory.category", "category")
       .where("subcategory.id = :id", { id: subcategoryId })
       .getOne();
     if (!subcategory) return null;
@@ -58,11 +56,11 @@ export class SubcategoryService {
     return parsedSubcategory;
   }
 
-  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+  async findByAlias(alias: string, language: LanguageEnum) {
     const subcategory = await this.subcategoryRepository
       .createQueryBuilder("subcategory")
-      .leftJoinAndSelect("subcategory.products", "product", "product.status = :status", { status })
-      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
+      .leftJoinAndSelect("subcategory.products", "product")
+      .leftJoinAndSelect("subcategory.category", "category")
       .where("subcategory.alias = :alias", { alias })
       .getOne();
     if (!subcategory) return null;
@@ -74,10 +72,9 @@ export class SubcategoryService {
     return parsedSubcategory;
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
-      where: { status, category: { status } },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -93,10 +90,10 @@ export class SubcategoryService {
     };
   }
 
-  async findOneWithContents(subcategoryId: number, status: StatusEnum) {
+  async findOneWithContents(subcategoryId: number) {
     const category = await this.subcategoryRepository.findOne({
       relations: { category: true },
-      where: { status, id: subcategoryId },
+      where: { id: subcategoryId },
     });
     if (!category) return null;
 
@@ -105,10 +102,10 @@ export class SubcategoryService {
     return category;
   }
 
-  async findAllByParentId(categoryId: number, status: StatusEnum, { page, limit }: IPagination) {
+  async findAllByParentId(categoryId: number, { page, limit }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
-      where: { status, category: { id: categoryId } },
+      where: { category: { id: categoryId } },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -139,7 +136,7 @@ export class SubcategoryService {
 
   // DELETE
   async delete(subcategoryId: number) {
-    return await this.subcategoryRepository.save({ status: StatusEnum.DELETED, id: subcategoryId });
+    return await this.subcategoryRepository.softDelete(subcategoryId);
   }
 
   // PARSERS

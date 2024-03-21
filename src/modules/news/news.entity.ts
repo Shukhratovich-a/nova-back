@@ -6,14 +6,14 @@ import {
   ManyToMany,
   JoinTable,
   Relation,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   AfterInsert,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { TagEntity } from "@modules/tag/tag.entity";
 
@@ -71,9 +71,6 @@ export class NewsEntity extends BaseEntity {
   @JoinTable({ name: "news_tags" })
   tags: Relation<TagEntity[]>;
 
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
-
   @Column({ name: "type", type: "simple-enum", enum: NewsTypeEnum, default: "hor" })
   type: NewsTypeEnum;
 
@@ -82,6 +79,9 @@ export class NewsEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 
   @BeforeInsert()
   async beforeInsert() {

@@ -18,11 +18,11 @@ export class CategoryDto {
   @Exclude()
   subcategories: SubcategoryDto[];
 
-  // @Expose()
-  // createAt: Date;
+  @Expose()
+  createAt: Date;
 
-  // @Expose()
-  // updateAt: Date;
+  @Expose()
+  updateAt: Date;
 }
 
 export class CategoryAdminDto {
@@ -50,9 +50,9 @@ export class CategoryAdminDto {
   @Exclude()
   subcategories: SubcategoryDto[];
 
-  // @Expose()
-  // createAt: Date;
+  @Expose()
+  createAt: Date;
 
-  // @Expose()
-  // updateAt: Date;
+  @Expose()
+  updateAt: Date;
 }

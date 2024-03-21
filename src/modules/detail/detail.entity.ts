@@ -9,9 +9,8 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
-
-import { StatusEnum } from "@enums/status.enum";
 
 import { ProductEntity } from "@modules/product/product.entity";
 
@@ -32,9 +31,6 @@ export class DetailCategoryEntity extends BaseEntity {
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
 
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
-
   @OneToMany(() => DetailEntity, (detail) => detail.category, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
 
@@ -43,6 +39,9 @@ export class DetailCategoryEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 }
 
 @Entity("detail_types")
@@ -62,9 +61,6 @@ export class DetailTypeEntity extends BaseEntity {
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
 
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
-
   @OneToMany(() => DetailEntity, (detail) => detail.type, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
 
@@ -73,6 +69,9 @@ export class DetailTypeEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 }
 
 @Entity("details")
@@ -82,9 +81,6 @@ export class DetailEntity extends BaseEntity {
 
   @Column({ name: "value", type: "varchar", nullable: true })
   value: string;
-
-  @Column({ name: "status", type: "simple-enum", enum: StatusEnum, default: "active" })
-  status: StatusEnum;
 
   @ManyToOne(() => DetailTypeEntity, (type) => type.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "type_id" })
@@ -103,4 +99,7 @@ export class DetailEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
+  deleteAt: Date;
 }

@@ -1,6 +1,4 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
-
-import { StatusEnum } from "@enums/status.enum";
+import { IsOptional, IsString } from "class-validator";
 
 export class UpdateCategoryDto {
   @IsString()
@@ -22,8 +20,4 @@ export class UpdateCategoryDto {
   @IsString()
   @IsOptional()
   titleAr?: string;
-
-  @IsEnum(StatusEnum)
-  @IsOptional()
-  status?: StatusEnum;
 }

@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -30,10 +29,9 @@ export class ProductService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const [products, total] = await this.productRepository
       .createQueryBuilder("product")
-      .where("product.status = :status", { status })
       .take(Number(limit))
       .skip((Number(page) - 1) * Number(limit) || 0)
       .getManyAndCount();
@@ -44,19 +42,15 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
-  async search(language: LanguageEnum, searchText: string, status: StatusEnum, { page = 1, limit = 10 }: IPagination) {
+  async search(language: LanguageEnum, searchText: string, { page = 1, limit = 10 }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
       relations: { subcategory: true },
       where: [
-        { code: Like(`%${searchText}%`), status },
-        { titleAr: Like(`%${searchText}%`), status },
-        { titleEn: Like(`%${searchText}%`), status },
-        { titleRu: Like(`%${searchText}%`), status },
-        { titleTr: Like(`%${searchText}%`), status },
-        { subcategory: { titleAr: Like(`%${searchText}%`), status }, status },
-        { subcategory: { titleEn: Like(`%${searchText}%`), status }, status },
-        { subcategory: { titleRu: Like(`%${searchText}%`), status }, status },
-        { subcategory: { titleTr: Like(`%${searchText}%`), status }, status },
+        { code: Like(`%${searchText}%`) },
+        { titleAr: Like(`%${searchText}%`) },
+        { titleEn: Like(`%${searchText}%`) },
+        { titleRu: Like(`%${searchText}%`) },
+        { titleTr: Like(`%${searchText}%`) },
       ],
       take: Number(limit),
       skip: (Number(page) - 1) * Number(limit) || 0,
@@ -69,14 +63,13 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
-  async findById(productId: number, language: LanguageEnum, status: StatusEnum) {
+  async findById(productId: number, language: LanguageEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
-      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
-      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
-      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .leftJoinAndSelect("product.details", "detail")
+      .leftJoinAndSelect("detail.type", "type")
+      .leftJoinAndSelect("detail.category", "category")
       .where("product.id = :id", { id: productId })
-      .andWhere("product.status = :status", { status })
       .getOne();
     if (!product) return null;
 
@@ -86,16 +79,15 @@ export class ProductService {
     return parsedProduct;
   }
 
-  async findByCode(productCode: string, language: LanguageEnum, status: StatusEnum) {
+  async findByCode(productCode: string, language: LanguageEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
-      .leftJoinAndSelect("product.subcategory", "subcategory", "subcategory.status = :status", { status })
-      .leftJoinAndSelect("subcategory.category", "category", "category.status = :status", { status })
-      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
-      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
-      .leftJoinAndSelect("detail.category", "detail_category", "detail_category.status = :status", { status })
+      .leftJoinAndSelect("product.subcategory", "subcategory")
+      .leftJoinAndSelect("subcategory.category", "category")
+      .leftJoinAndSelect("product.details", "detail")
+      .leftJoinAndSelect("detail.type", "type")
+      .leftJoinAndSelect("detail.category", "detail_category")
       .where("product.code = :code", { code: productCode })
-      .andWhere("product.status = :status", { status })
       .getOne();
     if (!product) return null;
 
@@ -105,14 +97,13 @@ export class ProductService {
     return parsedProduct;
   }
 
-  async findByAlias(alias: string, language: LanguageEnum, status: StatusEnum) {
+  async findByAlias(alias: string, language: LanguageEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
-      .leftJoinAndSelect("product.details", "detail", "detail.status = :status", { status })
-      .leftJoinAndSelect("detail.type", "type", "type.status = :status", { status })
-      .leftJoinAndSelect("detail.category", "category", "category.status = :status", { status })
+      .leftJoinAndSelect("product.details", "detail")
+      .leftJoinAndSelect("detail.type", "type")
+      .leftJoinAndSelect("detail.category", "category")
       .where("product.alias = :alias", { alias })
-      .andWhere("product.status = :status", { status })
       .getOne();
     if (!product) return null;
 
@@ -122,8 +113,8 @@ export class ProductService {
     return parsedProduct;
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination, code?: string) {
-    const where: Record<string, unknown> = { status };
+  async findAllWithCount({ page, limit }: IPagination, code?: string) {
+    const where: Record<string, unknown> = {};
     if (code) where.code = Like(`%${code}%`);
 
     const [products, total] = await this.productRepository.findAndCount({
@@ -146,10 +137,10 @@ export class ProductService {
     };
   }
 
-  async findOneWithContents(productId: number, status: StatusEnum) {
+  async findOneWithContents(productId: number) {
     const product = await this.productRepository.findOne({
       relations: { subcategory: { category: true }, details: { type: true, category: true } },
-      where: { status, id: productId },
+      where: { id: productId },
     });
     if (!product) return null;
 
@@ -160,9 +151,9 @@ export class ProductService {
     return product;
   }
 
-  async findAllByParentId(subcategoryId: number, status: StatusEnum, { page, limit }: IPagination) {
+  async findAllByParentId(subcategoryId: number, { page, limit }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
-      where: { status, subcategory: { id: subcategoryId } },
+      where: { subcategory: { id: subcategoryId } },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -182,8 +173,8 @@ export class ProductService {
 
   // CREATE
   async create(productDto: CreateProductDto) {
-    const pdfStatus = await this.pdfService.createProductPdf(productDto);
-    if (!pdfStatus) throw new BadRequestException();
+    const isPdfCreated = await this.pdfService.createProductPdf(productDto);
+    if (!isPdfCreated) throw new BadRequestException();
 
     const product = await this.productRepository.save(
       this.productRepository.create({
@@ -218,7 +209,7 @@ export class ProductService {
 
   // DELETE
   async delete(productId: number) {
-    return await this.productRepository.save({ status: StatusEnum.DELETED, id: productId });
+    return await this.productRepository.softDelete(productId);
   }
 
   // PARSERS

@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -21,10 +20,8 @@ export class BannerService {
   constructor(@InjectRepository(BannerEntity) private readonly bannerRepository: Repository<BannerEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, status: StatusEnum) {
-    const [banners, total] = await this.bannerRepository.findAndCount({
-      where: { status },
-    });
+  async findAll(language: LanguageEnum) {
+    const [banners, total] = await this.bannerRepository.findAndCount();
     if (!banners) return [];
 
     const parsedBanner: BannerDto[] = banners.map((banner) => this.parse(banner, language));
@@ -32,9 +29,8 @@ export class BannerService {
     return { data: parsedBanner, total };
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [banners, total] = await this.bannerRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -50,9 +46,9 @@ export class BannerService {
     };
   }
 
-  async findOneWithContents(bannerId: number, status: StatusEnum) {
+  async findOneWithContents(bannerId: number) {
     const banner = await this.bannerRepository.findOne({
-      where: { status, id: bannerId },
+      where: { id: bannerId },
     });
     if (!banner) return null;
 
@@ -73,7 +69,7 @@ export class BannerService {
 
   // DELETE
   async delete(bannerId: number) {
-    return await this.bannerRepository.save({ status: StatusEnum.DELETED, id: bannerId });
+    return await this.bannerRepository.softDelete(bannerId);
   }
 
   // CHECKERS

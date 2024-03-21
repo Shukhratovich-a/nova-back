@@ -4,7 +4,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { IPagination } from "@interfaces/pagination.interface";
-import { StatusEnum } from "@enums/status.enum";
 
 import { CertificateEntity } from "./certificate.entity";
 
@@ -16,17 +15,15 @@ export class CertificateService {
   constructor(@InjectRepository(CertificateEntity) private readonly certificateRepository: Repository<CertificateEntity>) {}
 
   // FIND
-  async findAll(status: StatusEnum, { page, limit }: IPagination) {
+  async findAll({ page, limit }: IPagination) {
     return await this.certificateRepository.find({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [certificates, total] = await this.certificateRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -43,9 +40,9 @@ export class CertificateService {
     };
   }
 
-  async findOneWithContents(certificateId: number, status: StatusEnum) {
+  async findOneWithContents(certificateId: number) {
     const certificate = await this.certificateRepository.findOne({
-      where: { status, id: certificateId },
+      where: { id: certificateId },
     });
     if (!certificate) return null;
 
@@ -67,7 +64,7 @@ export class CertificateService {
 
   // DELETE
   async delete(certificateId: number) {
-    return await this.certificateRepository.save({ status: StatusEnum.DELETED, id: certificateId });
+    return await this.certificateRepository.softDelete(certificateId);
   }
 
   // CHECKERS

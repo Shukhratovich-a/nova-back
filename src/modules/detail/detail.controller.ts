@@ -1,9 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
-import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
-
 import { IPagination } from "@interfaces/pagination.interface";
-import { StatusEnum } from "@enums/status.enum";
 
 import { DetailService, DetailCategoryService, DetailTypeService } from "./detail.service";
 
@@ -16,28 +13,18 @@ export class DetailController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.detailService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.detailService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:detailId")
-  async getOneWithContents(
-    @Param("detailId", new ParseIntPipe()) detailId: number,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-  ) {
-    return this.detailService.findOneWithContents(detailId, status);
+  async getOneWithContents(@Param("detailId", new ParseIntPipe()) detailId: number) {
+    return this.detailService.findOneWithContents(detailId);
   }
 
   @Get("get-by-parent/:productId")
-  async getAllByParentId(
-    @Param("productId", new ParseIntPipe()) productId: number,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.detailService.findAllByParentId(productId, status, { page, limit });
+  async getAllByParentId(@Param("productId", new ParseIntPipe()) productId: number, @Query() { page, limit }: IPagination) {
+    return this.detailService.findAllByParentId(productId, { page, limit });
   }
 
   // POST
@@ -71,19 +58,13 @@ export class DetailCategoryController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.detailCategoryService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.detailCategoryService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:categoryId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("categoryId", new ParseIntPipe()) categoryId: number,
-  ) {
-    return this.detailCategoryService.findOneWithContents(categoryId, status);
+  async getOneWithContents(@Param("categoryId", new ParseIntPipe()) categoryId: number) {
+    return this.detailCategoryService.findOneWithContents(categoryId);
   }
 
   // POST
@@ -117,19 +98,13 @@ export class DetailTypeController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.detailTypeService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.detailTypeService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:typeId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("typeId", new ParseIntPipe()) typeId: number,
-  ) {
-    return this.detailTypeService.findOneWithContents(typeId, status);
+  async getOneWithContents(@Param("typeId", new ParseIntPipe()) typeId: number) {
+    return this.detailTypeService.findOneWithContents(typeId);
   }
 
   // POST

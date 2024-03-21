@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { VideoService } from "./video.service";
 import { ProductService } from "@modules/product/product.service";
@@ -20,44 +19,32 @@ export class VideoController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.videoService.findAll(language, status, { page, limit });
+    return this.videoService.findAll(language, { page, limit });
   }
 
   @Get("get-by-id/:videoId")
   async getById(
     @Param("videoId", new ParseIntPipe()) videoId: number,
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
   ) {
-    return this.videoService.findById(videoId, language, status);
+    return this.videoService.findById(videoId, language);
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.videoService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.videoService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:videoId")
-  async getOne(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("videoId", new ParseIntPipe()) videoId: number,
-  ) {
-    return this.videoService.findOneWithContents(videoId, status);
+  async getOne(@Param("videoId", new ParseIntPipe()) videoId: number) {
+    return this.videoService.findOneWithContents(videoId);
   }
 
   @Get("get-by-parent/:videoId")
-  async getAllByParentId(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-    @Param("videoId", new ParseIntPipe()) videoId: number,
-  ) {
-    return this.videoService.findAllByParentId(videoId, status, { page, limit });
+  async getAllByParentId(@Query() { page, limit }: IPagination, @Param("videoId", new ParseIntPipe()) videoId: number) {
+    return this.videoService.findAllByParentId(videoId, { page, limit });
   }
 
   // POST

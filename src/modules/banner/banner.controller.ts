@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { BannerService } from "./banner.service";
 
@@ -19,25 +18,18 @@ export class BannerController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
   ) {
-    return this.bannerService.findAll(language, status);
+    return this.bannerService.findAll(language);
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.bannerService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.bannerService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:bannerId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("bannerId", new ParseIntPipe()) bannerId: number,
-  ) {
-    return this.bannerService.findOneWithContents(bannerId, status);
+  async getOneWithContents(@Param("bannerId", new ParseIntPipe()) bannerId: number) {
+    return this.bannerService.findOneWithContents(bannerId);
   }
 
   // POST

@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
 
-import { StatusEnum } from "@enums/status.enum";
 import { ContactTypeEnum } from "@/enums/contact-type.enum";
 import { IPagination } from "@/interfaces/pagination.interface";
 
@@ -17,19 +16,17 @@ export class ContactService {
   constructor(@InjectRepository(ContactEntity) private readonly contactRepository: Repository<ContactEntity>) {}
 
   // FIND
-  async findAll(status: StatusEnum) {
+  async findAll() {
+    return this.contactRepository.find();
+  }
+
+  async findByType(type: ContactTypeEnum) {
     return this.contactRepository.find({
-      where: { status },
+      where: { type },
     });
   }
 
-  async findByType(type: ContactTypeEnum, status: StatusEnum) {
-    return this.contactRepository.find({
-      where: { status, type },
-    });
-  }
-
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const where: Record<string, unknown> = { status };
 
     const [products, total] = await this.contactRepository.findAndCount({
@@ -45,9 +42,9 @@ export class ContactService {
     };
   }
 
-  async findOneWithContents(contactId: number, status: StatusEnum) {
+  async findOneWithContents(contactId: number) {
     const contact = await this.contactRepository.findOne({
-      where: { status, id: contactId },
+      where: { id: contactId },
     });
     if (!contact) return null;
 
@@ -66,7 +63,7 @@ export class ContactService {
 
   // DELETE
   async delete(contactId: number) {
-    return await this.contactRepository.save({ status: StatusEnum.DELETED, id: contactId });
+    return await this.contactRepository.softDelete(contactId);
   }
 
   // CHECKERS

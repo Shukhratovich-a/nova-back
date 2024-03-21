@@ -1,7 +1,6 @@
 import { IsEnum, IsOptional, IsString } from "class-validator";
 
 import { ContactTypeEnum } from "@enums/contact-type.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 export class UpdateContactDto {
   @IsString()
@@ -31,8 +30,4 @@ export class UpdateContactDto {
   @IsEnum(ContactTypeEnum)
   @IsOptional()
   type?: ContactTypeEnum;
-
-  @IsEnum(StatusEnum)
-  @IsOptional()
-  status?: StatusEnum;
 }

@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { SubcategoryService } from "@modules/subcategory/subcategory.service";
 import { ProductService } from "./product.service";
@@ -19,64 +18,52 @@ export class ProductController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.productService.findAll(language, status, { page, limit });
+    return this.productService.findAll(language, { page, limit });
   }
 
   @Get("search")
   async searchProducts(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query("q") searchText: string,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.productService.search(language, searchText, status, { page, limit });
+    return this.productService.search(language, searchText, { page, limit });
   }
 
   @Get("get-by-id/:productId")
   async getById(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Param("productId", new ParseIntPipe()) productId: number,
   ) {
-    return this.productService.findById(productId, language, status);
+    return this.productService.findById(productId, language);
   }
 
   @Get("get-by-code/:productCode")
   async getByCode(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Param("productCode") productCode: string,
   ) {
-    return this.productService.findByCode(productCode, language, status);
+    return this.productService.findByCode(productCode, language);
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-    @Query("code") code: string,
-  ) {
-    return this.productService.findAllWithCount(status, { page, limit }, code);
+  async getAllWithCount(@Query() { page, limit }: IPagination, @Query("code") code: string) {
+    return this.productService.findAllWithCount({ page, limit }, code);
   }
 
   @Get("get-one-with-contents/:productId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("productId", new ParseIntPipe()) productId: number,
-  ) {
-    return this.productService.findOneWithContents(productId, status);
+  async getOneWithContents(@Param("productId", new ParseIntPipe()) productId: number) {
+    return this.productService.findOneWithContents(productId);
   }
 
   @Get("get-by-parent/:subcategoryId")
   async getAllByParentId(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
     @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
   ) {
-    return this.productService.findAllByParentId(subcategoryId, status, { page, limit });
+    return this.productService.findAllByParentId(subcategoryId, { page, limit });
   }
 
   // POST

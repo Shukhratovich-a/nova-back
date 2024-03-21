@@ -1,7 +1,5 @@
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-
-import { StatusEnum } from "@enums/status.enum";
 
 import { CreateDetailDto } from "@modules/detail/dtos/create-detail.dto";
 
@@ -57,10 +55,6 @@ export class UpdateProductDto {
   @IsString()
   @IsOptional()
   schemeImage?: string;
-
-  @IsEnum(StatusEnum)
-  @IsOptional()
-  status?: StatusEnum;
 
   @IsArray()
   @IsOptional()

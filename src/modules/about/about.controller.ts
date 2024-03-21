@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { AboutService } from "./about.service";
 
@@ -19,25 +18,18 @@ export class AboutController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
   ) {
-    return this.aboutService.findAll(language, status);
+    return this.aboutService.findAll(language);
   }
 
   @Get("get-with-count")
-  async getAllWithCount(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.aboutService.findAllWithCount(status, { page, limit });
+  async getAllWithCount(@Query() { page, limit }: IPagination) {
+    return this.aboutService.findAllWithCount({ page, limit });
   }
 
   @Get("get-one-with-contents/:aboutId")
-  async getOneWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("aboutId", new ParseIntPipe()) aboutId: number,
-  ) {
-    return this.aboutService.findOneWithContents(aboutId, status);
+  async getOneWithContents(@Param("aboutId", new ParseIntPipe()) aboutId: number) {
+    return this.aboutService.findOneWithContents(aboutId);
   }
 
   // POST

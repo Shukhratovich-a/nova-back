@@ -6,7 +6,6 @@ import { plainToClass } from "class-transformer";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -27,12 +26,11 @@ export class DetailCategoryService {
 
   // FIND
   async findAll() {
-    return this.detailCategoryRepository.find({ where: { status: StatusEnum.ACTIVE } });
+    return this.detailCategoryRepository.find();
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [categories, total] = await this.detailCategoryRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -41,9 +39,9 @@ export class DetailCategoryService {
     return { data: categories, total };
   }
 
-  async findOneWithContents(categoryId: number, status: StatusEnum) {
+  async findOneWithContents(categoryId: number) {
     const category = await this.detailCategoryRepository.findOne({
-      where: { status, id: categoryId },
+      where: { id: categoryId },
     });
     if (!category) return null;
 
@@ -62,7 +60,7 @@ export class DetailCategoryService {
 
   // DELETE
   async delete(categoryId: number) {
-    return await this.detailCategoryRepository.save({ status: StatusEnum.DELETED, id: categoryId });
+    return await this.detailCategoryRepository.softDelete(categoryId);
   }
 
   // CHECKERS
@@ -87,12 +85,11 @@ export class DetailTypeService {
 
   // FIND
   async findAll() {
-    return this.detailTypeRepository.find({ where: { status: StatusEnum.ACTIVE } });
+    return this.detailTypeRepository.find();
   }
 
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [types, total] = await this.detailTypeRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -101,9 +98,9 @@ export class DetailTypeService {
     return { data: types, total };
   }
 
-  async findOneWithContents(typeId: number, status: StatusEnum) {
+  async findOneWithContents(typeId: number) {
     const type = await this.detailTypeRepository.findOne({
-      where: { status, id: typeId },
+      where: { id: typeId },
     });
     if (!type) return null;
 
@@ -122,7 +119,7 @@ export class DetailTypeService {
 
   // DELETE
   async delete(typeId: number) {
-    return await this.detailTypeRepository.save({ status: StatusEnum.DELETED, id: typeId });
+    return await this.detailTypeRepository.softDelete(typeId);
   }
 
   // CHECKERS
@@ -140,10 +137,9 @@ export class DetailService {
   ) {}
 
   // FIND
-  async findAllWithCount(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithCount({ page, limit }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -152,20 +148,20 @@ export class DetailService {
     return { data: details, total };
   }
 
-  async findOneWithContents(detailId: number, status: StatusEnum) {
+  async findOneWithContents(detailId: number) {
     const detail = await this.detailRepository.findOne({
       relations: { type: true, category: true },
-      where: { status, id: detailId },
+      where: { id: detailId },
     });
     if (!detail) return null;
 
     return detail;
   }
 
-  async findAllByParentId(productId: number, status: StatusEnum, { page, limit }: IPagination) {
+  async findAllByParentId(productId: number, { page, limit }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
-      where: { status, product: { id: productId } },
+      where: { product: { id: productId } },
       order: { category: { id: "ASC" } },
       take: limit,
       skip: (page - 1) * limit || 0,
@@ -194,7 +190,7 @@ export class DetailService {
 
   // DELETE
   async delete(typeId: number) {
-    return await this.detailRepository.save({ status: StatusEnum.DELETED, id: typeId });
+    return await this.detailRepository.softDelete(typeId);
   }
 
   async deleteByParent(parentId: number) {

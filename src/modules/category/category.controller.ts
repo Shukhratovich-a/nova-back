@@ -4,7 +4,6 @@ import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { CategoryService } from "./category.service";
 
@@ -19,54 +18,44 @@ export class CategoryController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.categoryService.findAll(language, status, { page, limit });
+    return this.categoryService.findAll(language, { page, limit });
   }
 
   // GET
   @Get("get-all-with-children")
   async getAllWithChildren(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Query() { page, limit }: IPagination,
   ) {
-    return this.categoryService.findAllWithChildren(language, status, { page, limit });
+    return this.categoryService.findAllWithChildren(language, { page, limit });
   }
 
   @Get("get-by-id/:categoryId")
   async getById(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Param("categoryId", new ParseIntPipe()) categoryId: number,
   ) {
-    return this.categoryService.findById(categoryId, language, status);
+    return this.categoryService.findById(categoryId, language);
   }
 
   @Get("get-by-alias/:alias")
   async getByAlias(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
     @Param("alias") alias: string,
   ) {
-    return this.categoryService.findByAlias(alias, language, status);
+    return this.categoryService.findByAlias(alias, language);
   }
 
   @Get("get-with-count")
-  async getAllWithContents(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Query() { page, limit }: IPagination,
-  ) {
-    return this.categoryService.findAllWithContents(status, { page, limit });
+  async getAllWithContents(@Query() { page, limit }: IPagination) {
+    return this.categoryService.findAllWithContents({ page, limit });
   }
 
   @Get("get-one-with-contents/:categoryId")
-  async getOne(
-    @Query("status", new EnumValidationPipe(StatusEnum, { defaultValue: StatusEnum.ACTIVE })) status: StatusEnum,
-    @Param("categoryId", new ParseIntPipe()) categoryId: number,
-  ) {
-    return this.categoryService.findOneWithContents(categoryId, status);
+  async getOne(@Param("categoryId", new ParseIntPipe()) categoryId: number) {
+    return this.categoryService.findOneWithContents(categoryId);
   }
 
   // POST

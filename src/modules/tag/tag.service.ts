@@ -5,7 +5,6 @@ import { In, Repository } from "typeorm";
 
 import { IPagination } from "@interfaces/pagination.interface";
 import { LanguageEnum } from "@enums/language.enum";
-import { StatusEnum } from "@enums/status.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
@@ -19,9 +18,8 @@ export class TagService {
   constructor(@InjectRepository(TagEntity) private readonly tagRepository: Repository<TagEntity>) {}
 
   // FIND
-  async findAllWithContents(status: StatusEnum, { page, limit }: IPagination) {
+  async findAllWithContents({ page, limit }: IPagination) {
     const [tags, total] = await this.tagRepository.findAndCount({
-      where: { status },
       take: limit,
       skip: (page - 1) * limit || 0,
     });
@@ -30,23 +28,18 @@ export class TagService {
     return { data: tags, total };
   }
 
-  async findOneWithContents(tagId: number, status: StatusEnum) {
+  async findOneWithContents(tagId: number) {
     const tag = await this.tagRepository.findOne({
-      where: { status, id: tagId },
+      where: { id: tagId },
     });
     if (!tag) return null;
 
     return tag;
   }
 
-  async findByLanguage(tags: string[], language: LanguageEnum, status: StatusEnum) {
+  async findByLanguage(tags: string[], language: LanguageEnum) {
     const currentTags = await this.tagRepository.find({
-      where: [
-        { titleEn: In(tags), status },
-        { titleRu: In(tags), status },
-        { titleTr: In(tags), status },
-        { titleAr: In(tags), status },
-      ],
+      where: [{ titleEn: In(tags) }, { titleRu: In(tags) }, { titleTr: In(tags) }, { titleAr: In(tags) }],
     });
     if (!currentTags) return null;
 
@@ -67,7 +60,7 @@ export class TagService {
 
   // DELETE
   async delete(tagId: number) {
-    return await this.tagRepository.save({ status: StatusEnum.DELETED, id: tagId });
+    return await this.tagRepository.softDelete(tagId);
   }
 
   // CHECKERS
