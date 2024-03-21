@@ -10,6 +10,7 @@ import * as sharp from "sharp";
 import { FileElementResponse } from "./dto/file-element.dto";
 
 import { MFile } from "./mfile.class";
+import { exec } from "child_process";
 
 @Injectable()
 export class FileService {
@@ -27,21 +28,24 @@ export class FileService {
   }
 
   async convertPdfToPng(filePath: string) {
+    const inputFile = join(path, filePath);
+    const outputFile = join(path, "uploads", "image.png");
+
     try {
-      const inputFile = join(path, filePath);
-      const outputFile = join(path, "uploads");
+      const command = `convert ${inputFile}[0] ${outputFile}`;
 
-      const options = {
-        saveFilename: "image",
-        savePath: outputFile,
-        format: "png",
-        width: 600,
-        height: 800,
-      };
-
-      const convert = fromPath(inputFile, options);
-
-      const pageOutput = await convert(1, { responseType: "image" });
+      // Execute the command
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`PDF converted to PNG: ${outputFile}`);
+      });
     } catch (error) {
       console.log(error);
     }
