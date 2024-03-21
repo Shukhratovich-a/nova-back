@@ -4,7 +4,7 @@ import {
   Get,
   Post,
   UploadedFile,
-  ParseFilePipe,
+  HttpCode,
   Res,
   Param,
   StreamableFile,
@@ -14,14 +14,12 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { Response } from "express";
-import { extname, join, parse, sep } from "path";
-import { path } from "app-root-path";
-import { createReadStream, existsSync, mkdir } from "fs";
-import { diskStorage } from "multer";
-import { format } from "date-fns";
+import { join, parse } from "path";
+import { createReadStream, existsSync } from "fs";
 
 import { FileService } from "./file.service";
 
+import { MFile } from "./mfile.class";
 import { FileElementResponse } from "./dto/file-element.dto";
 
 @Controller("file")
@@ -95,79 +93,22 @@ export class FileController {
   }
 
   @Post("upload")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: async (req, file, cb) => {
-          const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
-          const uploadFolder = `./uploads/other/${dateFolder}`;
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor("file"))
+  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileElementResponse> {
+    if (file.mimetype.includes("image")) {
+      const buffer = await this.fileService.convertToWebp(file.buffer);
 
-          mkdir(uploadFolder, { recursive: true }, (error) => {
-            if (error) {
-              console.error("Error creating directory:", error);
-            }
-            cb(error, uploadFolder);
-          });
-        },
-        filename: (_, file, cb) => {
-          const name = file.originalname.split(".")[0];
-          const extension = extname(file.originalname);
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          cb(null, `${name}-${randomName}${extension}`);
-        },
-      }),
-    }),
-  )
-  async uploadFile(@UploadedFile(new ParseFilePipe()) file: Express.Multer.File): Promise<FileElementResponse> {
-    const parsedPath = parse(file.path);
+      const save: MFile = new MFile({
+        originalname: `${file.originalname.split(".")[0]}.webp`,
+        buffer,
+      });
 
-    const url = `/${parsedPath.dir.replace(path, "").split(sep).join("/")}/${parsedPath.base}`;
+      return this.fileService.saveFile(save);
+    }
 
-    return { url, name: file.filename };
-  }
+    const save: MFile = new MFile(file);
 
-  @Post("upload-product-scheme")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: async (req, file, cb) => {
-          const dateFolder = format(new Date(), "yyyy-MM-dd_HH-mm");
-          const uploadFolder = `./uploads/other/${dateFolder}`;
-
-          mkdir(uploadFolder, { recursive: true }, (error) => {
-            if (error) {
-              console.error("Error creating directory:", error);
-            }
-            cb(error, uploadFolder);
-          });
-        },
-        filename: (_, file, cb) => {
-          const name = file.originalname.split(".")[0];
-          const extension = extname(file.originalname);
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          cb(null, `${name}-${randomName}${extension}`);
-        },
-      }),
-    }),
-  )
-  async uploadProductScheme(
-    @UploadedFile(new ParseFilePipe()) file: Express.Multer.File, // : Promise<FileElementResponse>
-  ) {
-    const parsedPath = parse(file.path);
-    const url = `/${parsedPath.dir.replace(path, "").split(sep).join("/")}/${parsedPath.base}`;
-
-    // if (file.mimetype === "application/pdf") {
-    const image = await this.fileService.convertPdfToPng(url);
-
-    console.log(image);
-    // }
-
-    return { url, name: file.filename };
+    return this.fileService.saveFile(save);
   }
 }
