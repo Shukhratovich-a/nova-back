@@ -133,16 +133,17 @@ export class FileController {
     if (file.mimetype.includes("pdf")) {
       const response = await this.fileService.convertPdfToPng(file.buffer);
 
-      const imageBuffer = await readFile(join(process.cwd(), response.path));
+      console.log(response);
 
-      const buffer = await this.fileService.convertToWebp(imageBuffer);
+      // const imageBuffer = await readFile(join(process.cwd(), response.path));
+      // const buffer = await this.fileService.convertToWebp(imageBuffer);
 
-      const save: MFile = new MFile({
-        originalname: `${file.originalname.split(".")[0]}.webp`,
-        buffer,
-      });
+      // const save: MFile = new MFile({
+      //   originalname: `${file.originalname.split(".")[0]}.webp`,
+      //   buffer,
+      // });
 
-      return this.fileService.saveFile(save);
+      // return this.fileService.saveFile(save);
     }
 
     const save: MFile = new MFile(file);
