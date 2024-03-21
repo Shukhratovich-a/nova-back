@@ -64,7 +64,7 @@ export class CertificateService {
 
   // DELETE
   async delete(certificateId: number) {
-    return await this.certificateRepository.softDelete(certificateId);
+    return await this.certificateRepository.delete(certificateId);
   }
 
   // CHECKERS

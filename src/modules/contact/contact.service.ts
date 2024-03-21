@@ -60,7 +60,7 @@ export class ContactService {
 
   // DELETE
   async delete(contactId: number) {
-    return await this.contactRepository.softDelete(contactId);
+    return await this.contactRepository.delete(contactId);
   }
 
   // CHECKERS

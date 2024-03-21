@@ -9,7 +9,6 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from "typeorm";
 
 import { ProductEntity } from "@modules/product/product.entity";
@@ -39,9 +38,6 @@ export class DetailCategoryEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }
 
 @Entity("detail_types")
@@ -69,9 +65,6 @@ export class DetailTypeEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }
 
 @Entity("details")
@@ -99,7 +92,4 @@ export class DetailEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

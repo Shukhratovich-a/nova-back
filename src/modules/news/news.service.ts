@@ -133,7 +133,7 @@ export class NewsService {
 
   // DELETE
   async delete(newsId: number) {
-    return await this.newsRepository.softDelete(newsId);
+    return await this.newsRepository.delete(newsId);
   }
 
   // CHECKERS

@@ -8,7 +8,6 @@ import {
   Relation,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from "typeorm";
 
 import { ProductEntity } from "@modules/product/product.entity";
@@ -42,7 +41,4 @@ export class VideoEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

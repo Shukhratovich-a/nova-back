@@ -136,7 +136,7 @@ export class SubcategoryService {
 
   // DELETE
   async delete(subcategoryId: number) {
-    return await this.subcategoryRepository.softDelete(subcategoryId);
+    return await this.subcategoryRepository.delete(subcategoryId);
   }
 
   // PARSERS

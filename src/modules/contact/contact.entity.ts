@@ -1,12 +1,4 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 import { ContactTypeEnum } from "@enums/contact-type.enum";
 
@@ -41,7 +33,4 @@ export class ContactEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

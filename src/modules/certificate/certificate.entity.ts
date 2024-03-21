@@ -1,12 +1,4 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("certificates")
 export class CertificateEntity extends BaseEntity {
@@ -27,7 +19,4 @@ export class CertificateEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

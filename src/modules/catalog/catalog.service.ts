@@ -70,7 +70,7 @@ export class CatalogService {
 
   // DELETE
   async delete(catalogId: number) {
-    return await this.catalogRepository.softDelete({ id: catalogId });
+    return await this.catalogRepository.delete({ id: catalogId });
   }
 
   // CHECKERS

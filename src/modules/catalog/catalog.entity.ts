@@ -1,12 +1,4 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("catalogs", { orderBy: { year: "DESC" } })
 export class CatalogEntity extends BaseEntity {
@@ -51,7 +43,4 @@ export class CatalogEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

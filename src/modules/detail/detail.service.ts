@@ -60,7 +60,7 @@ export class DetailCategoryService {
 
   // DELETE
   async delete(categoryId: number) {
-    return await this.detailCategoryRepository.softDelete(categoryId);
+    return await this.detailCategoryRepository.delete(categoryId);
   }
 
   // CHECKERS
@@ -119,7 +119,7 @@ export class DetailTypeService {
 
   // DELETE
   async delete(typeId: number) {
-    return await this.detailTypeRepository.softDelete(typeId);
+    return await this.detailTypeRepository.delete(typeId);
   }
 
   // CHECKERS
@@ -190,7 +190,7 @@ export class DetailService {
 
   // DELETE
   async delete(typeId: number) {
-    return await this.detailRepository.softDelete(typeId);
+    return await this.detailRepository.delete(typeId);
   }
 
   async deleteByParent(parentId: number) {

@@ -10,7 +10,6 @@ import {
   AfterInsert,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from "typeorm";
 
 import { NewsTypeEnum } from "@enums/news-type.enum";
@@ -79,9 +78,6 @@ export class NewsEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 
   @BeforeInsert()
   async beforeInsert() {

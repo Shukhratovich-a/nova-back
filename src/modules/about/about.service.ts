@@ -69,7 +69,7 @@ export class AboutService {
 
   // DELETE
   async delete(aboutId: number) {
-    return await this.aboutRepository.softDelete(aboutId);
+    return await this.aboutRepository.delete(aboutId);
   }
 
   // CHECKERS

@@ -106,7 +106,7 @@ export class VideoService {
 
   // DELETE
   async delete(videoId: number) {
-    return await this.videoRepository.softDelete(videoId);
+    return await this.videoRepository.delete(videoId);
   }
 
   // PARSERS

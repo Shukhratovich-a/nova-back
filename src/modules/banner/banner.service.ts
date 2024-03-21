@@ -69,7 +69,7 @@ export class BannerService {
 
   // DELETE
   async delete(bannerId: number) {
-    return await this.bannerRepository.softDelete(bannerId);
+    return await this.bannerRepository.delete(bannerId);
   }
 
   // CHECKERS

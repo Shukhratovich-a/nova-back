@@ -10,7 +10,6 @@ import {
   AfterInsert,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from "typeorm";
 
 import { CategoryEntity } from "@modules/category/category.entity";
@@ -51,9 +50,6 @@ export class SubcategoryEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 
   @AfterInsert()
   async afterInsert() {

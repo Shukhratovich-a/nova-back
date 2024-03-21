@@ -129,7 +129,7 @@ export class CategoryService {
 
   // DELETE
   async delete(categoryId: number) {
-    return await this.categoryRepository.softDelete(categoryId);
+    return await this.categoryRepository.delete(categoryId);
   }
 
   // CHECKERS

@@ -173,8 +173,8 @@ export class ProductService {
 
   // CREATE
   async create(productDto: CreateProductDto) {
-    const isPdfCreated = await this.pdfService.createProductPdf(productDto);
-    if (!isPdfCreated) throw new BadRequestException();
+    // const isPdfCreated = await this.pdfService.createProductPdf(productDto);
+    // if (!isPdfCreated) throw new BadRequestException();
 
     const product = await this.productRepository.save(
       this.productRepository.create({
@@ -209,7 +209,7 @@ export class ProductService {
 
   // DELETE
   async delete(productId: number) {
-    return await this.productRepository.softDelete(productId);
+    return await this.productRepository.delete(productId);
   }
 
   // PARSERS

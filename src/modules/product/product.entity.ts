@@ -9,7 +9,6 @@ import {
   Relation,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from "typeorm";
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
@@ -68,7 +67,4 @@ export class ProductEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
-
-  @DeleteDateColumn({ name: "delete_at", type: "datetime", nullable: true })
-  deleteAt: Date;
 }

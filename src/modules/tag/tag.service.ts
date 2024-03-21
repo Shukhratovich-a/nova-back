@@ -60,7 +60,7 @@ export class TagService {
 
   // DELETE
   async delete(tagId: number) {
-    return await this.tagRepository.softDelete(tagId);
+    return await this.tagRepository.delete(tagId);
   }
 
   // CHECKERS
