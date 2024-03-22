@@ -240,12 +240,14 @@ export class DetailService {
     });
 
     const otherDetails = details.filter((detail) => !detail.category);
-    const otherCategory: DetailCategoryDto = {
-      id: Date.now(),
-      title: other[`title${capitalize(language)}`],
-      details: otherDetails.map((detail) => this.parse(detail, language)),
-    };
-    newDetails.push(otherCategory);
+    if (!otherDetails.length) {
+      const otherCategory: DetailCategoryDto = {
+        id: Date.now(),
+        title: other[`title${capitalize(language)}`],
+        details: otherDetails.map((detail) => this.parse(detail, language)),
+      };
+      newDetails.push(otherCategory);
+    }
 
     return newDetails;
   }
