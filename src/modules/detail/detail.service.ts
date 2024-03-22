@@ -240,7 +240,7 @@ export class DetailService {
     });
 
     const otherDetails = details.filter((detail) => !detail.category);
-    if (!otherDetails.length) {
+    if (otherDetails.length > 0) {
       const otherCategory: DetailCategoryDto = {
         id: Date.now(),
         title: other[`title${capitalize(language)}`],
