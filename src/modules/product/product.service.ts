@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { FindOptionsWhere, Like, Not, Repository } from "typeorm";
@@ -39,6 +39,29 @@ export class ProductService {
 
     const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
 
+    return { data: parsedProducts, total };
+  }
+
+  async findRelated(productId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
+    // const searchTags = tags.map((tag) => `'${tag}'`).toString();
+    const product = await this.productRepository.findOne({ where: { id: productId }, relations: { subcategory: true } });
+    if (!product.subcategory) return [];
+
+    const [products, total] = await this.productRepository
+      .createQueryBuilder("product")
+      .leftJoinAndSelect("product.subcategory", "subcategory")
+      .where("product.id != :id", { id: productId })
+      .orderBy(`CASE WHEN subcategory.id = ${product.subcategory.id} THEN 0 ELSE 1 END`)
+      .addOrderBy("product.code")
+      .getManyAndCount();
+    if (!products) return [];
+
+    const parsedProducts: ProductDto[] = products
+      .slice((Number(page) - 1) * Number(limit), Number(page) * Number(limit))
+      .map((product) => {
+        const newProduct = this.parse(product, language);
+        return newProduct;
+      });
     return { data: parsedProducts, total };
   }
 

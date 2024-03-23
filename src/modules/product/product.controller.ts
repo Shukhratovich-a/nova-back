@@ -23,6 +23,18 @@ export class ProductController {
     return this.productService.findAll(language, { page, limit });
   }
 
+  @Get("get-related/:productId")
+  async getRelated(
+    @Param("productId") productId: number,
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query() { page, limit }: IPagination,
+  ) {
+    const product = await this.productService.checkById(productId);
+    if (!product) throw new BadRequestException("not found");
+
+    return this.productService.findRelated(productId, language, { page, limit });
+  }
+
   @Get("search")
   async searchProducts(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
@@ -37,6 +49,9 @@ export class ProductController {
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
     @Param("productId", new ParseIntPipe()) productId: number,
   ) {
+    const product = await this.productService.checkById(productId);
+    if (!product) throw new BadRequestException("not found");
+
     return this.productService.findById(productId, language);
   }
 
@@ -45,6 +60,9 @@ export class ProductController {
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
     @Param("productCode") productCode: string,
   ) {
+    const product = await this.productService.checkByCode(productCode);
+    if (!product) throw new BadRequestException("not found");
+
     return this.productService.findByCode(productCode, language);
   }
 
@@ -55,6 +73,9 @@ export class ProductController {
 
   @Get("get-one-with-contents/:productId")
   async getOneWithContents(@Param("productId", new ParseIntPipe()) productId: number) {
+    const product = await this.productService.checkById(productId);
+    if (!product) throw new BadRequestException("not found");
+
     return this.productService.findOneWithContents(productId);
   }
 
@@ -63,6 +84,9 @@ export class ProductController {
     @Query() { page, limit }: IPagination,
     @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
   ) {
+    const subcategory = await this.subcategoryService.checkById(subcategoryId);
+    if (!subcategory) throw new BadRequestException("category not exists");
+
     return this.productService.findAllByParentId(subcategoryId, { page, limit });
   }
 
