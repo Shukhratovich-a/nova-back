@@ -8,9 +8,7 @@ import { AppModule } from "@/app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: ["https://novaplastik.uz", "https://nova-front.vercel.app", "https://admin.novaplastik.uz", "http://localhost:5173"],
-  });
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
