@@ -66,6 +66,6 @@ export class FileService {
   }
 
   convertToWebp(file: Buffer): Promise<Buffer> {
-    return sharp(file).webp().toBuffer();
+    return sharp(file).resize({ width: 3000, fit: sharp.fit.contain }).webp().toBuffer();
   }
 }
