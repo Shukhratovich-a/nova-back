@@ -61,11 +61,35 @@ export class FileService {
     }
   }
 
-  async convertToWebpAndTrim(buffer: Buffer): Promise<Buffer> {
-    return sharp(buffer).trim().webp().toBuffer();
+  async convertToWebpAndTrim(file: Buffer): Promise<Buffer> {
+    try {
+      const image = sharp(file);
+      const metadata = await image.metadata();
+      const originalWidth = metadata.width;
+
+      if (originalWidth > 3000) {
+        return image.resize({ width: 3000, fit: sharp.fit.contain }).trim().webp().toBuffer();
+      } else {
+        return image.webp().trim().toBuffer();
+      }
+    } catch (error) {
+      console.error("Error processing image:", error);
+    }
   }
 
-  convertToWebp(file: Buffer): Promise<Buffer> {
-    return sharp(file).resize({ width: 3000, fit: sharp.fit.contain }).webp().toBuffer();
+  async convertToWebp(file: Buffer): Promise<Buffer> {
+    try {
+      const image = sharp(file);
+      const metadata = await image.metadata();
+      const originalWidth = metadata.width;
+
+      if (originalWidth > 3000) {
+        return image.resize({ width: 3000, fit: sharp.fit.contain }).webp().toBuffer();
+      } else {
+        return image.webp().toBuffer();
+      }
+    } catch (error) {
+      console.error("Error processing image:", error);
+    }
   }
 }
