@@ -66,6 +66,6 @@ export class FileService {
   }
 
   convertToWebp(file: Buffer): Promise<Buffer> {
-    return sharp(file).webp().toBuffer();
+    return sharp(file).webp({ quality: 80 }).toBuffer();
   }
 }
