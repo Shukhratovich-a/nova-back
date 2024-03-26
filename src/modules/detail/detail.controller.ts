@@ -13,8 +13,8 @@ export class DetailController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.detailService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.detailService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:detailId")
@@ -23,8 +23,8 @@ export class DetailController {
   }
 
   @Get("get-by-parent/:productId")
-  async getAllByParentId(@Param("productId", new ParseIntPipe()) productId: number, @Query() { page, limit }: IPagination) {
-    return this.detailService.findAllByParentId(productId, { page, limit });
+  async getAllByParentId(@Param("productId", new ParseIntPipe()) productId: number, @Query() pagination: IPagination) {
+    return this.detailService.findAllByParentId(productId, pagination);
   }
 
   // POST
@@ -58,8 +58,8 @@ export class DetailCategoryController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.detailCategoryService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.detailCategoryService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:categoryId")
@@ -98,8 +98,8 @@ export class DetailTypeController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.detailTypeService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.detailTypeService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:typeId")

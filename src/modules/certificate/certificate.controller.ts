@@ -13,13 +13,13 @@ export class CertificateController {
 
   // GET
   @Get("get-all")
-  async getAll(@Query() { page, limit }: IPagination) {
-    return this.certificateService.findAll({ page, limit });
+  async getAll(@Query() pagination: IPagination) {
+    return this.certificateService.findAll(pagination);
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.certificateService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.certificateService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:certificateId")

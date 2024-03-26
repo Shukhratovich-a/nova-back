@@ -26,10 +26,10 @@ export class ContactService {
     });
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [products, total] = await this.contactRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!products) return [];
 

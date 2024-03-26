@@ -20,12 +20,12 @@ export class NewsService {
   constructor(@InjectRepository(NewsEntity) private readonly newsRepository: Repository<NewsEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const [news, total] = await this.newsRepository
       .createQueryBuilder("news")
       .leftJoinAndSelect("news.tags", "tags")
-      .take(Number(limit))
-      .skip((page - 1) * Number(limit) || 0)
+      .take(limit)
+      .skip((page - 1) * limit)
       .getManyAndCount();
     if (!news) return [];
 
@@ -68,7 +68,7 @@ export class NewsService {
     return parsedNews;
   }
 
-  async findAllByTags(tags: string[], newsId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
+  async findAllByTags(tags: string[], newsId: number, language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const searchTags = tags.map((tag) => `'${tag}'`).toString();
 
     const [news, total] = await this.newsRepository
@@ -81,7 +81,7 @@ export class NewsService {
       .getManyAndCount();
     if (!news) return [];
 
-    const parsedNews: NewsDto[] = news.slice((Number(page) - 1) * Number(limit), Number(page) * Number(limit)).map((item) => {
+    const parsedNews: NewsDto[] = news.slice((page - 1) * limit, page * limit).map((item) => {
       const newItem = this.parseNews(item, language);
       newItem.tags = item.tags.map((tag) => tag[`title${capitalize(language)}`]);
       return newItem;
@@ -89,11 +89,11 @@ export class NewsService {
     return { data: parsedNews, total };
   }
 
-  async findAllWithContents({ page, limit }: IPagination) {
+  async findAllWithContents({ page = 1, limit = 0 }: IPagination) {
     const [news, total] = await this.newsRepository.findAndCount({
       relations: { tags: true },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!news) return [];
 

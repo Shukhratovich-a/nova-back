@@ -18,30 +18,30 @@ export class ProductController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.productService.findAll(language, { page, limit });
+    return this.productService.findAll(language, pagination);
   }
 
   @Get("get-related/:productId")
   async getRelated(
     @Param("productId") productId: number,
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
     const product = await this.productService.checkById(productId);
     if (!product) throw new BadRequestException("not found");
 
-    return this.productService.findRelated(productId, language, { page, limit });
+    return this.productService.findRelated(productId, language, pagination);
   }
 
   @Get("search")
   async searchProducts(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
     @Query("q") searchText: string,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.productService.search(language, searchText, { page, limit });
+    return this.productService.search(language, searchText, pagination);
   }
 
   @Get("get-by-id/:productId")
@@ -67,8 +67,8 @@ export class ProductController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination, @Query("code") code: string) {
-    return this.productService.findAllWithCount({ page, limit }, code);
+  async getAllWithCount(@Query() pagination: IPagination, @Query("code") code: string) {
+    return this.productService.findAllWithCount(pagination, code);
   }
 
   @Get("get-one-with-contents/:productId")
@@ -80,14 +80,11 @@ export class ProductController {
   }
 
   @Get("get-by-parent/:subcategoryId")
-  async getAllByParentId(
-    @Query() { page, limit }: IPagination,
-    @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number,
-  ) {
+  async getAllByParentId(@Query() pagination: IPagination, @Param("subcategoryId", new ParseIntPipe()) subcategoryId: number) {
     const subcategory = await this.subcategoryService.checkById(subcategoryId);
     if (!subcategory) throw new BadRequestException("category not exists");
 
-    return this.productService.findAllByParentId(subcategoryId, { page, limit });
+    return this.productService.findAllByParentId(subcategoryId, pagination);
   }
 
   // POST

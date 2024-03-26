@@ -19,9 +19,9 @@ export class NewsController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.newsService.findAll(language, { page, limit });
+    return this.newsService.findAll(language, pagination);
   }
 
   @Get("get-by-id/:newsId")
@@ -45,14 +45,14 @@ export class NewsController {
     @Query("newsId") newsId: number,
     @Query("tags", new ParseArrayPipe()) tags: string[],
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.newsService.findAllByTags(tags, newsId, language, { page, limit });
+    return this.newsService.findAllByTags(tags, newsId, language, pagination);
   }
 
   @Get("get-with-count")
-  async getAllWithContents(@Query() { page, limit }: IPagination) {
-    return this.newsService.findAllWithContents({ page, limit });
+  async getAllWithContents(@Query() pagination: IPagination) {
+    return this.newsService.findAllWithContents(pagination);
   }
 
   @Get("get-one-with-contents/:newsId")

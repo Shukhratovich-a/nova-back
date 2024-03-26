@@ -23,8 +23,8 @@ export class CatalogController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.catalogService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.catalogService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:catalogId")

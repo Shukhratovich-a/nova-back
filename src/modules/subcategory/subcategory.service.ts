@@ -27,11 +27,11 @@ export class SubcategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository
       .createQueryBuilder("subcategory")
       .take(limit)
-      .skip((page - 1) * limit || 0)
+      .skip((page - 1) * limit)
       .getManyAndCount();
     if (!subcategories) return [];
     const parsedSubcategories: SubcategoryDto[] = subcategories.map((subcategory) => {
@@ -72,11 +72,11 @@ export class SubcategoryService {
     return parsedSubcategory;
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!subcategories) return [];
 
@@ -102,12 +102,12 @@ export class SubcategoryService {
     return category;
   }
 
-  async findAllByParentId(categoryId: number, { page, limit }: IPagination) {
+  async findAllByParentId(categoryId: number, { page = 1, limit = 0 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
       where: { category: { id: categoryId } },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!subcategories) return [];
 

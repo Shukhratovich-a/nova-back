@@ -23,8 +23,8 @@ export class BannerController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.bannerService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.bannerService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:bannerId")

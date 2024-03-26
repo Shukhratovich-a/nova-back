@@ -26,10 +26,10 @@ export class CategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page, limit }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!categories) return [];
 
@@ -38,11 +38,11 @@ export class CategoryService {
     return { data: parsedCategories, total };
   }
 
-  async findAllWithChildren(language: LanguageEnum, { page, limit }: IPagination) {
+  async findAllWithChildren(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
       relations: { subcategories: true },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!categories) return [];
 
@@ -90,10 +90,10 @@ export class CategoryService {
     return parsedCategory;
   }
 
-  async findAllWithContents({ page, limit }: IPagination) {
+  async findAllWithContents({ page = 1, limit = 0 }: IPagination) {
     const [categories, total] = await this.categoryRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!categories) return [];
 

@@ -19,9 +19,9 @@ export class SubcategoryController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.subcategoryService.findAll(language, { page, limit });
+    return this.subcategoryService.findAll(language, pagination);
   }
 
   @Get("get-by-id/:subcategoryId")
@@ -41,8 +41,8 @@ export class SubcategoryController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.subcategoryService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.subcategoryService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:subcategoryId")
@@ -51,8 +51,8 @@ export class SubcategoryController {
   }
 
   @Get("get-by-parent/:categoryId")
-  async getAllByParentId(@Query() { page, limit }: IPagination, @Param("categoryId", new ParseIntPipe()) categoryId: number) {
-    return this.subcategoryService.findAllByParentId(categoryId, { page, limit });
+  async getAllByParentId(@Query() pagination: IPagination, @Param("categoryId", new ParseIntPipe()) categoryId: number) {
+    return this.subcategoryService.findAllByParentId(categoryId, pagination);
   }
 
   // POST

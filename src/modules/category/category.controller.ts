@@ -18,18 +18,18 @@ export class CategoryController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.categoryService.findAll(language, { page, limit });
+    return this.categoryService.findAll(language, pagination);
   }
 
   // GET
   @Get("get-all-with-children")
   async getAllWithChildren(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.categoryService.findAllWithChildren(language, { page, limit });
+    return this.categoryService.findAllWithChildren(language, pagination);
   }
 
   @Get("get-by-id/:categoryId")
@@ -49,8 +49,8 @@ export class CategoryController {
   }
 
   @Get("get-with-count")
-  async getAllWithContents(@Query() { page, limit }: IPagination) {
-    return this.categoryService.findAllWithContents({ page, limit });
+  async getAllWithContents(@Query() pagination: IPagination) {
+    return this.categoryService.findAllWithContents(pagination);
   }
 
   @Get("get-one-with-contents/:categoryId")

@@ -15,17 +15,17 @@ export class CertificateService {
   constructor(@InjectRepository(CertificateEntity) private readonly certificateRepository: Repository<CertificateEntity>) {}
 
   // FIND
-  async findAll({ page, limit }: IPagination) {
+  async findAll({ page = 1, limit = 0 }: IPagination) {
     return await this.certificateRepository.find({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [certificates, total] = await this.certificateRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!certificates) return [];
 

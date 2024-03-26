@@ -29,10 +29,10 @@ export class BannerService {
     return { data: parsedBanner, total };
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [banners, total] = await this.bannerRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!banners) return [];
 

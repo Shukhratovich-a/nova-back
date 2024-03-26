@@ -17,8 +17,8 @@ export class TagController {
 
   // GET
   @Get("get-with-count")
-  async getAllWithContents(@Query() { page, limit }: IPagination) {
-    return this.tagService.findAllWithContents({ page, limit });
+  async getAllWithContents(@Query() pagination: IPagination) {
+    return this.tagService.findAllWithContents(pagination);
   }
 
   @Get("get-one-with-contents/:tagId")

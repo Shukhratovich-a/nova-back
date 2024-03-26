@@ -29,10 +29,10 @@ export class AboutService {
     return { data: parsedAbouts, total };
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [abouts, total] = await this.aboutRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!abouts) return [];
 

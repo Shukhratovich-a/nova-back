@@ -29,11 +29,11 @@ export class ProductService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const [products, total] = await this.productRepository
       .createQueryBuilder("product")
-      .take(Number(limit))
-      .skip((Number(page) - 1) * Number(limit) || 0)
+      .take(limit)
+      .skip((page - 1) * limit)
       .getManyAndCount();
     if (!products) return [];
 
@@ -42,8 +42,7 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
-  async findRelated(productId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
-    // const searchTags = tags.map((tag) => `'${tag}'`).toString();
+  async findRelated(productId: number, language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
     const product = await this.productRepository.findOne({ where: { id: productId }, relations: { subcategory: true } });
     if (!product.subcategory) return [];
 
@@ -56,16 +55,14 @@ export class ProductService {
       .getManyAndCount();
     if (!products) return [];
 
-    const parsedProducts: ProductDto[] = products
-      .slice((Number(page) - 1) * Number(limit), Number(page) * Number(limit))
-      .map((product) => {
-        const newProduct = this.parse(product, language);
-        return newProduct;
-      });
+    const parsedProducts: ProductDto[] = products.slice((page - 1) * limit, page * limit).map((product) => {
+      const newProduct = this.parse(product, language);
+      return newProduct;
+    });
     return { data: parsedProducts, total };
   }
 
-  async search(language: LanguageEnum, searchText: string, { page = 1, limit = 10 }: IPagination) {
+  async search(language: LanguageEnum, searchText: string, { page = 1, limit = 0 }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
       relations: { subcategory: true },
       where: [
@@ -75,8 +72,8 @@ export class ProductService {
         { titleRu: Like(`%${searchText}%`) },
         { titleTr: Like(`%${searchText}%`) },
       ],
-      take: Number(limit),
-      skip: (Number(page) - 1) * Number(limit) || 0,
+      take: limit,
+      skip: (page - 1) * limit,
       order: { code: "ASC" },
     });
     if (!products) return [];
@@ -136,7 +133,7 @@ export class ProductService {
     return parsedProduct;
   }
 
-  async findAllWithCount({ page, limit }: IPagination, code?: string) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination, code?: string) {
     const where: Record<string, unknown> = {};
     if (code) where.code = Like(`%${code}%`);
 
@@ -144,7 +141,7 @@ export class ProductService {
       relations: { subcategory: { category: true } },
       where,
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!products) return [];
 
@@ -174,11 +171,11 @@ export class ProductService {
     return product;
   }
 
-  async findAllByParentId(subcategoryId: number, { page, limit }: IPagination) {
+  async findAllByParentId(subcategoryId: number, { page = 1, limit = 0 }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
       where: { subcategory: { id: subcategoryId } },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!products) return [];
 

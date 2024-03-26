@@ -19,9 +19,9 @@ export class VideoController {
   @Get("get-all")
   async getAll(
     @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
-    @Query() { page, limit }: IPagination,
+    @Query() pagination: IPagination,
   ) {
-    return this.videoService.findAll(language, { page, limit });
+    return this.videoService.findAll(language, pagination);
   }
 
   @Get("get-by-id/:videoId")
@@ -33,8 +33,8 @@ export class VideoController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.videoService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.videoService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:videoId")
@@ -43,8 +43,8 @@ export class VideoController {
   }
 
   @Get("get-by-parent/:videoId")
-  async getAllByParentId(@Query() { page, limit }: IPagination, @Param("videoId", new ParseIntPipe()) videoId: number) {
-    return this.videoService.findAllByParentId(videoId, { page, limit });
+  async getAllByParentId(@Query() pagination: IPagination, @Param("videoId", new ParseIntPipe()) videoId: number) {
+    return this.videoService.findAllByParentId(videoId, pagination);
   }
 
   // POST

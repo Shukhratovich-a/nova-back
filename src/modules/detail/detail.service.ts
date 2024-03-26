@@ -29,10 +29,10 @@ export class DetailCategoryService {
     return this.detailCategoryRepository.find();
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [categories, total] = await this.detailCategoryRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!categories) return [];
 
@@ -88,10 +88,10 @@ export class DetailTypeService {
     return this.detailTypeRepository.find();
   }
 
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [types, total] = await this.detailTypeRepository.findAndCount({
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!types) return [];
 
@@ -137,11 +137,11 @@ export class DetailService {
   ) {}
 
   // FIND
-  async findAllWithCount({ page, limit }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!details) return [];
 
@@ -158,13 +158,13 @@ export class DetailService {
     return detail;
   }
 
-  async findAllByParentId(productId: number, { page, limit }: IPagination) {
+  async findAllByParentId(productId: number, { page = 1, limit = 0 }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
       where: { product: { id: productId } },
       order: { category: { id: "ASC" } },
       take: limit,
-      skip: (page - 1) * limit || 0,
+      skip: (page - 1) * limit,
     });
     if (!details) return [];
 

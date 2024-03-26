@@ -27,8 +27,8 @@ export class ContactController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.contactService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.contactService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:contactId")

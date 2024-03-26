@@ -23,8 +23,8 @@ export class AboutController {
   }
 
   @Get("get-with-count")
-  async getAllWithCount(@Query() { page, limit }: IPagination) {
-    return this.aboutService.findAllWithCount({ page, limit });
+  async getAllWithCount(@Query() pagination: IPagination) {
+    return this.aboutService.findAllWithCount(pagination);
   }
 
   @Get("get-one-with-contents/:aboutId")
