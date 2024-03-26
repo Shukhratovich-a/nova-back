@@ -97,28 +97,9 @@ export class FileController {
   @HttpCode(200)
   @UseInterceptors(FileInterceptor("file"))
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileElementResponse> {
-    try {
-      if (file.mimetype.includes("image")) {
-        const buffer = await this.fileService.convertToWebp(file.buffer);
+    const save: MFile = new MFile(file);
 
-        const save: MFile = new MFile({
-          originalname: `${file.originalname.split(".")[0]}.webp`,
-          buffer,
-        });
-
-        return this.fileService.saveFile(save);
-      }
-
-      const save: MFile = new MFile(file);
-
-      return this.fileService.saveFile(save);
-    } catch (error) {
-      console.log(error);
-
-      const save: MFile = new MFile(file);
-
-      return this.fileService.saveFile(save);
-    }
+    return this.fileService.saveFile(save);
   }
 
   @Post("upload-and-trim")
