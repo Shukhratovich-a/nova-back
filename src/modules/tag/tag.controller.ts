@@ -10,6 +10,7 @@ import { TagService } from "./tag.service";
 
 import { CreateTagDto } from "./dto/create-tag.dto";
 import { UpdateTagDto } from "./dto/update-tag.dto";
+import { OrderTagsDto } from "./dto/order-tag.dto";
 
 @Controller("tag")
 export class TagController {
@@ -38,6 +39,11 @@ export class TagController {
   @Post("create")
   async create(@Body() tagDto: CreateTagDto) {
     return this.tagService.create(tagDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderTagsDto) {
+    return this.tagService.order(data);
   }
 
   // PUT

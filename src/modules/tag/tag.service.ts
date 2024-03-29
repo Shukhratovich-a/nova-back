@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { In, Repository } from "typeorm";
@@ -12,6 +12,7 @@ import { TagEntity } from "./tag.entity";
 
 import { CreateTagDto } from "./dto/create-tag.dto";
 import { UpdateTagDto } from "./dto/update-tag.dto";
+import { OrderTagDto } from "./dto/order-tag.dto";
 
 @Injectable()
 export class TagService {
@@ -46,6 +47,22 @@ export class TagService {
     const parsedTags = currentTags.map((tag) => this.parse(tag, language));
 
     return parsedTags;
+  }
+
+  // ORDER
+  async order(tags: OrderTagDto[]) {
+    try {
+      for (const { id, order } of tags) {
+        const currentTag = await this.tagRepository.find({ where: { id } });
+        if (!currentTag) continue;
+
+        await this.tagRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CREATE

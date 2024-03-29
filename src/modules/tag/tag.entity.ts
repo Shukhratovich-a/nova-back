@@ -1,6 +1,6 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-@Entity("tags")
+@Entity("tags", { orderBy: { order: "ASC" } })
 export class TagEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -16,6 +16,9 @@ export class TagEntity extends BaseEntity {
 
   @Column({ name: "title_ar", type: "varchar", nullable: true })
   titleAr: string;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
