@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -14,6 +14,7 @@ import { BannerEntity } from "./banner.entity";
 import { BannerDto } from "./dtos/banner.dto";
 import { CreateBannerDto } from "./dtos/create-banner.dto";
 import { UpdateBannerDto } from "./dtos/update-banner.dto";
+import { OrderBannerDto } from "./dtos/order-banner.dto";
 
 @Injectable()
 export class BannerService {
@@ -55,6 +56,22 @@ export class BannerService {
     banner.poster = process.env.HOST + banner.poster;
 
     return banner;
+  }
+
+  // ORDER
+  async order(banners: OrderBannerDto[]) {
+    try {
+      for (const { id, order } of banners) {
+        const currentTag = await this.bannerRepository.find({ where: { id } });
+        if (!currentTag) continue;
+
+        await this.bannerRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CREATE

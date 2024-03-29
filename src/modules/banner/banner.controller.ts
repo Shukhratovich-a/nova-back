@@ -9,6 +9,7 @@ import { BannerService } from "./banner.service";
 
 import { CreateBannerDto } from "./dtos/create-banner.dto";
 import { UpdateBannerDto } from "./dtos/update-banner.dto";
+import { OrderBannersDto } from "./dtos/order-banner.dto";
 
 @Controller("banner")
 export class BannerController {
@@ -36,6 +37,11 @@ export class BannerController {
   @Post("create")
   async create(@Body() bannerDto: CreateBannerDto) {
     return this.bannerService.create(bannerDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderBannersDto) {
+    return this.bannerService.order(data);
   }
 
   // PUT
