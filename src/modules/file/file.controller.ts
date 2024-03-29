@@ -129,22 +129,11 @@ export class FileController {
     return this.fileService.saveFile(save);
   }
 
-  @Post("upload-product-scheme")
+  @Post("upload-product-image")
   @HttpCode(200)
   @UseInterceptors(FileInterceptor("file"))
   async uploadProductScheme(@UploadedFile() file: Express.Multer.File): Promise<FileElementResponse> {
     if (!(file.mimetype.includes("image") || file.mimetype.includes("pdf"))) throw new BadRequestException();
-
-    if (file.mimetype.includes("image")) {
-      const buffer = await this.fileService.convertToWebp(file.buffer);
-
-      const save: MFile = new MFile({
-        originalname: `${file.originalname.split(".")[0]}.webp`,
-        buffer,
-      });
-
-      return this.fileService.saveFile(save);
-    }
 
     if (file.mimetype.includes("pdf")) {
       const response = await this.fileService.convertPdfToPng(file.buffer);
@@ -159,7 +148,12 @@ export class FileController {
       return this.fileService.saveFile(save);
     }
 
-    const save: MFile = new MFile(file);
+    const buffer = await this.fileService.convertToWebpAndTrim(file.buffer);
+
+    const save: MFile = new MFile({
+      originalname: `${file.originalname.split(".")[0]}.webp`,
+      buffer,
+    });
 
     return this.fileService.saveFile(save);
   }
