@@ -9,6 +9,7 @@ import { CategoryService } from "./category.service";
 
 import { CreateCategoryDto } from "./dtos/create-category.dto";
 import { UpdateCategoryDto } from "./dtos/update-category.dto";
+import { OrderCategoriesDto } from "./dtos/order-category.dto";
 
 @Controller("category")
 export class CategoryController {
@@ -62,6 +63,11 @@ export class CategoryController {
   @Post("create")
   async create(@Body() categoryDto: CreateCategoryDto) {
     return this.categoryService.create(categoryDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderCategoriesDto) {
+    return this.categoryService.order(data);
   }
 
   // PUT

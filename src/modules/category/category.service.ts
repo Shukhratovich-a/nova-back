@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Inject, Injectable, forwardRef, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -16,6 +16,7 @@ import { SubcategoryService } from "@modules/subcategory/subcategory.service";
 import { CategoryDto } from "./dtos/category.dto";
 import { CreateCategoryDto } from "./dtos/create-category.dto";
 import { UpdateCategoryDto } from "./dtos/update-category.dto";
+import { OrderCategoryDto } from "./dtos/order-category.dto";
 
 @Injectable()
 export class CategoryService {
@@ -115,6 +116,22 @@ export class CategoryService {
     category.poster = process.env.HOST + category.poster;
 
     return category;
+  }
+
+  // ORDER
+  async order(categories: OrderCategoryDto[]) {
+    try {
+      for (const { id, order } of categories) {
+        const currentTag = await this.categoryRepository.find({ where: { id } });
+        if (!currentTag) continue;
+
+        await this.categoryRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CREATE

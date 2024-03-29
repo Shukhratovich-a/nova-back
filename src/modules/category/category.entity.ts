@@ -12,7 +12,7 @@ import {
 
 import { SubcategoryEntity } from "@modules/subcategory/subcategory.entity";
 
-@Entity("categories")
+@Entity("categories", { orderBy: { order: "ASC" } })
 export class CategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -37,6 +37,9 @@ export class CategoryEntity extends BaseEntity {
 
   @OneToMany(() => SubcategoryEntity, (subcategory) => subcategory.category)
   subcategories: Relation<SubcategoryEntity[]>;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
