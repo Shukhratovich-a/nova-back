@@ -63,15 +63,12 @@ export class FileService {
 
   async convertToWebpAndTrim(file: Buffer): Promise<Buffer> {
     try {
-      const image = sharp(file);
-      const metadata = await image.metadata();
-      const originalWidth = metadata.width;
-
-      if (originalWidth > 3000) {
-        return image.resize({ width: 3000, fit: sharp.fit.contain }).trim().webp().toBuffer();
-      } else {
-        return image.webp().trim().toBuffer();
-      }
+      return sharp(file)
+        .trim()
+        .resize({ width: 1800, height: 1800, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .extend({ top: 100, bottom: 100, left: 100, right: 100, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .webp()
+        .toBuffer();
     } catch (error) {
       console.error("Error processing image:", error);
     }
