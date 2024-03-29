@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -14,6 +14,7 @@ import { DetailEntity, DetailCategoryEntity, DetailTypeEntity } from "./detail.e
 import { DetailCategoryDto, DetailDto } from "./dtos/detail.dto";
 import { CreateDetailDto, CreateDetailCategoryDto, CreateDetailTypeDto } from "./dtos/create-detail.dto";
 import { UpdateDetailDto, UpdateDetailCategoryDto, UpdateDetailTypeDto } from "./dtos/update-detail.dto";
+import { OrderDetailCategoryDto } from "./dtos/order-about.dto";
 
 import { other } from "./detail.constants";
 
@@ -61,6 +62,22 @@ export class DetailCategoryService {
   // DELETE
   async delete(categoryId: number) {
     return await this.detailCategoryRepository.delete(categoryId);
+  }
+
+  // ORDER
+  async order(detailCategories: OrderDetailCategoryDto[]) {
+    try {
+      for (const { id, order } of detailCategories) {
+        const currentDetailCategory = await this.detailCategoryRepository.find({ where: { id } });
+        if (!currentDetailCategory) continue;
+
+        await this.detailCategoryRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CHECKERS

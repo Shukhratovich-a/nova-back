@@ -6,6 +6,7 @@ import { DetailService, DetailCategoryService, DetailTypeService } from "./detai
 
 import { CreateDetailDto, CreateDetailCategoryDto, CreateDetailTypeDto } from "./dtos/create-detail.dto";
 import { UpdateDetailDto, UpdateDetailCategoryDto, UpdateDetailTypeDto } from "./dtos/update-detail.dto";
+import { OrderDetailCategoriesDto } from "./dtos/order-about.dto";
 
 @Controller("detail")
 export class DetailController {
@@ -71,6 +72,11 @@ export class DetailCategoryController {
   @Post("create")
   async create(@Body() categoryDto: CreateDetailCategoryDto) {
     return this.detailCategoryService.create(categoryDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderDetailCategoriesDto) {
+    return this.detailCategoryService.order(data);
   }
 
   // PUT
