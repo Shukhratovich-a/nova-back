@@ -9,6 +9,7 @@ import { AboutService } from "./about.service";
 
 import { CreateAboutDto } from "./dtos/create-about.dto";
 import { UpdateAboutDto } from "./dtos/update-about.dto";
+import { OrderAboutsDto } from "./dtos/order-about.dto";
 
 @Controller("about")
 export class AboutController {
@@ -36,6 +37,11 @@ export class AboutController {
   @Post("create")
   async create(@Body() aboutDto: CreateAboutDto) {
     return this.aboutService.create(aboutDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderAboutsDto) {
+    return this.aboutService.order(data);
   }
 
   // PUT

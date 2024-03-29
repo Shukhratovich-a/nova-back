@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -14,6 +14,7 @@ import { AboutEntity } from "./about.entity";
 import { AboutDto } from "./dtos/about.dto";
 import { CreateAboutDto } from "./dtos/create-about.dto";
 import { UpdateAboutDto } from "./dtos/update-about.dto";
+import { OrderAboutDto } from "./dtos/order-about.dto";
 
 @Injectable()
 export class AboutService {
@@ -55,6 +56,22 @@ export class AboutService {
     about.poster = process.env.HOST + about.poster;
 
     return about;
+  }
+
+  // ORDER
+  async order(abouts: OrderAboutDto[]) {
+    try {
+      for (const { id, order } of abouts) {
+        const currentAbout = await this.aboutRepository.find({ where: { id } });
+        if (!currentAbout) continue;
+
+        await this.aboutRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CREATE
