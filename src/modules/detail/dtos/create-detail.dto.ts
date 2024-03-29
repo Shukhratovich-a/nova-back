@@ -42,5 +42,9 @@ export class CreateDetailDto {
 
   @IsNumber()
   @IsOptional()
+  order: number;
+
+  @IsNumber()
+  @IsOptional()
   productId?: number;
 }

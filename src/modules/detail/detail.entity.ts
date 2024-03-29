@@ -13,7 +13,7 @@ import {
 
 import { ProductEntity } from "@modules/product/product.entity";
 
-@Entity("detail_categories")
+@Entity("detail_categories", { orderBy: { order: "ASC" } })
 export class DetailCategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -32,6 +32,9 @@ export class DetailCategoryEntity extends BaseEntity {
 
   @OneToMany(() => DetailEntity, (detail) => detail.category, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
@@ -67,7 +70,7 @@ export class DetailTypeEntity extends BaseEntity {
   updateAt: Date;
 }
 
-@Entity("details")
+@Entity("details", { orderBy: { order: "ASC" } })
 export class DetailEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -86,6 +89,9 @@ export class DetailEntity extends BaseEntity {
   @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "product_id" })
   product: ProductEntity;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;

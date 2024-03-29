@@ -90,6 +90,7 @@ export class ProductService {
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "category")
       .where("product.id = :id", { id: productId })
+      .orderBy("detail.order", "ASC")
       .getOne();
     if (!product) return null;
 
@@ -108,6 +109,7 @@ export class ProductService {
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "detail_category")
       .where("product.code = :code", { code: productCode })
+      .orderBy("detail.order", "ASC")
       .getOne();
     if (!product) return null;
 
@@ -124,6 +126,7 @@ export class ProductService {
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "category")
       .where("product.alias = :alias", { alias })
+      .orderBy("detail.order", "ASC")
       .getOne();
     if (!product) return null;
 
@@ -161,6 +164,7 @@ export class ProductService {
     const product = await this.productRepository.findOne({
       relations: { subcategory: { category: true }, details: { type: true, category: true } },
       where: { id: productId },
+      order: { details: { order: "ASC" } },
     });
     if (!product) return null;
 
