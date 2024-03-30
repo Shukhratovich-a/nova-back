@@ -108,14 +108,10 @@ export class DetailService {
 
     if (detail.type) {
       newDetail.title = detail.type[`title${capitalize(language)}`];
+
+      if (detail.dimension) newDetail.title = `${newDetail.title} ${detail.dimension[`title${capitalize(language)}`]}`;
     } else {
       newDetail.title = null;
-    }
-
-    if (detail.dimension) {
-      newDetail.dimension = detail.dimension[`title${capitalize(language)}`];
-    } else {
-      newDetail.dimension = null;
     }
 
     return newDetail;
