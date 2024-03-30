@@ -1,36 +1,20 @@
 import { IsString, IsNumber, IsOptional } from "class-validator";
 
-export class CreateDetailCategoryDto {
-  @IsString()
-  titleRu: string;
-
-  @IsString()
-  titleEn: string;
-
-  @IsString()
-  titleTr: string;
-
-  @IsString()
-  titleAr: string;
-}
-
-export class CreateDetailTypeDto {
-  @IsString()
-  titleRu: string;
-
-  @IsString()
-  titleEn: string;
-
-  @IsString()
-  titleTr: string;
-
-  @IsString()
-  titleAr: string;
-}
-
 export class CreateDetailDto {
   @IsString()
-  value: string;
+  valueEn: string;
+
+  @IsString()
+  @IsOptional()
+  valueRu?: string;
+
+  @IsString()
+  @IsOptional()
+  valueTr?: string;
+
+  @IsString()
+  @IsOptional()
+  valueAr?: string;
 
   @IsOptional()
   @IsNumber()

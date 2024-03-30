@@ -1,45 +1,21 @@
 import { IsString, IsNumber, IsOptional } from "class-validator";
 
-export class UpdateDetailCategoryDto {
-  @IsString()
-  @IsOptional()
-  titleRu?: string;
-
-  @IsString()
-  @IsOptional()
-  titleEn?: string;
-
-  @IsString()
-  @IsOptional()
-  titleTr?: string;
-
-  @IsString()
-  @IsOptional()
-  titleAr?: string;
-}
-
-export class UpdateDetailTypeDto {
-  @IsString()
-  @IsOptional()
-  titleRu?: string;
-
-  @IsString()
-  @IsOptional()
-  titleEn?: string;
-
-  @IsString()
-  @IsOptional()
-  titleTr?: string;
-
-  @IsString()
-  @IsOptional()
-  titleAr?: string;
-}
-
 export class UpdateDetailDto {
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  value?: string;
+  valueEn?: string;
+
+  @IsString()
+  @IsOptional()
+  valueRu?: string;
+
+  @IsString()
+  @IsOptional()
+  valueTr?: string;
+
+  @IsString()
+  @IsOptional()
+  valueAr?: string;
 
   @IsNumber()
   @IsOptional()

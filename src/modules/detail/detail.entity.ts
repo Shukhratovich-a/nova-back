@@ -3,80 +3,34 @@ import {
   BaseEntity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   ManyToOne,
-  Relation,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from "typeorm";
 
 import { ProductEntity } from "@modules/product/product.entity";
-
-@Entity("detail_categories", { orderBy: { order: "ASC" } })
-export class DetailCategoryEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title_ru", type: "varchar", nullable: true })
-  titleRu: string;
-
-  @Column({ name: "title_en", type: "varchar", nullable: true })
-  titleEn: string;
-
-  @Column({ name: "title_tr", type: "varchar", nullable: true })
-  titleTr: string;
-
-  @Column({ name: "title_ar", type: "varchar", nullable: true })
-  titleAr: string;
-
-  @OneToMany(() => DetailEntity, (detail) => detail.category, { onDelete: "CASCADE" })
-  details: Relation<DetailEntity[]>;
-
-  @Column({ name: "order", type: "int", default: 0 })
-  order: number;
-
-  @CreateDateColumn({ name: "create_at", type: "datetime" })
-  createAt: Date;
-
-  @UpdateDateColumn({ name: "update_at", type: "datetime" })
-  updateAt: Date;
-}
-
-@Entity("detail_types")
-export class DetailTypeEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: "id" })
-  id: number;
-
-  @Column({ name: "title_ru", type: "varchar", nullable: true })
-  titleRu: string;
-
-  @Column({ name: "title_en", type: "varchar", nullable: true })
-  titleEn: string;
-
-  @Column({ name: "title_tr", type: "varchar", nullable: true })
-  titleTr: string;
-
-  @Column({ name: "title_ar", type: "varchar", nullable: true })
-  titleAr: string;
-
-  @OneToMany(() => DetailEntity, (detail) => detail.type, { onDelete: "CASCADE" })
-  details: Relation<DetailEntity[]>;
-
-  @CreateDateColumn({ name: "create_at", type: "datetime" })
-  createAt: Date;
-
-  @UpdateDateColumn({ name: "update_at", type: "datetime" })
-  updateAt: Date;
-}
+import { DetailTypeEntity } from "@modules/detail-type/detail-type.entity";
+import { DetailCategoryEntity } from "@modules/detail-category/detail-category.entity";
+import { DetailDimensionEntity } from "@modules/detail-dimension/detail-dimension.entity";
 
 @Entity("details", { orderBy: { order: "ASC" } })
 export class DetailEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "value", type: "varchar", nullable: true })
-  value: string;
+  @Column({ name: "value_en", type: "varchar", nullable: false })
+  valueEn?: string;
+
+  @Column({ name: "value_ru", type: "varchar", nullable: true })
+  valueRu?: string;
+
+  @Column({ name: "value_tr", type: "varchar", nullable: true })
+  valueTr?: string;
+
+  @Column({ name: "value_ar", type: "varchar", nullable: true })
+  valueAr?: string;
 
   @ManyToOne(() => DetailTypeEntity, (type) => type.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "type_id" })
@@ -85,6 +39,10 @@ export class DetailEntity extends BaseEntity {
   @ManyToOne(() => DetailCategoryEntity, (category) => category.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "category_id" })
   category?: DetailCategoryEntity | null;
+
+  @ManyToOne(() => DetailDimensionEntity, (dimension) => dimension.details, { nullable: true, onDelete: "CASCADE" })
+  @JoinColumn({ name: "dimension_id" })
+  dimension?: DetailDimensionEntity | null;
 
   @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "product_id" })
@@ -98,4 +56,11 @@ export class DetailEntity extends BaseEntity {
 
   @UpdateDateColumn({ name: "update_at", type: "datetime" })
   updateAt: Date;
+
+  @BeforeInsert()
+  afterInsert() {
+    if (!this.valueRu) this.valueRu = this.valueEn;
+    if (!this.valueTr) this.valueTr = this.valueEn;
+    if (!this.valueAr) this.valueAr = this.valueEn;
+  }
 }

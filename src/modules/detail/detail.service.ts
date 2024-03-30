@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -9,141 +9,16 @@ import { LanguageEnum } from "@enums/language.enum";
 
 import { capitalize } from "@utils/capitalize.utils";
 
-import { DetailEntity, DetailCategoryEntity, DetailTypeEntity } from "./detail.entity";
+import { DetailCategoryService } from "@modules/detail-category/detail-category.service";
 
-import { DetailCategoryDto, DetailDto } from "./dtos/detail.dto";
-import { CreateDetailDto, CreateDetailCategoryDto, CreateDetailTypeDto } from "./dtos/create-detail.dto";
-import { UpdateDetailDto, UpdateDetailCategoryDto, UpdateDetailTypeDto } from "./dtos/update-detail.dto";
-import { OrderDetailCategoryDto } from "./dtos/order-about.dto";
+import { DetailEntity } from "./detail.entity";
+
+import { DetailDto } from "./dtos/detail.dto";
+import { CreateDetailDto } from "./dtos/create-detail.dto";
+import { UpdateDetailDto } from "./dtos/update-detail.dto";
+import { DetailCategoryDto } from "@modules/detail-category/dtos/detail-category.dto";
 
 import { other } from "./detail.constants";
-
-// DETAIL CATEGORY
-@Injectable()
-export class DetailCategoryService {
-  constructor(
-    @InjectRepository(DetailCategoryEntity) private readonly detailCategoryRepository: Repository<DetailCategoryEntity>,
-  ) {}
-
-  // FIND
-  async findAll() {
-    return this.detailCategoryRepository.find();
-  }
-
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
-    const [categories, total] = await this.detailCategoryRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    if (!categories) return [];
-
-    return { data: categories, total };
-  }
-
-  async findOneWithContents(categoryId: number) {
-    const category = await this.detailCategoryRepository.findOne({
-      where: { id: categoryId },
-    });
-    if (!category) return null;
-
-    return category;
-  }
-
-  // CREATE
-  async create(categoryDto: CreateDetailCategoryDto) {
-    return await this.detailCategoryRepository.save(this.detailCategoryRepository.create({ ...categoryDto }));
-  }
-
-  // UPDATE
-  async update(categoryDto: UpdateDetailCategoryDto, categoryId: number) {
-    return await this.detailCategoryRepository.save({ ...categoryDto, id: categoryId });
-  }
-
-  // DELETE
-  async delete(categoryId: number) {
-    return await this.detailCategoryRepository.delete(categoryId);
-  }
-
-  // ORDER
-  async order(detailCategories: OrderDetailCategoryDto[]) {
-    try {
-      for (const { id, order } of detailCategories) {
-        const currentDetailCategory = await this.detailCategoryRepository.find({ where: { id } });
-        if (!currentDetailCategory) continue;
-
-        await this.detailCategoryRepository.save({ order, id });
-      }
-
-      return { success: true };
-    } catch {
-      throw new BadRequestException();
-    }
-  }
-
-  // CHECKERS
-  async checkById(categoryId: number) {
-    return this.detailCategoryRepository.findOne({ where: { id: categoryId } });
-  }
-
-  // PARSERS
-  parse(category: DetailCategoryEntity, language: LanguageEnum) {
-    const newCategory: DetailCategoryDto = plainToClass(DetailCategoryDto, category, { excludeExtraneousValues: true });
-
-    newCategory.title = category[`title${capitalize(language)}`];
-
-    return newCategory;
-  }
-}
-
-// DETAIL TYPE
-@Injectable()
-export class DetailTypeService {
-  constructor(@InjectRepository(DetailTypeEntity) private readonly detailTypeRepository: Repository<DetailTypeEntity>) {}
-
-  // FIND
-  async findAll() {
-    return this.detailTypeRepository.find();
-  }
-
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
-    const [types, total] = await this.detailTypeRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    if (!types) return [];
-
-    return { data: types, total };
-  }
-
-  async findOneWithContents(typeId: number) {
-    const type = await this.detailTypeRepository.findOne({
-      where: { id: typeId },
-    });
-    if (!type) return null;
-
-    return type;
-  }
-
-  // CREATE
-  async create(typeDto: CreateDetailTypeDto) {
-    return await this.detailTypeRepository.save(this.detailTypeRepository.create({ ...typeDto }));
-  }
-
-  // UPDATE
-  async update(typeDto: UpdateDetailTypeDto, typeId: number) {
-    return await this.detailTypeRepository.save({ ...typeDto, id: typeId });
-  }
-
-  // DELETE
-  async delete(typeId: number) {
-    return await this.detailTypeRepository.delete(typeId);
-  }
-
-  // CHECKERS
-  async checkById(typeId: number) {
-    return this.detailTypeRepository.findOne({ where: { id: typeId } });
-  }
-}
 
 // DETAIL
 @Injectable()
