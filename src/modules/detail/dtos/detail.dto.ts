@@ -9,4 +9,7 @@ export class DetailDto {
 
   @Exclude()
   title: string;
+
+  @Exclude()
+  dimension: string;
 }
