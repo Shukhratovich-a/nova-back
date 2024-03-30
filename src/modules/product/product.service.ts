@@ -195,6 +195,22 @@ export class ProductService {
     };
   }
 
+  async findAllOrderCategory() {
+    const products = await this.productRepository.find({
+      relations: { subcategory: { category: true }, details: { type: true } },
+      order: { subcategory: { category: { order: "ASC" } } },
+    });
+    if (!products) return [];
+
+    return products.map((product) => {
+      if (product.mainImage) product.mainImage = process.env.HOST + product.mainImage;
+      if (product.schemeImage) product.schemeImage = process.env.HOST + product.schemeImage;
+      if (product.boxImage) product.boxImage = process.env.HOST + product.boxImage;
+
+      return product;
+    });
+  }
+
   // CREATE
   async create(productDto: CreateProductDto) {
     // const isPdfCreated = await this.pdfService.createProductPdf(productDto);
