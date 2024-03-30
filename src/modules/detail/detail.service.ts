@@ -71,6 +71,7 @@ export class DetailService {
         product: { id: detailDto.productId },
         type: { id: detailDto.typeId },
         category: { id: detailDto.categoryId },
+        dimension: { id: detailDto.dimensionId },
       }),
     );
   }

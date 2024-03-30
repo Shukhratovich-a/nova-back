@@ -26,6 +26,10 @@ export class CreateDetailDto {
 
   @IsNumber()
   @IsOptional()
+  dimensionId?: number;
+
+  @IsNumber()
+  @IsOptional()
   order: number;
 
   @IsNumber()

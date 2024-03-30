@@ -27,6 +27,10 @@ export class UpdateDetailDto {
 
   @IsNumber()
   @IsOptional()
+  dimensionId?: number;
+
+  @IsNumber()
+  @IsOptional()
   order?: number;
 
   @IsNumber()
