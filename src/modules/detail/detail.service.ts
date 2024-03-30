@@ -106,11 +106,10 @@ export class DetailService {
     const newDetail: DetailDto = plainToClass(DetailDto, detail, { excludeExtraneousValues: true });
 
     newDetail.value = detail[`value${capitalize(language)}`];
+    if (detail.dimension) newDetail.value = `${newDetail.value} ${detail.dimension[`title${capitalize(language)}`]}`;
 
     if (detail.type) {
       newDetail.title = detail.type[`title${capitalize(language)}`];
-
-      if (detail.dimension) newDetail.title = `${newDetail.title} ${detail.dimension[`title${capitalize(language)}`]}`;
     } else {
       newDetail.title = null;
     }
