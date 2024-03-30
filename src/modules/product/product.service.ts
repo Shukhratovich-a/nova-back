@@ -89,6 +89,7 @@ export class ProductService {
       .leftJoinAndSelect("product.details", "detail")
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "category")
+      .leftJoinAndSelect("detail.dimension", "dimension")
       .where("product.id = :id", { id: productId })
       .orderBy("detail.order", "ASC")
       .getOne();
@@ -108,6 +109,7 @@ export class ProductService {
       .leftJoinAndSelect("product.details", "detail")
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "detail_category")
+      .leftJoinAndSelect("detail.dimension", "dimension")
       .where("product.code = :code", { code: productCode })
       .orderBy("detail.order", "ASC")
       .getOne();
@@ -125,6 +127,7 @@ export class ProductService {
       .leftJoinAndSelect("product.details", "detail")
       .leftJoinAndSelect("detail.type", "type")
       .leftJoinAndSelect("detail.category", "category")
+      .leftJoinAndSelect("detail.dimension", "dimension")
       .where("product.alias = :alias", { alias })
       .orderBy("detail.order", "ASC")
       .getOne();
@@ -162,7 +165,7 @@ export class ProductService {
 
   async findOneWithContents(productId: number) {
     const product = await this.productRepository.findOne({
-      relations: { subcategory: { category: true }, details: { type: true, category: true } },
+      relations: { subcategory: { category: true }, details: { type: true, category: true, dimension: true } },
       where: { id: productId },
       order: { details: { order: "ASC" } },
     });
