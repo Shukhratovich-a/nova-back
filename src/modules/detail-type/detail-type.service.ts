@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -9,6 +9,7 @@ import { DetailTypeEntity } from "./detail-type.entity";
 
 import { CreateDetailTypeDto } from "./dtos/create-detail-type.dto";
 import { UpdateDetailTypeDto } from "./dtos/update-detail-type.dto";
+import { OrderDetailTypeDto } from "./dtos/order-detail-type.dto";
 
 @Injectable()
 export class DetailTypeService {
@@ -16,7 +17,7 @@ export class DetailTypeService {
 
   // FIND
   async findAll() {
-    return this.detailTypeRepository.find();
+    return this.detailTypeRepository.find({ order: { order: "ASC" } });
   }
 
   async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
@@ -51,6 +52,22 @@ export class DetailTypeService {
   // DELETE
   async delete(typeId: number) {
     return await this.detailTypeRepository.delete(typeId);
+  }
+
+  // ORDER
+  async order(detailTypes: OrderDetailTypeDto[]) {
+    try {
+      for (const { id, order } of detailTypes) {
+        const currentDetailType = await this.detailTypeRepository.find({ where: { id } });
+        if (!currentDetailType) continue;
+
+        await this.detailTypeRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CHECKERS

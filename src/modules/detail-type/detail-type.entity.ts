@@ -11,7 +11,7 @@ import {
 
 import { DetailEntity } from "@/modules/detail/detail.entity";
 
-@Entity("detail_types")
+@Entity("detail_types", { orderBy: { order: "ASC" } })
 export class DetailTypeEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -30,6 +30,9 @@ export class DetailTypeEntity extends BaseEntity {
 
   @OneToMany(() => DetailEntity, (detail) => detail.type, { onDelete: "CASCADE" })
   details: Relation<DetailEntity[]>;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;

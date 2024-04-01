@@ -54,7 +54,7 @@ export class DetailService {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
       where: { product: { id: productId } },
-      order: { category: { id: "ASC" } },
+      order: { category: { order: "ASC" }, type: { order: "ASC" } },
       take: limit,
       skip: (page - 1) * limit,
     });

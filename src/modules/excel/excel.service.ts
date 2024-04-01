@@ -14,7 +14,7 @@ export class ExcelService {
 
   async generateProductsExcel() {
     const products = await this.productService.findAllOrderCategory();
-    const detailTypes = (await this.detailTypeService.findAll()).sort((a, b) => a.id - b.id);
+    const detailTypes = await this.detailTypeService.findAll();
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Products");

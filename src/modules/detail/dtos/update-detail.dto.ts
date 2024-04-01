@@ -31,9 +31,5 @@ export class UpdateDetailDto {
 
   @IsNumber()
   @IsOptional()
-  order?: number;
-
-  @IsNumber()
-  @IsOptional()
   productId?: number;
 }

@@ -15,7 +15,7 @@ import { DetailTypeEntity } from "@modules/detail-type/detail-type.entity";
 import { DetailCategoryEntity } from "@modules/detail-category/detail-category.entity";
 import { DetailDimensionEntity } from "@modules/detail-dimension/detail-dimension.entity";
 
-@Entity("details", { orderBy: { order: "ASC" } })
+@Entity("details")
 export class DetailEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -47,9 +47,6 @@ export class DetailEntity extends BaseEntity {
   @ManyToOne(() => ProductEntity, (product) => product.details, { nullable: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "product_id" })
   product: ProductEntity;
-
-  @Column({ name: "order", type: "int", default: 0 })
-  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;
