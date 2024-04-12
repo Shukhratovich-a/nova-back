@@ -315,7 +315,7 @@ export const pdf = async (dto: ProductDto) => {
                 color: #1b5a7d;
               "
             >
-              FE LLC Nova Plumbing Solutions - ALL RIGHTS ARE RESERVED
+              FE LLC Nova Plumbing Solutions - ALL RIGHTS RESERVED
             </div>
   
             <div
@@ -332,7 +332,7 @@ export const pdf = async (dto: ProductDto) => {
             </div>
   
             <div style="font-size: 8px; font-weight: 700; line-height: 10px; text-align: center; color: #1b5a7d">
-              <a style="color: inherit" href="mailto:info@novaplastik.uz">info@novaplastik.uz</a> - Customer support line
+              <a style="color: inherit" href="mailto:info@novaplastik.uz">info@novaplastik.uz</a> - Customers support line
               +998933883042
             </div>
           </div>
