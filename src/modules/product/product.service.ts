@@ -218,15 +218,15 @@ export class ProductService {
   }
 
   // CREATE
-  async create(productDto: CreateProductDto) {
+  async create({ details, ...productDto }: CreateProductDto) {
     const product = await this.productRepository.save(
       this.productRepository.create({
         ...productDto,
         subcategory: { id: productDto.subcategoryId },
       }),
     );
-    if (productDto.details) {
-      productDto.details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
+    if (details) {
+      details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
     }
 
     const newProduct = await this.productRepository.findOne({
@@ -255,6 +255,16 @@ export class ProductService {
         details.forEach((detail) => this.detailService.create({ ...detail, productId }));
       }
     }
+
+    const newProduct = await this.productRepository.findOne({
+      where: { id: product.id },
+      relations: { details: { category: true, dimension: true, type: true } },
+    });
+    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
+    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+
+    const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
+    if (!isPdfCreated) throw new BadRequestException();
 
     return product;
   }
