@@ -229,15 +229,15 @@ export class ProductService {
       details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
     }
 
-    const newProduct = await this.productRepository.findOne({
-      where: { id: product.id },
-      relations: { details: { category: true, dimension: true, type: true } },
-    });
-    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    // const newProduct = await this.productRepository.findOne({
+    //   where: { id: product.id },
+    //   relations: { details: { category: true, dimension: true, type: true } },
+    // });
+    // const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
+    // parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
 
-    const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
-    if (!isPdfCreated) throw new BadRequestException();
+    // const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
+    // if (!isPdfCreated) throw new BadRequestException();
 
     return product;
   }
@@ -249,22 +249,21 @@ export class ProductService {
       id: productId,
       subcategory: { id: productDto.subcategoryId },
     });
-
     if (details) {
       if (await this.detailService.deleteByParent(productId)) {
         details.forEach((detail) => this.detailService.create({ ...detail, productId }));
       }
     }
 
-    const newProduct = await this.productRepository.findOne({
-      where: { id: product.id },
-      relations: { details: { category: true, dimension: true, type: true } },
-    });
-    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    // const newProduct = await this.productRepository.findOne({
+    //   where: { id: product.id },
+    //   relations: { details: { category: true, dimension: true, type: true } },
+    // });
+    // const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
+    // parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
 
-    const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
-    if (!isPdfCreated) throw new BadRequestException();
+    // const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
+    // if (!isPdfCreated) throw new BadRequestException();
 
     return product;
   }
