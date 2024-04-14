@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { FindOptionsWhere, Like, Not, Repository } from "typeorm";
@@ -229,15 +229,14 @@ export class ProductService {
       details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
     }
 
-    // const newProduct = await this.productRepository.findOne({
-    //   where: { id: product.id },
-    //   relations: { details: { category: true, dimension: true, type: true } },
-    // });
-    // const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    // parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    const newProduct = await this.productRepository.findOne({
+      where: { id: product.id },
+      relations: { details: { category: true, dimension: true, type: true } },
+    });
+    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
+    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
 
-    // const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
-    // if (!isPdfCreated) throw new BadRequestException();
+    await this.pdfService.createProductPdf(parsedProduct);
 
     return product;
   }
@@ -255,15 +254,14 @@ export class ProductService {
       }
     }
 
-    // const newProduct = await this.productRepository.findOne({
-    //   where: { id: product.id },
-    //   relations: { details: { category: true, dimension: true, type: true } },
-    // });
-    // const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    // parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    const newProduct = await this.productRepository.findOne({
+      where: { id: product.id },
+      relations: { details: { category: true, dimension: true, type: true } },
+    });
+    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
+    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
 
-    // const isPdfCreated = await this.pdfService.createProductPdf(parsedProduct);
-    // if (!isPdfCreated) throw new BadRequestException();
+    await this.pdfService.createProductPdf(parsedProduct);
 
     return product;
   }

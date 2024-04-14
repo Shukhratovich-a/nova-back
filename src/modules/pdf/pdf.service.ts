@@ -12,15 +12,20 @@ export class PdfService {
   async createProductPdf(dto: ProductDto): Promise<boolean> {
     const filePath = join("uploads", "product-files", `${dto.code}.pdf`);
 
-    const browser = await puppeteer.launch({ product: "chrome" });
-    const page = await browser.newPage();
+    try {
+      const browser = await puppeteer.launch({ product: "chrome" });
+      const page = await browser.newPage();
 
-    await page.setContent(await pdf(dto));
-    await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1, isLandscape: true });
-    await page.pdf({ path: filePath, format: "A4", printBackground: true, margin: { top: 0 }, scale: 1.3 });
+      await page.setContent(await pdf(dto));
+      await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1, isLandscape: true });
+      await page.pdf({ path: filePath, format: "A4", printBackground: true, margin: { top: 0 }, scale: 1.3 });
 
-    await browser.close();
+      await browser.close();
 
-    return true;
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 }
