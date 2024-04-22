@@ -1,22 +1,27 @@
 import { Type } from "class-transformer";
-import { IsString, IsArray, ValidateNested } from "class-validator";
+import { IsString, IsArray, ValidateNested, IsOptional } from "class-validator";
 
 import { VideoProductDto } from "./video.dto";
 
 export class CreateVideoDto {
   @IsString()
-  titleEn: string;
+  @IsOptional()
+  titleEn?: string;
 
   @IsString()
-  titleRu: string;
+  @IsOptional()
+  titleRu?: string;
 
   @IsString()
-  titleTr: string;
+  @IsOptional()
+  titleTr?: string;
 
   @IsString()
-  titleAr: string;
+  @IsOptional()
+  titleAr?: string;
 
   @IsString()
+  @IsOptional()
   video: string;
 
   @IsArray()
