@@ -2,7 +2,12 @@ import { IsOptional, IsString } from "class-validator";
 
 export class CreateBannerDto {
   @IsString()
-  poster: string;
+  @IsOptional()
+  posterDesktop?: string;
+
+  @IsString()
+  @IsOptional()
+  posterMobile?: string;
 
   @IsString()
   @IsOptional()

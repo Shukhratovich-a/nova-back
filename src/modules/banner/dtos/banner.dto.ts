@@ -5,7 +5,10 @@ export class BannerDto {
   id: number;
 
   @Expose()
-  poster: string;
+  posterDesktop: string;
+
+  @Expose()
+  posterMobile: string;
 
   @Exclude()
   title: string;

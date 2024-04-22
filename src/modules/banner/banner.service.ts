@@ -39,7 +39,8 @@ export class BannerService {
 
     return {
       data: banners.map((banner) => {
-        banner.poster = process.env.HOST + banner.poster;
+        banner.posterDesktop = process.env.HOST + banner.posterDesktop;
+        banner.posterMobile = process.env.HOST + banner.posterMobile;
 
         return banner;
       }),
@@ -53,7 +54,8 @@ export class BannerService {
     });
     if (!banner) return null;
 
-    banner.poster = process.env.HOST + banner.poster;
+    banner.posterDesktop = process.env.HOST + banner.posterDesktop;
+    banner.posterMobile = process.env.HOST + banner.posterMobile;
 
     return banner;
   }

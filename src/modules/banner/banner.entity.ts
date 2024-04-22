@@ -5,8 +5,11 @@ export class BannerEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "poster", type: "varchar" })
-  poster: string;
+  @Column({ name: "poster_desktop", type: "varchar", nullable: true })
+  posterDesktop: string;
+
+  @Column({ name: "poster_mobile", type: "varchar", nullable: true })
+  posterMobile: string;
 
   @Column({ name: "title_ru", type: "varchar", nullable: true })
   titleRu: string;
