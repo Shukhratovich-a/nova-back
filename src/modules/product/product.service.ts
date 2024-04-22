@@ -37,7 +37,7 @@ export class ProductService {
       .getManyAndCount();
     if (!products) return [];
 
-    const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
+    const parsedProducts: ProductDto[] = await this.parseAll(products, language);
 
     return { data: parsedProducts, total };
   }
@@ -55,10 +55,9 @@ export class ProductService {
       .getManyAndCount();
     if (!products) return [];
 
-    const parsedProducts: ProductDto[] = products.slice((page - 1) * limit, page * limit).map((product) => {
-      const newProduct = this.parse(product, language);
-      return newProduct;
-    });
+    if (!limit) limit = total;
+    const parsedProducts: ProductDto[] = await this.parseAll(products.slice((page - 1) * limit, page * limit), language);
+
     return { data: parsedProducts, total };
   }
 
@@ -78,7 +77,7 @@ export class ProductService {
     });
     if (!products) return [];
 
-    const parsedProducts: ProductDto[] = products.map((product) => this.parse(product, language));
+    const parsedProducts: ProductDto[] = await this.parseAll(products, language);
 
     return { data: parsedProducts, total };
   }
@@ -96,9 +95,8 @@ export class ProductService {
       .getOne();
     if (!product) return null;
 
-    const parsedProduct: ProductDto = this.parse(product, language);
+    const parsedProduct: ProductDto = await this.parse(product, language);
 
-    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
     return parsedProduct;
   }
 
@@ -117,9 +115,8 @@ export class ProductService {
       .getOne();
     if (!product) return null;
 
-    const parsedProduct: ProductDto = this.parse(product, language);
+    const parsedProduct: ProductDto = await this.parse(product, language);
 
-    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
     return parsedProduct;
   }
 
@@ -136,9 +133,8 @@ export class ProductService {
       .getOne();
     if (!product) return null;
 
-    const parsedProduct: ProductDto = this.parse(product, language);
+    const parsedProduct: ProductDto = await this.parse(product, language);
 
-    parsedProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
     return parsedProduct;
   }
 
@@ -233,10 +229,13 @@ export class ProductService {
       where: { id: product.id },
       relations: { details: { category: true, dimension: true, type: true } },
     });
-    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    const parsedProductEn = await this.parse(newProduct, LanguageEnum.EN);
+    const parsedProductRu = await this.parse(newProduct, LanguageEnum.RU);
+    const parsedProductTr = await this.parse(newProduct, LanguageEnum.TR);
 
-    await this.pdfService.createProductPdf(parsedProduct);
+    await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
+    await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
+    await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
     return product;
   }
@@ -258,10 +257,13 @@ export class ProductService {
       where: { id: product.id },
       relations: { details: { category: true, dimension: true, type: true } },
     });
-    const parsedProduct = this.parse(newProduct, LanguageEnum.EN);
-    parsedProduct.detailCategories = await this.detailService.sortDetails(newProduct.details, LanguageEnum.EN);
+    const parsedProductEn = await this.parse(newProduct, LanguageEnum.EN);
+    const parsedProductRu = await this.parse(newProduct, LanguageEnum.RU);
+    const parsedProductTr = await this.parse(newProduct, LanguageEnum.TR);
 
-    await this.pdfService.createProductPdf(parsedProduct);
+    await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
+    await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
+    await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
     return product;
   }
@@ -272,7 +274,7 @@ export class ProductService {
   }
 
   // PARSERS
-  parse(product: ProductEntity, language: LanguageEnum) {
+  async parse(product: ProductEntity, language: LanguageEnum) {
     const newProduct: ProductDto = plainToClass(ProductDto, product, { excludeExtraneousValues: true });
 
     newProduct.title = product[`title${capitalize(language)}`];
@@ -282,7 +284,21 @@ export class ProductService {
       newProduct.subcategory = this.subcategorySevice.parse(product.subcategory, language);
     }
 
+    if (product.details && product.details.length > 0) {
+      newProduct.detailCategories = await this.detailService.sortDetails(product.details, language);
+    }
+
     return newProduct;
+  }
+
+  async parseAll(products: ProductEntity[], language: LanguageEnum) {
+    const newProducts: ProductDto[] = [];
+
+    for (const product of products) {
+      newProducts.push(await this.parse(product, language));
+    }
+
+    return newProducts;
   }
 
   // CHECKERS
