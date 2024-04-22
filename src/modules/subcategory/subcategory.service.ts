@@ -51,7 +51,7 @@ export class SubcategoryService {
     if (!subcategory) return null;
 
     const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
-    parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
+    parsedSubcategory.products = await this.productService.parseAll(subcategory.products, language);
 
     return parsedSubcategory;
   }
@@ -66,7 +66,7 @@ export class SubcategoryService {
     if (!subcategory) return null;
 
     const parsedSubcategory: SubcategoryDto = this.parse(subcategory, language);
-    parsedSubcategory.products = subcategory.products.map((product) => this.productService.parse(product, language));
+    parsedSubcategory.products = await this.productService.parseAll(subcategory.products, language);
     parsedSubcategory.category = this.categoryService.parse(subcategory.category, language);
 
     return parsedSubcategory;

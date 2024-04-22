@@ -34,13 +34,7 @@ export class VideoService {
     });
     if (!videos) return [];
 
-    const parsedVideos: VideoDto[] = videos.map((video) => {
-      const parsedVideo = this.parse(video, language);
-
-      parsedVideo.products = video.products.map((product) => this.productService.parse(product, language));
-
-      return parsedVideo;
-    });
+    const parsedVideos: VideoDto[] = await this.parseAll(videos, language);
 
     return parsedVideos;
   }
@@ -53,8 +47,7 @@ export class VideoService {
     });
     if (!video) return null;
 
-    const parsedVideo: VideoDto = this.parse(video, language);
-    parsedVideo.products = video.products.map((product) => this.productService.parse(product, language));
+    const parsedVideo: VideoDto = await this.parse(video, language);
 
     return parsedVideo;
   }
@@ -110,12 +103,26 @@ export class VideoService {
   }
 
   // PARSERS
-  parse(product: VideoEntity, language: LanguageEnum) {
-    const newVideo: VideoDto = plainToClass(VideoDto, product, { excludeExtraneousValues: true });
+  async parse(video: VideoEntity, language: LanguageEnum) {
+    const newVideo: VideoDto = plainToClass(VideoDto, video, { excludeExtraneousValues: true });
 
-    newVideo.title = product[`title${capitalize(language)}`];
+    newVideo.title = video[`title${capitalize(language)}`];
+
+    if (newVideo.products && newVideo.products.length > 0) {
+      newVideo.products = await this.productService.parseAll(video.products, language);
+    }
 
     return newVideo;
+  }
+
+  async parseAll(videos: VideoEntity[], language: LanguageEnum) {
+    const newVideos: VideoDto[] = [];
+
+    for (const video of videos) {
+      newVideos.push(await this.parse(video, language));
+    }
+
+    return newVideos;
   }
 
   // CHECKERS
