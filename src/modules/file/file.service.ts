@@ -65,9 +65,9 @@ export class FileService {
     try {
       return sharp(file)
         .trim()
-        .resize({ width: 1800, height: 1800, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-        .extend({ top: 100, bottom: 100, left: 100, right: 100, background: { r: 0, g: 0, b: 0, alpha: 0 } })
-        .webp()
+        .resize({ width: 1800, fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
+        .extend({ top: 100, bottom: 100, left: 100, right: 100, background: { r: 255, g: 255, b: 255, alpha: 1 } })
+        .flatten({ background: { r: 255, g: 255, b: 255, alpha: 1 } })
         .toBuffer();
     } catch (error) {
       console.error("Error processing image:", error);
