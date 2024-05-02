@@ -5,12 +5,15 @@ export class CreateAboutDto {
   poster: string;
 
   @IsString()
+  @IsOptional()
   titleRu: string;
 
   @IsString()
+  @IsOptional()
   titleEn: string;
 
   @IsString()
+  @IsOptional()
   titleTr: string;
 
   @IsString()
