@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateAboutDto {
   @IsString()
@@ -14,17 +14,22 @@ export class CreateAboutDto {
   titleTr: string;
 
   @IsString()
+  @IsOptional()
   titleAr: string;
 
   @IsString()
+  @IsOptional()
   descriptionRu: string;
 
   @IsString()
+  @IsOptional()
   descriptionEn: string;
 
   @IsString()
+  @IsOptional()
   descriptionTr: string;
 
   @IsString()
+  @IsOptional()
   descriptionAr: string;
 }
