@@ -1,11 +1,15 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { IPagination } from "@interfaces/pagination.interface";
+import { LanguageEnum } from "@/enums/language.enum";
+
+import { EnumValidationPipe } from "@/pipes/enum-validation.pipe";
 
 import { CertificateService } from "./certificate.service";
 
 import { CreateCertificateDto } from "./dtos/create-certificate.dto";
 import { UpdateCertificateDto } from "./dtos/update-certificate.dto";
+import { OrderCertificatesDto } from "./dtos/order-certificate.dto";
 
 @Controller("certificate")
 export class CertificateController {
@@ -13,8 +17,11 @@ export class CertificateController {
 
   // GET
   @Get("get-all")
-  async getAll(@Query() pagination: IPagination) {
-    return this.certificateService.findAll(pagination);
+  async getAll(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+    @Query() pagination: IPagination,
+  ) {
+    return this.certificateService.findAll(pagination, language);
   }
 
   @Get("get-with-count")
@@ -31,6 +38,11 @@ export class CertificateController {
   @Post("create")
   async create(@Body() certificateDto: CreateCertificateDto) {
     return this.certificateService.create(certificateDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderCertificatesDto) {
+    return this.certificateService.order(data);
   }
 
   // PUT
