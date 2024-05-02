@@ -32,7 +32,7 @@ export class AboutEntity extends BaseEntity {
   @Column({ name: "description_ar", type: "varchar", nullable: true })
   descriptionAr: string;
 
-  @Column({ name: "order", type: "int", default: 0 })
+  @Column({ name: "order", type: "int", default: 1000 })
   order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
