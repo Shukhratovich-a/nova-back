@@ -65,21 +65,21 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
 
   if (dto.mainImage) {
     const mainImageBuffer = await sharp(resolve(join(process.cwd(), dto.mainImage)))
-      .resize({ width: 195, height: 195, fit: "contain" })
+      .resize({ width: 500, height: 500, fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
       .toBuffer();
     mainImage = `data:image/jpeg;base64,${mainImageBuffer.toString("base64")}`;
   }
 
   if (dto.schemeImage) {
     const schemeImageBuffer = await sharp(resolve(join(process.cwd(), dto.schemeImage)))
-      .resize({ width: 195, height: 195, fit: "contain" })
+      .resize({ width: 500, height: 500, fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
       .toBuffer();
     schemeImage = `data:image/jpeg;base64,${schemeImageBuffer.toString("base64")}`;
   }
 
   if (dto.boxImage) {
     const boxImageBuffer = await sharp(resolve(join(process.cwd(), dto.boxImage)))
-      .resize({ width: 195, height: 195, fit: "contain" })
+      .resize({ width: 500, height: 500, fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
       .toBuffer();
     boxImage = `data:image/jpeg;base64,${boxImageBuffer.toString("base64")}`;
   }
@@ -293,9 +293,22 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                   ${keyWords[language].mainImage}
                 </div>
   
-                <div style="display: flex; justify-content: center; align-items: center; flex-grow: 1">
-                  ${mainImage ? `<img style="width: 194px; height: 194px; object-fit: contain" src="${mainImage}" alt="" />` : ""}
-                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    width: 195px;
+                    height: 195px;
+                    align-items: center;
+                    flex-grow: 1;
+                    margin: 0 auto;
+                    ${mainImage ? `background-image: url('${mainImage}');` : ""}
+                    background-color: #fff;
+                    background-size: contain;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                  "
+                ></div>
               </div>
               <div style="flex-grow: 1; border-bottom: 1px solid #1b5a7d">
                 <div
@@ -314,13 +327,22 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                   ${keyWords[language].schemeImage}
                 </div>
   
-                <div style="display: flex; justify-content: center; align-items: center; flex-grow: 1">
-                  ${
-                    schemeImage
-                      ? `<img style="width: 194px; height: 194px; object-fit: contain" src="${schemeImage}" alt="" />`
-                      : ""
-                  }
-                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    width: 195px;
+                    height: 195px;
+                    align-items: center;
+                    flex-grow: 1;
+                    margin: 0 auto;
+                    ${schemeImage ? `background-image: url('${schemeImage}');` : ""}
+                    background-color: #fff;
+                    background-size: contain;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                  "
+                ></div>
               </div>
               <div style="flex-grow: 1">
                 <div
@@ -339,9 +361,22 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                   ${keyWords[language].boxImage}
                 </div>
   
-                <div style="display: flex; justify-content: center; align-items: center; flex-grow: 1">
-                  ${boxImage ? `<img style="width: 194px; height: 194px; object-fit: contain" src="${boxImage}" alt="" />` : ""}
-                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    width: 195px;
+                    height: 195px;
+                    align-items: center;
+                    flex-grow: 1;
+                    margin: 0 auto;
+                    ${boxImage ? `background-image: url('${boxImage}');` : ""}
+                    background-color: #fff;
+                    background-size: contain;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                  "
+                ></div>
               </div>
             </div>
           </div>
