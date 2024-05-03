@@ -5,7 +5,35 @@ import { ContactTypeEnum } from "@enums/contact-type.enum";
 export class UpdateContactDto {
   @IsString()
   @IsOptional()
-  address?: string;
+  companyEn?: string;
+
+  @IsString()
+  @IsOptional()
+  companyRu?: string;
+
+  @IsString()
+  @IsOptional()
+  companyTr?: string;
+
+  @IsString()
+  @IsOptional()
+  companyAr?: string;
+
+  @IsString()
+  @IsOptional()
+  addressEn?: string;
+
+  @IsString()
+  @IsOptional()
+  addressRu?: string;
+
+  @IsString()
+  @IsOptional()
+  addressTr?: string;
+
+  @IsString()
+  @IsOptional()
+  addressEnAr?: string;
 
   @IsString()
   @IsOptional()
@@ -17,11 +45,19 @@ export class UpdateContactDto {
 
   @IsString()
   @IsOptional()
-  country?: string;
+  countryEn?: string;
 
   @IsString()
   @IsOptional()
-  city?: string;
+  countryRu?: string;
+
+  @IsString()
+  @IsOptional()
+  countryAr?: string;
+
+  @IsString()
+  @IsOptional()
+  countryTr?: string;
 
   @IsString()
   @IsOptional()

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, B
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
+import { LanguageEnum } from "@/enums/language.enum";
 import { ContactTypeEnum } from "@enums/contact-type.enum";
 import { IPagination } from "@/interfaces/pagination.interface";
 
@@ -15,15 +16,18 @@ export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Get("get-all")
-  async getAll() {
-    return this.contactService.findAll();
+  async getAll(
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+  ) {
+    return this.contactService.findAll(language);
   }
 
   @Get("get-by-type/:type")
   async getByType(
     @Param("type", new EnumValidationPipe(ContactTypeEnum, { defaultValue: ContactTypeEnum.CENTRAL })) type: ContactTypeEnum,
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
   ) {
-    return this.contactService.findByType(type);
+    return this.contactService.findByType(type, language);
   }
 
   @Get("get-with-count")

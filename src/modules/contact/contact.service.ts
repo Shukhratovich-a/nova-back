@@ -2,12 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
+import { plainToClass } from "class-transformer";
 
+import { LanguageEnum } from "@/enums/language.enum";
 import { ContactTypeEnum } from "@/enums/contact-type.enum";
 import { IPagination } from "@/interfaces/pagination.interface";
 
+import { capitalize } from "@/utils/capitalize.utils";
+
 import { ContactEntity } from "./contact.entity";
 
+import { ContactDto } from "./dtos/contact.dto";
 import { CreateContactDto } from "./dtos/create-contact.dto";
 import { UpdateContactDto } from "./dtos/update-contact.dto";
 
@@ -16,14 +21,20 @@ export class ContactService {
   constructor(@InjectRepository(ContactEntity) private readonly contactRepository: Repository<ContactEntity>) {}
 
   // FIND
-  async findAll() {
-    return this.contactRepository.find();
+  async findAll(language: LanguageEnum) {
+    const contacts = await this.contactRepository.find();
+
+    const parsedContact = contacts.map((contact) => this.parse(contact, language));
+
+    return parsedContact;
   }
 
-  async findByType(type: ContactTypeEnum) {
-    return this.contactRepository.find({
-      where: { type },
-    });
+  async findByType(type: ContactTypeEnum, language: LanguageEnum) {
+    const contacts = await this.contactRepository.find({ where: { type } });
+
+    const parsedContact = contacts.map((contact) => this.parse(contact, language));
+
+    return parsedContact;
   }
 
   async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
@@ -66,5 +77,16 @@ export class ContactService {
   // CHECKERS
   async checkById(contactId: number) {
     return this.contactRepository.findOne({ where: { id: contactId } });
+  }
+
+  // PARSERS
+  parse(contact: ContactEntity, language: LanguageEnum) {
+    const newContact: ContactDto = plainToClass(ContactDto, contact, { excludeExtraneousValues: true });
+
+    newContact.company = contact[`company${capitalize(language)}`];
+    newContact.address = contact[`address${capitalize(language)}`];
+    newContact.country = contact[`country${capitalize(language)}`];
+
+    return newContact;
   }
 }

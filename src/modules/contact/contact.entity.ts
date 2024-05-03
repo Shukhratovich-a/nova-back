@@ -7,8 +7,29 @@ export class ContactEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
 
-  @Column({ name: "address", type: "varchar" })
-  address: string;
+  @Column({ name: "company_en", type: "varchar", nullable: true })
+  companyEn: string;
+
+  @Column({ name: "company_ru", type: "varchar", nullable: true })
+  companyRu: string;
+
+  @Column({ name: "company_tr", type: "varchar", nullable: true })
+  companyTr: string;
+
+  @Column({ name: "company_ar", type: "varchar", nullable: true })
+  companyAr: string;
+
+  @Column({ name: "address_en", type: "varchar", nullable: true })
+  addressEn: string;
+
+  @Column({ name: "address_ru", type: "varchar", nullable: true })
+  addressRu: string;
+
+  @Column({ name: "address_tr", type: "varchar", nullable: true })
+  addressTr: string;
+
+  @Column({ name: "address_ar", type: "varchar", nullable: true })
+  addressAr: string;
 
   @Column({ name: "phone", type: "varchar", nullable: true })
   phone: string;
@@ -19,11 +40,17 @@ export class ContactEntity extends BaseEntity {
   @Column({ name: "type", type: "simple-enum", enum: ContactTypeEnum })
   type: ContactTypeEnum;
 
-  @Column({ name: "country", type: "varchar" })
-  country: string;
+  @Column({ name: "country_en", type: "varchar", nullable: true })
+  countryEn: string;
 
-  @Column({ name: "city", type: "varchar", nullable: true })
-  city: string;
+  @Column({ name: "country_ru", type: "varchar", nullable: true })
+  countryRu: string;
+
+  @Column({ name: "country_tr", type: "varchar", nullable: true })
+  countryTr: string;
+
+  @Column({ name: "country_ar", type: "varchar", nullable: true })
+  countryAr: string;
 
   @Column({ name: "map", type: "varchar", nullable: true })
   map: string;

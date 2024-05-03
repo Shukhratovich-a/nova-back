@@ -4,7 +4,30 @@ import { ContactTypeEnum } from "@enums/contact-type.enum";
 
 export class CreateContactDto {
   @IsString()
-  address: string;
+  companyEn: string;
+
+  @IsString()
+  companyRu: string;
+
+  @IsString()
+  companyTr: string;
+
+  @IsString()
+  @IsOptional()
+  companyAr: string;
+
+  @IsString()
+  addressEn: string;
+
+  @IsString()
+  addressRu: string;
+
+  @IsString()
+  addressTr: string;
+
+  @IsString()
+  @IsOptional()
+  addressEnAr: string;
 
   @IsString()
   phone: string;
@@ -13,11 +36,17 @@ export class CreateContactDto {
   email: string;
 
   @IsString()
-  country: string;
+  countryEn: string;
+
+  @IsString()
+  countryRu: string;
+
+  @IsString()
+  countryTr: string;
 
   @IsString()
   @IsOptional()
-  city?: string;
+  countryAr: string;
 
   @IsString()
   map: string;
