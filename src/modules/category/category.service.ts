@@ -12,6 +12,7 @@ import { capitalize } from "@utils/capitalize.utils";
 import { CategoryEntity } from "./category.entity";
 
 import { SubcategoryService } from "@modules/subcategory/subcategory.service";
+import { CronService } from "@modules/cron/cron.service";
 
 import { CategoryDto } from "./dtos/category.dto";
 import { CreateCategoryDto } from "./dtos/create-category.dto";
@@ -22,8 +23,8 @@ import { OrderCategoryDto } from "./dtos/order-category.dto";
 export class CategoryService {
   constructor(
     @InjectRepository(CategoryEntity) private readonly categoryRepository: Repository<CategoryEntity>,
-    @Inject(forwardRef(() => SubcategoryService))
-    private readonly subcategoryService: SubcategoryService,
+    @Inject(forwardRef(() => SubcategoryService)) private readonly subcategoryService: SubcategoryService,
+    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -136,17 +137,29 @@ export class CategoryService {
 
   // CREATE
   async create(categoryDto: CreateCategoryDto) {
-    return await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
+    const category = await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
+
+    this.cronService.sendRequest(`/category`);
+
+    return category;
   }
 
   // UPDATE
   async update(categoryDto: UpdateCategoryDto, categoryId: number) {
-    return await this.categoryRepository.save({ ...categoryDto, id: categoryId });
+    const category = await this.categoryRepository.save({ ...categoryDto, id: categoryId });
+
+    this.cronService.sendRequest(`/category`);
+
+    return category;
   }
 
   // DELETE
   async delete(categoryId: number) {
-    return await this.categoryRepository.delete(categoryId);
+    const category = await this.categoryRepository.delete(categoryId);
+
+    this.cronService.sendRequest(`/category`);
+
+    return category;
   }
 
   // CHECKERS

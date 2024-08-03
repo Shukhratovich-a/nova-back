@@ -11,9 +11,10 @@ import { capitalize } from "@utils/capitalize.utils";
 
 import { ProductEntity } from "./product.entity";
 
-import { SubcategoryService } from "../subcategory/subcategory.service";
+import { SubcategoryService } from "@modules/subcategory/subcategory.service";
 import { DetailService } from "@modules/detail/detail.service";
 import { PdfService } from "@modules/pdf/pdf.service";
+import { CronService } from "@modules/cron/cron.service";
 
 import { ProductDto } from "./dtos/product.dto";
 import { CreateProductDto } from "./dtos/create-product.dto";
@@ -26,6 +27,7 @@ export class ProductService {
     @Inject(forwardRef(() => SubcategoryService)) private readonly subcategorySevice: SubcategoryService,
     @Inject(forwardRef(() => DetailService)) private readonly detailService: DetailService,
     @Inject(forwardRef(() => PdfService)) private readonly pdfService: PdfService,
+    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -85,9 +87,11 @@ export class ProductService {
   async findById(productId: number, language: LanguageEnum) {
     const product = await this.productRepository
       .createQueryBuilder("product")
+      .leftJoinAndSelect("product.subcategory", "subcategory")
+      .leftJoinAndSelect("subcategory.category", "category")
       .leftJoinAndSelect("product.details", "detail")
       .leftJoinAndSelect("detail.type", "type")
-      .leftJoinAndSelect("detail.category", "category")
+      .leftJoinAndSelect("detail.category", "detail_category")
       .leftJoinAndSelect("detail.dimension", "dimension")
       .where("product.id = :id", { id: productId })
       .orderBy("category.order", "ASC")
@@ -237,6 +241,9 @@ export class ProductService {
     await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
     await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
+    const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
+    this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
+
     return product;
   }
 
@@ -265,12 +272,22 @@ export class ProductService {
     await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
     await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
+    const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
+    this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
+
     return product;
   }
 
   // DELETE
   async delete(productId: number) {
-    return await this.productRepository.delete(productId);
+    const oldProduct = await this.findById(productId, LanguageEnum.EN);
+
+    const product = await this.productRepository.delete(productId);
+    console.log(oldProduct);
+
+    this.cronService.sendRequest(`/category/${oldProduct.subcategory.category.alias}/${oldProduct.subcategory.alias}`);
+
+    return product;
   }
 
   // PARSERS

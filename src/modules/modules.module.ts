@@ -14,6 +14,7 @@ import { CatalogModule } from "./catalog/catalog.module";
 import { NewsModule } from "./news/news.module";
 import { TagModule } from "./tag/tag.module";
 import { VideoModule } from "./video/video.module";
+import { CronModule } from "./cron/cron.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { VideoModule } from "./video/video.module";
     NewsModule,
     TagModule,
     VideoModule,
+    CronModule,
   ],
 })
 export class Modules {}

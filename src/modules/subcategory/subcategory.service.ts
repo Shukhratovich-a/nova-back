@@ -13,6 +13,7 @@ import { SubcategoryEntity } from "./subcategory.entity";
 
 import { CategoryService } from "@modules/category/category.service";
 import { ProductService } from "@modules/product/product.service";
+import { CronService } from "@modules/cron/cron.service";
 
 import { SubcategoryDto } from "./dtos/subcategory.dto";
 import { CreateSubcategoryDto } from "./dtos/create-subcategory.dto";
@@ -24,6 +25,7 @@ export class SubcategoryService {
     @InjectRepository(SubcategoryEntity) private readonly subcategoryRepository: Repository<SubcategoryEntity>,
     @Inject(forwardRef(() => CategoryService)) private readonly categoryService: CategoryService,
     @Inject(forwardRef(() => ProductService)) private readonly productService: ProductService,
+    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -124,23 +126,41 @@ export class SubcategoryService {
 
   // CREATE
   async create(subcategoryDto: CreateSubcategoryDto) {
-    return await this.subcategoryRepository.save(
+    const subcategory = await this.subcategoryRepository.save(
       this.subcategoryRepository.create({ ...subcategoryDto, category: { id: subcategoryDto.categoryId } }),
     );
+
+    const { alias } = await this.categoryService.checkById(subcategoryDto.categoryId);
+    this.cronService.sendRequest(`/category/${alias}`);
+
+    return subcategory;
   }
 
   // UPDATE
   async update(subcategoryDto: UpdateSubcategoryDto, subcategoryId: number) {
-    return await this.subcategoryRepository.save({
+    const subcategory = await this.subcategoryRepository.save({
       ...subcategoryDto,
       id: subcategoryId,
       category: { id: subcategoryDto.categoryId },
     });
+
+    const { alias } = await this.categoryService.checkById(subcategoryDto.categoryId);
+    this.cronService.sendRequest(`/category/${alias}`);
+
+    return subcategory;
   }
 
   // DELETE
   async delete(subcategoryId: number) {
-    return await this.subcategoryRepository.delete(subcategoryId);
+    const {
+      category: { alias },
+    } = await this.findById(subcategoryId, LanguageEnum.EN);
+
+    const subcategory = await this.subcategoryRepository.delete(subcategoryId);
+
+    this.cronService.sendRequest(`/category/${alias}`);
+
+    return subcategory;
   }
 
   // PARSERS
