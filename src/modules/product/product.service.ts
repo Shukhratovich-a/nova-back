@@ -283,7 +283,6 @@ export class ProductService {
     const oldProduct = await this.findById(productId, LanguageEnum.EN);
 
     const product = await this.productRepository.delete(productId);
-    console.log(oldProduct);
 
     this.cronService.sendRequest(`/category/${oldProduct.subcategory.category.alias}/${oldProduct.subcategory.alias}`);
 
