@@ -21,7 +21,7 @@ export class CronService {
 
     try {
       for (const locale of locales) {
-        await lastValueFrom(this.httpService.get("http://localhost:3000/" + locale + this.endpoint));
+        await lastValueFrom(this.httpService.get(`${process.env.DOMAIN}/${locale}${this.endpoint}`));
         console.log("Request successful");
       }
 
