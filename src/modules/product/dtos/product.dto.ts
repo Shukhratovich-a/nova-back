@@ -1,6 +1,6 @@
 import { Exclude, Expose } from "class-transformer";
 
-import { SubcategoryDto } from "@/modules/subcategory/dtos/subcategory.dto";
+import { SubcategoryDto } from "@modules/subcategory/dtos/subcategory.dto";
 import { DetailCategoryDto } from "@modules/detail-category/dtos/detail-category.dto";
 
 export class ProductDto {

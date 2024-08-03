@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-import { DetailEntity } from "@/modules/detail/detail.entity";
+import { DetailEntity } from "@modules/detail/detail.entity";
 
 @Entity("detail_dimension")
 export class DetailDimensionEntity extends BaseEntity {

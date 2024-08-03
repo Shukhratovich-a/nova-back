@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, BadRequestException } from "@nestjs/common";
 
 import { IPagination } from "@interfaces/pagination.interface";
-import { LanguageEnum } from "@/enums/language.enum";
+import { LanguageEnum } from "@enums/language.enum";
 
-import { EnumValidationPipe } from "@/pipes/enum-validation.pipe";
+import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
 import { CertificateService } from "./certificate.service";
 

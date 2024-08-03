@@ -4,11 +4,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { plainToClass } from "class-transformer";
 
-import { LanguageEnum } from "@/enums/language.enum";
-import { ContactTypeEnum } from "@/enums/contact-type.enum";
-import { IPagination } from "@/interfaces/pagination.interface";
+import { LanguageEnum } from "@enums/language.enum";
+import { ContactTypeEnum } from "@enums/contact-type.enum";
+import { IPagination } from "@interfaces/pagination.interface";
 
-import { capitalize } from "@/utils/capitalize.utils";
+import { capitalize } from "@utils/capitalize.utils";
 
 import { ContactEntity } from "./contact.entity";
 

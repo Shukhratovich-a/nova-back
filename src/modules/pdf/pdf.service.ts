@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { join } from "path";
 import puppeteer from "puppeteer";
 
-import { LanguageEnum } from "@/enums/language.enum";
+import { LanguageEnum } from "@enums/language.enum";
 
 import { ProductDto } from "@modules/product/dtos/product.dto";
 

@@ -1,7 +1,7 @@
 import * as sharp from "sharp";
 import { join, resolve } from "path";
 
-import { LanguageEnum } from "@/enums/language.enum";
+import { LanguageEnum } from "@enums/language.enum";
 
 import { ProductDto } from "@modules/product/dtos/product.dto";
 

@@ -1,6 +1,6 @@
 import { Exclude, Expose } from "class-transformer";
 
-import { ContactTypeEnum } from "@/enums/contact-type.enum";
+import { ContactTypeEnum } from "@enums/contact-type.enum";
 
 export class ContactDto {
   @Expose()

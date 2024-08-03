@@ -2,9 +2,9 @@ import { Controller, Get, Post, Put, Delete, Param, Query, Body, ParseIntPipe, B
 
 import { EnumValidationPipe } from "@pipes/enum-validation.pipe";
 
-import { LanguageEnum } from "@/enums/language.enum";
+import { LanguageEnum } from "@enums/language.enum";
 import { ContactTypeEnum } from "@enums/contact-type.enum";
-import { IPagination } from "@/interfaces/pagination.interface";
+import { IPagination } from "@interfaces/pagination.interface";
 
 import { ContactService } from "./contact.service";
 
