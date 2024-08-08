@@ -22,13 +22,10 @@ export class CronService {
     try {
       for (const locale of locales) {
         await lastValueFrom(this.httpService.get(`${process.env.DOMAIN}/${locale}${this.endpoint}`));
-        console.log("Request successful");
       }
 
       this.requestCount++;
     } catch (error) {
-      console.error("Error sending request");
-
       this.requestCount++;
     }
   }
