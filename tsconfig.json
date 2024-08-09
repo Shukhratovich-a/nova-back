@@ -26,7 +26,8 @@
       "@enums/*": ["src/enums/*"],
       "@modules/*": ["src/modules/*"],
       "@interceptors/*": ["src/interceptors/*"],
-      "@interfaces/*": ["src/interfaces/*"]
+      "@interfaces/*": ["src/interfaces/*"],
+      "@middlewares/*": ["src/middlewares/*"]
     }
   }
 }
