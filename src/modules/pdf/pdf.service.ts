@@ -20,6 +20,7 @@ export class PdfService {
 
       await page.setContent(await pdf(dto, language));
       await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1, isLandscape: true });
+      await page.setCacheEnabled(false);
       await page.pdf({ path: filePath, format: "A4", printBackground: true, margin: { top: 0 }, scale: 1.3 });
 
       await browser.close();
