@@ -84,9 +84,12 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
     boxImage = `data:image/jpeg;base64,${boxImageBuffer.toString("base64")}`;
   }
 
-  const details = dto.detailCategories
-    .map(
-      (category) => `<div style="display: flex; flex-direction: column">
+  let details = "";
+
+  if (dto.detailCategories && dto.detailCategories.length > 0) {
+    details = dto.detailCategories
+      .map(
+        (category) => `<div style="display: flex; flex-direction: column">
   <div
     style="
       display: flex;
@@ -139,8 +142,9 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
     )
     .join("")}
 </div>`,
-    )
-    .join("");
+      )
+      .join("");
+  }
 
   return `<!DOCTYPE html>
   <html lang="en">

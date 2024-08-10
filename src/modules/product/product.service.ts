@@ -19,6 +19,7 @@ import { CronService } from "@modules/cron/cron.service";
 import { ProductDto } from "./dtos/product.dto";
 import { CreateProductDto } from "./dtos/create-product.dto";
 import { UpdateProductDto } from "./dtos/update-product.dto";
+import { CreateDetailDto } from "../detail/dtos/create-detail.dto";
 
 @Injectable()
 export class ProductService {
@@ -225,21 +226,18 @@ export class ProductService {
         subcategory: { id: productDto.subcategoryId },
       }),
     );
-    if (details) {
-      details.forEach((detail) => this.detailService.create({ ...detail, productId: product.id }));
+
+    const isDetailsCreated = await this.createDetails(details, product.id);
+
+    if (isDetailsCreated) {
+      const parsedProductEn = await this.findById(product.id, LanguageEnum.EN);
+      const parsedProductRu = await this.findById(product.id, LanguageEnum.RU);
+      const parsedProductTr = await this.findById(product.id, LanguageEnum.TR);
+
+      await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
+      await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
+      await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
     }
-
-    const newProduct = await this.productRepository.findOne({
-      where: { id: product.id },
-      relations: { details: { category: true, dimension: true, type: true } },
-    });
-    const parsedProductEn = await this.parse(newProduct, LanguageEnum.EN);
-    const parsedProductRu = await this.parse(newProduct, LanguageEnum.RU);
-    const parsedProductTr = await this.parse(newProduct, LanguageEnum.TR);
-
-    await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
-    await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
-    await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
     const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
     this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
@@ -254,23 +252,23 @@ export class ProductService {
       id: productId,
       subcategory: { id: productDto.subcategoryId },
     });
+
     if (details) {
       if (await this.detailService.deleteByParent(productId)) {
-        details.forEach((detail) => this.detailService.create({ ...detail, productId }));
+        const isDetailsCreated = await this.createDetails(details, productId);
+        console.log(isDetailsCreated);
+
+        if (isDetailsCreated) {
+          const parsedProductEn = await this.findById(product.id, LanguageEnum.EN);
+          const parsedProductRu = await this.findById(product.id, LanguageEnum.RU);
+          const parsedProductTr = await this.findById(product.id, LanguageEnum.TR);
+
+          await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
+          await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
+          await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
+        }
       }
     }
-
-    const newProduct = await this.productRepository.findOne({
-      where: { id: product.id },
-      relations: { details: { category: true, dimension: true, type: true } },
-    });
-    const parsedProductEn = await this.parse(newProduct, LanguageEnum.EN);
-    const parsedProductRu = await this.parse(newProduct, LanguageEnum.RU);
-    const parsedProductTr = await this.parse(newProduct, LanguageEnum.TR);
-
-    await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
-    await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
-    await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
 
     const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
     this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
@@ -315,6 +313,18 @@ export class ProductService {
     }
 
     return newProducts;
+  }
+
+  async createDetails(details: CreateDetailDto[], id: number) {
+    try {
+      for (let i = 0; i < details.length; i++) {
+        await this.detailService.create({ ...details[i], productId: id });
+      }
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   // CHECKERS
