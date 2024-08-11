@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { RouterModule } from "@nestjs/core";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { DetailCategoryModule } from "@modules/tr/detail-category/detail-category.module";
@@ -12,7 +13,13 @@ import { DetailController } from "./detail.controller";
 import { DetailService } from "./detail.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DetailEntity], "db_tr"), DetailCategoryModule, DetailTypeModule, DetailDimensionModule],
+  imports: [
+    TypeOrmModule.forFeature([DetailEntity], "db_tr"),
+    DetailCategoryModule,
+    DetailTypeModule,
+    DetailDimensionModule,
+    RouterModule.register([{ path: "tr", children: [DetailCategoryModule, DetailTypeModule, DetailDimensionModule] }]),
+  ],
   controllers: [DetailController],
   providers: [DetailService],
   exports: [DetailService],
