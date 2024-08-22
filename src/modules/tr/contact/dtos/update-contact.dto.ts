@@ -33,7 +33,7 @@ export class UpdateContactDto {
 
   @IsString()
   @IsOptional()
-  addressEnAr?: string;
+  addressAr?: string;
 
   @IsString()
   @IsOptional()

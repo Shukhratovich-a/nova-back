@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsString } from "class-validator";
 
 import { ContactTypeEnum } from "@enums/contact-type.enum";
 
@@ -13,7 +13,6 @@ export class CreateContactDto {
   companyTr: string;
 
   @IsString()
-  @IsOptional()
   companyAr: string;
 
   @IsString()
@@ -26,8 +25,7 @@ export class CreateContactDto {
   addressTr: string;
 
   @IsString()
-  @IsOptional()
-  addressEnAr: string;
+  addressAr: string;
 
   @IsString()
   phone: string;
@@ -45,7 +43,6 @@ export class CreateContactDto {
   countryTr: string;
 
   @IsString()
-  @IsOptional()
   countryAr: string;
 
   @IsString()
