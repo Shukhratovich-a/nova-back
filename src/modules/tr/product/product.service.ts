@@ -233,10 +233,12 @@ export class ProductService {
       const parsedProductEn = await this.findById(product.id, LanguageEnum.EN);
       const parsedProductRu = await this.findById(product.id, LanguageEnum.RU);
       const parsedProductTr = await this.findById(product.id, LanguageEnum.TR);
+      const parsedProductAr = await this.findById(product.id, LanguageEnum.AR);
 
       await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
       await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
       await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
+      await this.pdfService.createProductPdf(parsedProductAr, LanguageEnum.AR);
     }
 
     const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
@@ -262,10 +264,12 @@ export class ProductService {
           const parsedProductEn = await this.findById(product.id, LanguageEnum.EN);
           const parsedProductRu = await this.findById(product.id, LanguageEnum.RU);
           const parsedProductTr = await this.findById(product.id, LanguageEnum.TR);
+          const parsedProductAr = await this.findById(product.id, LanguageEnum.AR);
 
           await this.pdfService.createProductPdf(parsedProductEn, LanguageEnum.EN);
           await this.pdfService.createProductPdf(parsedProductRu, LanguageEnum.RU);
           await this.pdfService.createProductPdf(parsedProductTr, LanguageEnum.TR);
+          await this.pdfService.createProductPdf(parsedProductAr, LanguageEnum.AR);
         }
       }
     }

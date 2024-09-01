@@ -45,16 +45,16 @@ const keyWords: Record<LanguageEnum, Record<string, string | number>> = {
     supportLine: "Müşteri destek hattı",
   },
   ar: {
-    card: "PRODUCT CARD",
-    code: "Product code",
-    title: "Product title",
-    description: "Description (Specifications)",
-    mainImage: "Main image",
-    schemeImage: "Scheme image",
-    boxImage: "Box image",
-    allRights: "FE LLC Nova Plumbing Solutions  ALL RIGHTS RESERVED",
-    moreInfo: "For more information please contact with the manufacturer",
-    supportLine: "Customers support line",
+    card: "بطاقة المنتج",
+    code: "رمز المنتج",
+    title: "عنوان المنتج",
+    description: "الوصف (المواصفات)",
+    mainImage: "الصورة الرئيسية",
+    schemeImage: "صورة المخطط",
+    boxImage: "صورة الصندوق",
+    allRights: "FE LLC Nova Plumbing Solutions جميع الحقوق محفوظة",
+    moreInfo: "لمزيد من المعلومات يرجى الاتصال بالشركة المصنعة",
+    supportLine: "خط دعم العملاء",
   },
 };
 
@@ -119,7 +119,7 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
       font-weight: 700;
       line-height: 12px;
       text-align: center;
-      border-right: 1px solid #1b5a7d;
+      border-${language === "ar" ? "left" : "right"}: 1px solid #1b5a7d;
     "
   >
     ${detail.title}
@@ -147,7 +147,7 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
   }
 
   return `<!DOCTYPE html>
-  <html lang="en">
+  <html lang="en" dir="${language === "ar" ? "rtl" : "ltr"}">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=595, initial-scale=1.0" />
@@ -205,7 +205,9 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
           </div>
   
           <div style="box-sizing: border-box; display: flex; flex-grow: 1; border-bottom: 1px solid #1b5a7d">
-            <div style="display: flex; flex-direction: column; width: 335px; border-right: 1px solid #1b5a7d">
+            <div style="display: flex; flex-direction: column; width: 335px; border-${
+              language === "ar" ? "left" : "right"
+            }: 1px solid #1b5a7d">
               <div style="font-size: 10px; line-height: 12px; font-weight: 700; text-align: center">
                 <div style="display: flex; border-bottom: 1px solid #1b5a7d">
                   <div
@@ -216,7 +218,7 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                       width: 135px;
                       flex-shrink: 0;
                       padding: 9px 12px;
-                      border-right: 1px solid #1b5a7d;
+                      border-${language === "ar" ? "left" : "right"}: 1px solid #1b5a7d;
                       background-color: #ddebf6;
                     "
                   >
@@ -229,7 +231,7 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                   </div>
                 </div>
   
-                <div style="display: flex; border-bottom: 1px solid #1b5a7d">
+                <div style="display: flex;  border-bottom: 1px solid #1b5a7d">
                   <div
                     style="
                       display: flex;
@@ -238,7 +240,7 @@ export const pdf = async (dto: ProductDto, language: LanguageEnum) => {
                       width: 135px;
                       flex-shrink: 0;
                       padding: 9px 12px;
-                      border-right: 1px solid #1b5a7d;
+                      border-${language === "ar" ? "left" : "right"}: 1px solid #1b5a7d;
                       background-color: #ddebf6;
                     "
                   >
