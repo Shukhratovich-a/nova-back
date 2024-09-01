@@ -5,10 +5,12 @@ import { useContainer } from "class-validator";
 
 import { AppModule } from "@/app.module";
 
+import { corsList } from "./constants/cors.constant";
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: ["error", "verbose", "warn", "debug"] });
 
-  app.enableCors({ origin: ["https://novaplastik.uz", "https://nova-front.vercel.app", "https://admin.novaplastik.uz"] });
+  app.enableCors({ origin: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
