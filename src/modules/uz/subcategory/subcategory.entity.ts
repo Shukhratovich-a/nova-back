@@ -15,7 +15,7 @@ import {
 import { CategoryEntity } from "@modules/uz/category/category.entity";
 import { ProductEntity } from "@modules/uz/product/product.entity";
 
-@Entity("subcategories")
+@Entity("subcategories", { orderBy: { order: "ASC" } })
 export class SubcategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ name: "id" })
   id: number;
@@ -44,6 +44,9 @@ export class SubcategoryEntity extends BaseEntity {
 
   @OneToMany(() => ProductEntity, (products) => products.subcategory)
   products: Relation<ProductEntity[]>;
+
+  @Column({ name: "order", type: "int", default: 0 })
+  order: number;
 
   @CreateDateColumn({ name: "create_at", type: "datetime" })
   createAt: Date;

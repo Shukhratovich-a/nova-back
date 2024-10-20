@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Inject, Injectable, forwardRef, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Repository } from "typeorm";
@@ -18,6 +18,7 @@ import { CronService } from "@modules/uz/cron/cron.service";
 import { SubcategoryDto } from "./dtos/subcategory.dto";
 import { CreateSubcategoryDto } from "./dtos/create-subcategory.dto";
 import { UpdateSubcategoryDto } from "./dtos/update-subcategory.dto";
+import { OrderSubcategoryDto } from "./dtos/order-subcategory.dto";
 
 @Injectable()
 export class SubcategoryService {
@@ -122,6 +123,22 @@ export class SubcategoryService {
       }),
       total,
     };
+  }
+
+  // ORDER
+  async order(subcategories: OrderSubcategoryDto[]) {
+    try {
+      for (const { id, order } of subcategories) {
+        const currentTag = await this.subcategoryRepository.find({ where: { id } });
+        if (!currentTag) continue;
+
+        await this.subcategoryRepository.save({ order, id });
+      }
+
+      return { success: true };
+    } catch {
+      throw new BadRequestException();
+    }
   }
 
   // CREATE

@@ -10,6 +10,7 @@ import { SubcategoryService } from "./subcategory.service";
 
 import { CreateSubcategoryDto } from "./dtos/create-subcategory.dto";
 import { UpdateSubcategoryDto } from "./dtos/update-subcategory.dto";
+import { OrderSubcategoriesDto } from "./dtos/order-subcategory.dto";
 
 @Controller("subcategory")
 export class SubcategoryController {
@@ -62,6 +63,11 @@ export class SubcategoryController {
     if (!category) throw new BadRequestException("category not exists");
 
     return this.subcategoryService.create(subcategoryDto);
+  }
+
+  @Post("order")
+  async order(@Body() { data }: OrderSubcategoriesDto) {
+    return this.subcategoryService.order(data);
   }
 
   // PUT
