@@ -40,6 +40,14 @@ export class VideoController {
     return this.videoService.findByProductId(productId, language);
   }
 
+  @Get("get-by-product-code/:productCode")
+  async getByProductCode(
+    @Param("productCode") productCode: string,
+    @Query("language", new EnumValidationPipe(LanguageEnum, { defaultValue: LanguageEnum.RU })) language: LanguageEnum,
+  ) {
+    return this.videoService.findByProductCode(productCode, language);
+  }
+
   @Get("get-with-count")
   async getAllWithCount(@Query() pagination: IPagination) {
     return this.videoService.findAllWithCount(pagination);

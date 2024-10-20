@@ -64,6 +64,18 @@ export class VideoService {
     return parsedVideos;
   }
 
+  async findByProductCode(productCode: string, language: LanguageEnum) {
+    const videos = await this.videoRepository.find({
+      relations: { products: true },
+      where: { products: { code: productCode } },
+      order: { products: { code: "ASC" } },
+    });
+
+    const parsedVideos: VideoDto[] = await this.parseAll(videos, language);
+
+    return parsedVideos;
+  }
+
   async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
     const [videos, total] = await this.videoRepository.findAndCount({
       relations: { products: true },
