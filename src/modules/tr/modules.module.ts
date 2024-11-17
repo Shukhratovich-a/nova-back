@@ -15,6 +15,7 @@ import { CatalogModule } from "./catalog/catalog.module";
 import { NewsModule } from "./news/news.module";
 import { TagModule } from "./tag/tag.module";
 import { VideoModule } from "./video/video.module";
+import { InstallationModule } from "./installation/installation.module";
 import { CronModule } from "./cron/cron.module";
 
 @Module({
@@ -33,6 +34,7 @@ import { CronModule } from "./cron/cron.module";
     NewsModule,
     TagModule,
     VideoModule,
+    InstallationModule,
     CronModule,
 
     RouterModule.register([
@@ -53,6 +55,7 @@ import { CronModule } from "./cron/cron.module";
           NewsModule,
           TagModule,
           VideoModule,
+          InstallationModule,
           CronModule,
         ],
       },
