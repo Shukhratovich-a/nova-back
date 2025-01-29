@@ -19,7 +19,7 @@ import { DetailService } from "./detail.service";
     DetailCategoryModule,
     DetailTypeModule,
     DetailDimensionModule,
-    RouterModule.register([{ path: "uz", children: [DetailCategoryModule, DetailTypeModule, DetailDimensionModule] }]),
+    RouterModule.register([{ path: "eg", children: [DetailCategoryModule, DetailTypeModule, DetailDimensionModule] }]),
   ],
   controllers: [DetailController],
   providers: [DetailService],
