@@ -12,7 +12,6 @@ import { capitalize } from "@utils/capitalize.utils";
 import { CategoryEntity } from "./category.entity";
 
 import { SubcategoryService } from "@modules/uz/subcategory/subcategory.service";
-import { CronService } from "@modules/uz/cron/cron.service";
 
 import { CategoryDto } from "./dtos/category.dto";
 import { CreateCategoryDto } from "./dtos/create-category.dto";
@@ -24,7 +23,6 @@ export class CategoryService {
   constructor(
     @InjectRepository(CategoryEntity, "db_uz") private readonly categoryRepository: Repository<CategoryEntity>,
     @Inject(forwardRef(() => SubcategoryService)) private readonly subcategoryService: SubcategoryService,
-    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -139,8 +137,6 @@ export class CategoryService {
   async create(categoryDto: CreateCategoryDto) {
     const category = await this.categoryRepository.save(this.categoryRepository.create({ ...categoryDto }));
 
-    this.cronService.sendRequest(`/category`);
-
     return category;
   }
 
@@ -148,16 +144,12 @@ export class CategoryService {
   async update(categoryDto: UpdateCategoryDto, categoryId: number) {
     const category = await this.categoryRepository.save({ ...categoryDto, id: categoryId });
 
-    this.cronService.sendRequest(`/category`);
-
     return category;
   }
 
   // DELETE
   async delete(categoryId: number) {
     const category = await this.categoryRepository.delete(categoryId);
-
-    this.cronService.sendRequest(`/category`);
 
     return category;
   }

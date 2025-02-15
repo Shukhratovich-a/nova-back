@@ -14,7 +14,6 @@ import { ProductEntity } from "./product.entity";
 import { SubcategoryService } from "@modules/uz/subcategory/subcategory.service";
 import { DetailService } from "@modules/uz/detail/detail.service";
 import { PdfService } from "@modules/uz/pdf/pdf.service";
-import { CronService } from "@modules/uz/cron/cron.service";
 
 import { ProductDto } from "./dtos/product.dto";
 import { CreateProductDto } from "./dtos/create-product.dto";
@@ -28,7 +27,6 @@ export class ProductService {
     @Inject(forwardRef(() => SubcategoryService)) private readonly subcategorySevice: SubcategoryService,
     @Inject(forwardRef(() => DetailService)) private readonly detailService: DetailService,
     @Inject(forwardRef(() => PdfService)) private readonly pdfService: PdfService,
-    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -241,9 +239,6 @@ export class ProductService {
       await this.pdfService.createProductPdf(parsedProductAr, LanguageEnum.AR);
     }
 
-    const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
-    this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
-
     return product;
   }
 
@@ -274,19 +269,12 @@ export class ProductService {
       }
     }
 
-    const subcategory = await this.subcategorySevice.findById(productDto.subcategoryId, LanguageEnum.EN);
-    this.cronService.sendRequest(`/category/${subcategory.category.alias}/${subcategory.alias}`);
-
     return product;
   }
 
   // DELETE
   async delete(productId: number) {
-    const oldProduct = await this.findById(productId, LanguageEnum.EN);
-
     const product = await this.productRepository.delete(productId);
-
-    this.cronService.sendRequest(`/category/${oldProduct.subcategory.category.alias}/${oldProduct.subcategory.alias}`);
 
     return product;
   }

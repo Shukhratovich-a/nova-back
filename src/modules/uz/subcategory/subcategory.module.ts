@@ -3,7 +3,6 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { CategoryModule } from "@modules/uz/category/category.module";
 import { ProductModule } from "@modules/uz/product/product.module";
-import { CronModule } from "@modules/uz/cron/cron.module";
 
 import { SubcategoryEntity } from "./subcategory.entity";
 
@@ -16,7 +15,6 @@ import { SubcategoryService } from "./subcategory.service";
     TypeOrmModule.forFeature([SubcategoryEntity], "db_uz"),
     forwardRef(() => CategoryModule),
     forwardRef(() => ProductModule),
-    forwardRef(() => CronModule),
   ],
   controllers: [SubcategoryController],
   providers: [SubcategoryService],

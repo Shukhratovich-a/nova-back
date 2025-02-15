@@ -13,7 +13,6 @@ import { SubcategoryEntity } from "./subcategory.entity";
 
 import { CategoryService } from "@modules/uz/category/category.service";
 import { ProductService } from "@modules/uz/product/product.service";
-import { CronService } from "@modules/uz/cron/cron.service";
 
 import { SubcategoryDto } from "./dtos/subcategory.dto";
 import { CreateSubcategoryDto } from "./dtos/create-subcategory.dto";
@@ -26,7 +25,6 @@ export class SubcategoryService {
     @InjectRepository(SubcategoryEntity, "db_uz") private readonly subcategoryRepository: Repository<SubcategoryEntity>,
     @Inject(forwardRef(() => CategoryService)) private readonly categoryService: CategoryService,
     @Inject(forwardRef(() => ProductService)) private readonly productService: ProductService,
-    @Inject(forwardRef(() => CronService)) private readonly cronService: CronService,
   ) {}
 
   // FIND
@@ -147,9 +145,6 @@ export class SubcategoryService {
       this.subcategoryRepository.create({ ...subcategoryDto, category: { id: subcategoryDto.categoryId } }),
     );
 
-    const { alias } = await this.categoryService.checkById(subcategoryDto.categoryId);
-    this.cronService.sendRequest(`/category/${alias}`);
-
     return subcategory;
   }
 
@@ -161,21 +156,12 @@ export class SubcategoryService {
       category: { id: subcategoryDto.categoryId },
     });
 
-    const { alias } = await this.categoryService.checkById(subcategoryDto.categoryId);
-    this.cronService.sendRequest(`/category/${alias}`);
-
     return subcategory;
   }
 
   // DELETE
   async delete(subcategoryId: number) {
-    const {
-      category: { alias },
-    } = await this.findById(subcategoryId, LanguageEnum.EN);
-
     const subcategory = await this.subcategoryRepository.delete(subcategoryId);
-
-    this.cronService.sendRequest(`/category/${alias}`);
 
     return subcategory;
   }
