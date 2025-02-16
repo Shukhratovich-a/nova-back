@@ -1,5 +1,8 @@
+import { join } from "path";
+
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ServeStaticModule } from "@nestjs/serve-static";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -11,6 +14,11 @@ import { Modules as TrModules } from "@modules/tr/modules.module";
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), "uploads"),
+      serveRoot: "/uploads",
+    }),
+
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
 
