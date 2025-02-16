@@ -27,15 +27,19 @@ export class CategoryService {
 
   // FIND
   async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
-    const [categories, total] = await this.categoryRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-    if (!categories) return [];
+    try {
+      const [categories, total] = await this.categoryRepository.findAndCount({
+        take: limit,
+        skip: (page - 1) * limit,
+      });
+      if (!categories) return [];
 
-    const parsedCategories: CategoryDto[] = categories.map((category) => this.parse(category, language));
+      const parsedCategories: CategoryDto[] = categories.map((category) => this.parse(category, language));
 
-    return { data: parsedCategories, total };
+      return { data: parsedCategories, total };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findAllWithChildren(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {

@@ -22,12 +22,16 @@ export class BannerService {
 
   // FIND
   async findAll(language: LanguageEnum) {
-    const [banners, total] = await this.bannerRepository.findAndCount();
-    if (!banners) return [];
+    try {
+      const [banners, total] = await this.bannerRepository.findAndCount();
+      if (!banners) return [];
 
-    const parsedBanner: BannerDto[] = banners.map((banner) => this.parse(banner, language));
+      const parsedBanner: BannerDto[] = banners.map((banner) => this.parse(banner, language));
 
-    return { data: parsedBanner, total };
+      return { data: parsedBanner, total };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
