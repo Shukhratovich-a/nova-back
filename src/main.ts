@@ -12,9 +12,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
-  console.log(process.env.PORT);
-  console.log(process.env.HOSTNAME);
-
-  await app.listen(parseInt(process.env.PORT, 10) || 3001);
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
