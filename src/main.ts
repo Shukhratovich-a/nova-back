@@ -11,6 +11,7 @@ async function bootstrap() {
   app.enableCors({ origin: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.setGlobalPrefix("v2");
 
   await app.listen(process.env.PORT || 3002);
 }

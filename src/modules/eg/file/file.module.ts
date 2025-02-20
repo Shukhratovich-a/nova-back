@@ -11,7 +11,7 @@ import { FileService } from "./file.service";
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "uploads"),
-      serveRoot: "/eg/uploads",
+      serveRoot: "/v2/eg/uploads",
     }),
   ],
   controllers: [FileController],

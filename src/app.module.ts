@@ -16,7 +16,7 @@ import { Modules as TrModules } from "@modules/tr/modules.module";
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), "uploads"),
-      serveRoot: "/uploads",
+      serveRoot: "/v2/uploads",
     }),
 
     ScheduleModule.forRoot(),
