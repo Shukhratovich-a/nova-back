@@ -30,7 +30,7 @@ export class ProductService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const [products, total] = await this.productRepository
       .createQueryBuilder("product")
       .take(limit)
@@ -43,7 +43,7 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
-  async findRelated(productId: number, language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findRelated(productId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const product = await this.productRepository.findOne({ where: { id: productId }, relations: { subcategory: true } });
     if (!product.subcategory) return [];
 
@@ -62,7 +62,7 @@ export class ProductService {
     return { data: parsedProducts, total };
   }
 
-  async search(language: LanguageEnum, searchText: string, { page = 1, limit = 0 }: IPagination) {
+  async search(language: LanguageEnum, searchText: string, { page = 1, limit = 10 }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
       relations: { subcategory: true },
       where: [
@@ -141,7 +141,7 @@ export class ProductService {
     return parsedProduct;
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination, code?: string) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination, code?: string) {
     const where: Record<string, unknown> = {};
     if (code) where.code = Like(`%${code}%`);
 
@@ -180,7 +180,7 @@ export class ProductService {
     return product;
   }
 
-  async findAllByParentId(subcategoryId: number, { page = 1, limit = 0 }: IPagination) {
+  async findAllByParentId(subcategoryId: number, { page = 1, limit = 10 }: IPagination) {
     const [products, total] = await this.productRepository.findAndCount({
       where: { subcategory: { id: subcategoryId } },
       take: limit,

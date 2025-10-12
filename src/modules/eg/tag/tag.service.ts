@@ -19,7 +19,7 @@ export class TagService {
   constructor(@InjectRepository(TagEntity, "db_eg") private readonly tagRepository: Repository<TagEntity>) {}
 
   // FIND
-  async findAllWithContents({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithContents({ page = 1, limit = 10 }: IPagination) {
     const [tags, total] = await this.tagRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

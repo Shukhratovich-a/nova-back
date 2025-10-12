@@ -25,7 +25,7 @@ export class InstallationService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const installations = await this.installationRepository.find({
       relations: { products: true },
       take: limit,
@@ -76,7 +76,7 @@ export class InstallationService {
     return parsedInstallations;
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [installations, total] = await this.installationRepository.findAndCount({
       relations: { products: true },
       take: limit,
@@ -98,7 +98,7 @@ export class InstallationService {
     return installation;
   }
 
-  async findAllByParentId(installationId: number, { page = 1, limit = 0 }: IPagination) {
+  async findAllByParentId(installationId: number, { page = 1, limit = 10 }: IPagination) {
     const [installations, total] = await this.installationRepository.findAndCount({
       relations: { products: true },
       where: { products: { id: installationId } },

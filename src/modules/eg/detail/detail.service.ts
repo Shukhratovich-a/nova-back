@@ -29,7 +29,7 @@ export class DetailService {
   ) {}
 
   // FIND
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
       take: limit,
@@ -50,7 +50,7 @@ export class DetailService {
     return detail;
   }
 
-  async findAllByParentId(productId: number, { page = 1, limit = 0 }: IPagination) {
+  async findAllByParentId(productId: number, { page = 1, limit = 10 }: IPagination) {
     const [details, total] = await this.detailRepository.findAndCount({
       relations: { type: true, category: true },
       where: { product: { id: productId } },

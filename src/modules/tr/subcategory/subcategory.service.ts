@@ -28,7 +28,7 @@ export class SubcategoryService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository
       .createQueryBuilder("subcategory")
       .take(limit)
@@ -73,7 +73,7 @@ export class SubcategoryService {
     return parsedSubcategory;
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
       take: limit,
@@ -103,7 +103,7 @@ export class SubcategoryService {
     return category;
   }
 
-  async findAllByParentId(categoryId: number, { page = 1, limit = 0 }: IPagination) {
+  async findAllByParentId(categoryId: number, { page = 1, limit = 10 }: IPagination) {
     const [subcategories, total] = await this.subcategoryRepository.findAndCount({
       relations: { category: true },
       where: { category: { id: categoryId } },

@@ -28,7 +28,7 @@ export class CatalogService {
     return { data: parsedCatalogs, total };
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [catalogs, total] = await this.catalogRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

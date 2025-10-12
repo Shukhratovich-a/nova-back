@@ -23,7 +23,7 @@ export class CertificateService {
   ) {}
 
   // FIND
-  async findAll({ page = 1, limit = 0 }: IPagination, language?: LanguageEnum) {
+  async findAll({ page = 1, limit = 10 }: IPagination, language?: LanguageEnum) {
     const certificates = await this.certificateRepository.find({ take: limit, skip: (page - 1) * limit });
     if (!certificates) return [];
 
@@ -32,7 +32,7 @@ export class CertificateService {
     return parsedCertificates;
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [certificates, total] = await this.certificateRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

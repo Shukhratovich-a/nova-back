@@ -20,7 +20,7 @@ export class DetailTypeService {
     return this.detailTypeRepository.find({ order: { order: "ASC" } });
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [types, total] = await this.detailTypeRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

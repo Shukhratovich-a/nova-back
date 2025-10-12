@@ -25,7 +25,7 @@ export class VideoService {
   ) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const videos = await this.videoRepository.find({
       relations: { products: true },
       take: limit,
@@ -76,7 +76,7 @@ export class VideoService {
     return parsedVideos;
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [videos, total] = await this.videoRepository.findAndCount({
       relations: { products: true },
       take: limit,
@@ -98,7 +98,7 @@ export class VideoService {
     return video;
   }
 
-  async findAllByParentId(videoId: number, { page = 1, limit = 0 }: IPagination) {
+  async findAllByParentId(videoId: number, { page = 1, limit = 10 }: IPagination) {
     const [videos, total] = await this.videoRepository.findAndCount({
       relations: { products: true },
       where: { products: { id: videoId } },

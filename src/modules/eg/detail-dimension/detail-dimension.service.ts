@@ -22,7 +22,7 @@ export class DetailDimensionService {
     return this.detailDimensionRepository.find();
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [dimensions, total] = await this.detailDimensionRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

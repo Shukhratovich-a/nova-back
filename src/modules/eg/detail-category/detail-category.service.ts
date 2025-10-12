@@ -28,7 +28,7 @@ export class DetailCategoryService {
     return this.detailCategoryRepository.find();
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [categories, total] = await this.detailCategoryRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

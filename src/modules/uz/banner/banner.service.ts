@@ -34,7 +34,7 @@ export class BannerService {
     }
   }
 
-  async findAllWithCount({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithCount({ page = 1, limit = 10 }: IPagination) {
     const [banners, total] = await this.bannerRepository.findAndCount({
       take: limit,
       skip: (page - 1) * limit,

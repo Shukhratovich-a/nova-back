@@ -20,7 +20,7 @@ export class NewsService {
   constructor(@InjectRepository(NewsEntity, "db_eg") private readonly newsRepository: Repository<NewsEntity>) {}
 
   // FIND
-  async findAll(language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAll(language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const [news, total] = await this.newsRepository
       .createQueryBuilder("news")
       .leftJoinAndSelect("news.tags", "tags")
@@ -68,7 +68,7 @@ export class NewsService {
     return parsedNews;
   }
 
-  async findAllByTags(tags: string[], newsId: number, language: LanguageEnum, { page = 1, limit = 0 }: IPagination) {
+  async findAllByTags(tags: string[], newsId: number, language: LanguageEnum, { page = 1, limit = 10 }: IPagination) {
     const searchTags = tags.map((tag) => `'${tag}'`).toString();
 
     const [news, total] = await this.newsRepository
@@ -89,7 +89,7 @@ export class NewsService {
     return { data: parsedNews, total };
   }
 
-  async findAllWithContents({ page = 1, limit = 0 }: IPagination) {
+  async findAllWithContents({ page = 1, limit = 10 }: IPagination) {
     const [news, total] = await this.newsRepository.findAndCount({
       relations: { tags: true },
       take: limit,
